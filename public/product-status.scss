@@ -1,0 +1,67 @@
+$brand-primary:         darken(#428bca, 6.5%) !default; // #337ab7
+$brand-success:         #5cb85c !default;
+$brand-info:            #5bc0de !default;
+$brand-warning:         #f0ad4e !default;
+$brand-danger:          #d9534f !default;
+
+#app {
+  margin-bottom: 50px;
+
+  .form-inline {
+    &.block-labels {
+      .form-group {
+        label {
+          display: block;
+        }
+      }
+    }
+  }
+
+  #item-list {
+    tr {
+      &.checked {
+        td {
+          background-color: #f7e741;
+        }
+      }
+    }
+    td.move {
+      background-color: $brand-danger;
+      color: #ffffff;
+      font-weight: bold;
+      text-align: center;
+    }
+  }
+
+  .save-form {
+    &.form-inline {
+      .form-group {
+        display: inline-block;
+      }
+    }
+  }
+  @media (max-width: 767px) {
+    .save-form {
+      width: 100%;
+      .new-bin {
+        width: 6em;
+      }
+    }
+  }
+
+  @media (min-width: 768px) {
+    .form-inline {
+      .form-group {
+        margin-right: 10px;
+        label {
+          padding-right: 3px;
+        }
+      }
+      button {
+        margin-right: 10px;
+      }
+    }
+  }
+
+
+}
