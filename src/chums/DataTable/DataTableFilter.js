@@ -3,6 +3,7 @@
  */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 
 export default class DataTableFilter extends Component {
     static propTypes = {
@@ -10,7 +11,8 @@ export default class DataTableFilter extends Component {
         onChangeFilter: PropTypes.func.isRequired,
         onReload: PropTypes.func,
         showInactive: PropTypes.bool,
-        onToggleInactive: PropTypes.func
+        onToggleInactive: PropTypes.func,
+        classNames: PropTypes.any
     };
 
     onChangeFilter(ev) {
@@ -50,7 +52,7 @@ export default class DataTableFilter extends Component {
 
     render() {
         return (
-            <div className="form-inline">
+            <div className={classNames("form-inline", this.props.classNames || '')}>
                 <div className="form-group">
                     <label>Filter</label>
                     <input type="text" className="form-control" value={this.props.filter}

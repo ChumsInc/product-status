@@ -3,11 +3,9 @@
  */
 const webpack = require('webpack');
 const path = require('path');
-const WebpackChunkHash = require("webpack-chunk-hash");
 const ManifestPlugin = require('webpack-manifest-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 let args = process.argv;
-
 
 let production = false;
 if (args.indexOf('-p') > -1) {
@@ -25,94 +23,51 @@ const localProxy = {
     changeOrigin: true,
     secure: false,
 };
-module.exports = production
-    ? {
-        devtool: 'source-map',
-        entry: {
-            app: './src/index.js',
-            // vendor: ['bluebird', 'classnames','mobx', 'mobx-react', 'moment', 'react', 'react-dom', 'whatwg-fetch'],
-        },
-        output: {
-            path: path.join(__dirname, 'public/js'),
-            filename: "[name].[chunkhash].js",
-            chunkFilename: "[name].[chunkhash].js",
-            sourceMapFilename: '[file].map',
-            publicPath: '/js/',
-        },
-        module: {
-            rules: [
-                {
-                    test: /\.jsx?$/,
-                    exclude: /node_modules/,
-                    use: ['react-hot-loader', 'babel-loader'],
-                    include: [path.join(__dirname, 'src')]
-                    // include: [path.join(__dirname, 'src')]
-                },
-                {
-                    test: /\.(css|scss|sass)$/,
-                    exclude: /node_modules/,
-                    use: ['style-loader', 'css-loader'],
-                    include: [path.join(__dirname, 'src')]
-                }
-            ]
-        },
-        plugins: [
-            new webpack.DefinePlugin({
-                'process.env': {
-                    NODE_ENV: JSON.stringify('production')
-                }
-            }),
-            new ManifestPlugin(),
-            new BundleAnalyzerPlugin(),
-        ],
-        target: 'web',
-    }
-    : {
-        devtool: 'eval-source-map',
-        entry: {
-            app: './src/index',
-            // vendor: ['bluebird', 'classnames','mobx', 'mobx-react', 'react', 'react-dom', 'whatwg-fetch']
-        },
-        output: {
-            path: path.join(__dirname, './public/js'),
-            filename: production ? 'bundle.[hash].js' : 'bundle.js',
-            sourceMapFilename: '[file].map',
-            publicPath: '/js/',
-        },
-        module: {
-            rules: [
-                {
-                    test: /\.jsx?$/,
-                    exclude: /node_modules/,
-                    use: ['react-hot-loader', 'babel-loader'],
-                    include: [path.join(__dirname, 'src')]
-                },
-                {
-                    test: /\.(css|scss|sass)$/,
-                    exclude: /node_modules/,
-                    use: ['style-loader', 'css-loader'],
-                    include: [path.join(__dirname, 'src')]
-                }
-            ]
-        },
-        plugins: [
-                // new webpack.optimize.CommonsChunkPlugin({name: "vendor", filename: "vendor.bundle.js"}),
-                new webpack.HotModuleReplacementPlugin(),
-                new BundleAnalyzerPlugin(),
-            ],
-        target: 'web',
-        devServer: {
-            proxy: {
-                '/node-dev': Object.assign({}, localProxy),
-                '/node/': Object.assign({}, localProxy),
-                '/node_modules/': Object.assign({}, localProxy),
-                '/sage/': Object.assign({}, localProxy),
-                '/node-sage': Object.assign({}, localProxy),
-                '/node-chums': Object.assign({}, localProxy),
-                '/node-bc': Object.assign({}, localProxy),
-                '/node-safety': Object.assign({}, localProxy),
-                '/intranet': Object.assign({}, localProxy),
-            }
-        },
-    };
 
+const config = {
+    mode: production ? 'production' : 'development',
+    devtool: production ? 'source-map' : "eval-source-map",
+    entry: './src/index.js',
+    output: {
+        path: path.join(__dirname, 'public/js'),
+        filename: "bundle.[hash].js",
+        sourceMapFilename: '[file].map',
+        // publicPath: '/js/',
+    },
+    module: {
+        rules: [
+            {
+                test: /\.js$/,
+                exclude: '/node_modules/',
+                use: ['babel-loader']
+            },
+            {
+                test: /\.css$/,
+                use: [{loader: 'style-loader'}, {loader: 'css-loader'}]
+            }
+        ]
+    },
+    plugins: [
+        new ManifestPlugin(),
+        new BundleAnalyzerPlugin(),
+    ],
+    target: 'web',
+};
+
+if (!production) {
+    config.plugins = [
+        ...config.plugins,
+        new webpack.HotModuleReplacementPlugin(),
+    ];
+    config.output.filename = 'bundle.js';
+    config.devServer = {
+        contentBase: path.join(__dirname, '/public'),
+        // hot: true,
+        proxy: {
+            '/node-dev': Object.assign({}, localProxy),
+            '/node': Object.assign({}, localProxy),
+            '/intranet': Object.assign({}, localProxy),
+        }
+    };
+}
+module.exports = config;

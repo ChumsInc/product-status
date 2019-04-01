@@ -19,6 +19,14 @@ export default class SaveForm extends Component {
         onSave: PropTypes.func.isRequired,
     };
 
+    constructor(props) {
+        super(props);
+        this.onShowSelected = this.onShowSelected.bind(this);
+        this.onSave = this.onSave.bind(this);
+        this.onChange = this.onChange.bind(this);
+    }
+
+
     onChange(ev) {
         this.props.onChange(ev.target.value);
     }
@@ -50,11 +58,11 @@ export default class SaveForm extends Component {
         const { newItemStatus, showSelected } = this.props;
         const statusOptions = this.renderItemStatusOptions();
         return (
-            <form className="form-inline save-form" onSubmit={::this.onShowSelected} style={{display: 'inline-block'}}>
+            <form className="form-inline save-form" onSubmit={this.onShowSelected} style={{display: 'inline-block'}}>
                 <div className="form-group">
                     <label className="hidden-xs">New Item Status</label>
                     <select className="form-control" value={newItemStatus || '%'}
-                            onChange={::this.onChange}>
+                            onChange={this.onChange}>
                         <option value={null}>Select One</option>
                         <option value="">Clear Status</option>
                         {statusOptions}
@@ -62,11 +70,11 @@ export default class SaveForm extends Component {
                 </div>
                 <button type="button"
                         className={classNames("btn", {'btn-default': !showSelected, 'btn-warning': showSelected})}
-                        onClick={::this.onShowSelected}>
+                        onClick={this.onShowSelected}>
                     {showSelected ? 'Show All' : 'Show Selected'}
                 </button>
                 <button type="submit" className="btn btn-primary"
-                        onClick={::this.onSave}
+                        onClick={this.onSave}
                         disabled={this.newItemStatus === null}>
                     Save
                 </button>

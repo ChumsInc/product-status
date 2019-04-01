@@ -1,0 +1,55 @@
+#app {
+  margin-bottom: 50px; }
+  #app .form-inline.block-labels .form-group {
+    flex-direction: column;
+    align-items: flex-start; }
+    #app .form-inline.block-labels .form-group .form-control {
+      margin-left: 0; }
+    #app .form-inline.block-labels .form-group label {
+      display: inline-block;
+      margin-bottom: 0.25rem;
+      font-size: 0.85rem; }
+    #app .form-inline.block-labels .form-group select {
+      max-width: 10rem; }
+  #app .form-inline .input-autocomplete {
+    position: relative; }
+    #app .form-inline .input-autocomplete .dropdown-menu {
+      width: 25rem; }
+      #app .form-inline .input-autocomplete .dropdown-menu .dropdown-item {
+        cursor: pointer;
+        padding: 0 0.5rem; }
+        #app .form-inline .input-autocomplete .dropdown-menu .dropdown-item.active, #app .form-inline .input-autocomplete .dropdown-menu .dropdown-item:hover {
+          background-color: #337ab7;
+          color: white; }
+        #app .form-inline .input-autocomplete .dropdown-menu .dropdown-item .item-dropdown-item {
+          display: flex;
+          flex-direction: row;
+          justify-content: flex-start; }
+          #app .form-inline .input-autocomplete .dropdown-menu .dropdown-item .item-dropdown-item .item-code {
+            flex: 0 0 8rem;
+            font-weight: 500; }
+          #app .form-inline .input-autocomplete .dropdown-menu .dropdown-item .item-dropdown-item .item-description {
+            flex: 0 0 auto; }
+  #app #item-list tr.checked td {
+    background-color: #f7e741; }
+  #app #item-list td.move {
+    background-color: #d9534f;
+    color: #ffffff;
+    font-weight: bold;
+    text-align: center; }
+  #app .save-form.form-inline .form-group {
+    display: inline-block; }
+  @media (max-width: 767px) {
+    #app .save-form {
+      width: 100%; }
+      #app .save-form .new-bin {
+        width: 6em; } }
+  @media print {
+    #app table {
+      width: 100%; }
+      #app table thead, #app table tfoot {
+        display: table-header-group; }
+      #app table th, #app table td {
+        font-size: xx-small; } }
+
+/*# sourceMappingURL=styles.css.map */

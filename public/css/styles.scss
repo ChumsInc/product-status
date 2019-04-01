@@ -1,0 +1,107 @@
+$brand-primary:         darken(#428bca, 6.5%) !default; // #337ab7
+$brand-success:         #5cb85c !default;
+$brand-info:            #5bc0de !default;
+$brand-warning:         #f0ad4e !default;
+$brand-danger:          #d9534f !default;
+
+#app {
+  margin-bottom: 50px;
+
+  .form-inline {
+    &.block-labels {
+      .form-group {
+        flex-direction: column;
+        align-items: flex-start;
+        .form-control {
+          margin-left: 0;
+        }
+        label {
+          display: inline-block;
+          margin-bottom: 0.25rem;
+          font-size: 0.85rem;
+        }
+        select {
+          max-width: 10rem;
+        }
+      }
+    }
+
+    .input-autocomplete {
+      position: relative;
+      .dropdown-menu {
+        width: 25rem;
+        .dropdown-item {
+          cursor: pointer;
+          padding: 0 0.5rem;
+
+          &.active,
+          &:hover {
+            background-color: $brand-primary;
+            color: white;
+          }
+          .item-dropdown-item {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            .item-code {
+              flex: 0 0 8rem;
+              font-weight: 500;
+            }
+            .item-description {
+              flex: 0 0 auto;
+              //white-space: normal;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  #item-list {
+    tr {
+      &.checked {
+        td {
+          background-color: #f7e741;
+        }
+      }
+    }
+    td.move {
+      background-color: $brand-danger;
+      color: #ffffff;
+      font-weight: bold;
+      text-align: center;
+    }
+  }
+
+  .save-form {
+    &.form-inline {
+      .form-group {
+        display: inline-block;
+      }
+    }
+  }
+  @media (max-width: 767px) {
+    .save-form {
+      width: 100%;
+      .new-bin {
+        width: 6em;
+      }
+    }
+  }
+
+  @media print {
+
+    table {
+      width: 100%;
+      thead, tfoot {
+        display: table-header-group;
+      }
+      th, td {
+        font-size: xx-small;
+
+      }
+    }
+  }
+
+}
+

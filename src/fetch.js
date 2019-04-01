@@ -2,7 +2,8 @@
  * Created by steve on 8/24/2016.
  */
 
-import 'isomorphic-fetch';
+import 'whatwg-fetch';
+import pathToRegExp from 'path-to-regexp';
 
 self.fetch.credentials = 'include';
 
@@ -34,11 +35,10 @@ export const fetchOptions = {
 const onErrorResponse = (response) => {
     if (response.ok) {
         return response;
-    } else {
-        const error = new Error(`${response.status} ${response.statusText}`);
-        error.response = response;
-        throw error;
     }
+    const error = new Error(`${response.status} ${response.statusText}`);
+    error.response = response;
+    return Promise.reject(error);
 };
 
 export function fetchGET(url) {
@@ -60,7 +60,7 @@ export function fetchGET(url) {
     });
 }
 
-export function fetchGET_HTML(url) {
+export function fetchHTML(url) {
     return new Promise((resolve, reject) => {
         fetch(url, {credentials: 'same-origin'})
             .then(onErrorResponse)
@@ -82,8 +82,7 @@ export function fetchPOST(url, data) {
             .then(response => response.json())
             .then(response => {
                 if (response.error) {
-                    reject(response.error);
-                    return;
+                    throw new Error(response.error);
                 }
                 resolve(response);
             })
@@ -111,3 +110,34 @@ export function fetchDELETE(url) {
             });
     });
 }
+
+export const cacheBuster = (url = null, cacheDuration = 1) => {
+    const value = Math.floor(new Date().valueOf() / (cacheDuration || 1)).toString(36);
+    if (url) {
+        const re = /\b(_=[0-9a-f]+)\b/gi;
+        if (re.test(url)) {
+            return url.replace(/\b(_=[0-9a-f]+)\b/, `_=${value}`);
+        }
+        return url + (/\?/.test(url) ? '&' : '?') + `_=${value}`;
+    }
+    return value;
+};
+
+/**
+ *
+ * @param {String} path
+ * @param {Object} props
+ * @param {boolean} cacheBusted
+ * @return {String}
+ */
+export const buildPath = (path, props, cacheBusted = false, cacheDuration = 1) => {
+    try {
+        const url = pathToRegExp.compile(path)(props);
+        return cacheBusted ? cacheBuster(url, cacheDuration) : url;
+    } catch (e) {
+        console.trace(e.message, path, props);
+        return path;
+    }
+};
+
+

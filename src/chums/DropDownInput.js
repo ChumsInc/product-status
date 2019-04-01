@@ -2,80 +2,167 @@
  * Created by steve on 9/8/2016.
  */
 
-import React, { Component } from 'react';
+import React, { Component, createRef } from 'react';
 import PropTypes from 'prop-types';
-import ProgressBar from './ProgressBar';
+import ProgressBar from '../components/ProgressBar';
 import { KEYMAP } from './keymap';
+import TextInput from '../components/TextInput';
+import classNames from 'classnames';
+
+const noop = () => {};
+
+export const MAX_DROPDOWN_INPUT_ITEMS = 20;
+/**
+ *
+ * @param {boolean} active
+ * @param {Number} index
+ * @param {function} onClick
+ * @param {String} text
+ * @return {*}
+ * @constructor
+ */
+export const DropDownItem = ({active, index, onClick, text}) => (
+    <li className={classNames('menu-item', {active})}
+        onClick={() => onClick(index)}
+        onTouchEnd={() => onClick(index)}>
+        {text}
+    </li>
+);
 
 export default class DropDownInput extends Component {
     static propTypes = {
+        value: PropTypes.string,
+        field: PropTypes.string,
         items: PropTypes.any.isRequired,
         minLength: PropTypes.number,
-        onChange: PropTypes.func,
-        onSelect: PropTypes.func.isRequired,
         placeholder: PropTypes.string,
         className: PropTypes.string,
-        value: PropTypes.string,
         loading: PropTypes.bool,
+        maxItems: PropTypes.number,
+
+        onChange: PropTypes.func,
+        onSelect: PropTypes.func.isRequired,
         formatter: PropTypes.func,
     };
 
+    static defaultProps = {
+        value: '',
+        field: '',
+        items: [],
+        formatter: DropDownInput.formatter,
+        minLength: 0,
+        placeholder: '',
+        className: '',
+        loading: false,
+        maxItems: MAX_DROPDOWN_INPUT_ITEMS,
+    };
 
-    constructor() {
-        super();
-        this.state = {
-            index: 0,
-            visible: false,
-            value: ''
-        };
+    state = {
+        index: 0,
+        page: 0,
+        visible: false,
+    };
+
+    constructor(props) {
+        super(props);
+        this.timer = null;
+        this.ref = createRef();
+        this.onChange = this.onChange.bind(this);
+        this.setIndex = this.setIndex.bind(this);
+        this.onKeyup = this.onKeyup.bind(this);
+        this.onClick = this.onClick.bind(this);
+        this.onBlur = this.onBlur.bind(this);
+        this.onClickPrev = this.onClickPrev.bind(this);
+        this.onClickNext = this.onClickNext.bind(this);
+        this.onClickOutside = this.onClickOutside.bind(this);
+        this.showDropdown = this.showDropdown.bind(this);
     }
 
-    componentWillMount() {
-        if (this.props.value !== undefined) {
-            this.setState({value: this.props.value});
+    componentDidMount() {
+        document.addEventListener('click', this.onClickOutside);
+    }
+
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        const {value, minLength, loading, items} = this.props;
+
+        // const visible = prevState.visible || loading;
+        // if (loading && !this.state.visible) {
+        //     this.setState({visible: true, index: 0});
+        // }
+    }
+
+    componentWillUnmount() {
+        clearTimeout(this.timer);
+        document.removeEventListener('click', this.onClickOutside);
+    }
+
+    onClickOutside(ev) {
+        // if (!this.ref.current.contains(ev.target)) {
+        //     return;
+        // }
+        const isInside = this.ref.current.contains(ev.target);
+        if (this.state.visible && !isInside) {
+            this.showDropdown(false);
         }
     }
 
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.value !== undefined) {
-            this.setState({value: nextProps.value});
+    showDropdown(visible, callback = noop) {
+        if (visible != this.state.visible) {
+            document.removeEventListener('click', this.onClickOutside);
+            if (visible) {
+                document.addEventListener('click', this.onClickOutside);
+            }
+            this.setState({visible}, callback);
+        } else {
+            callback();
         }
     }
 
 
-    onChange(ev) {
-        let value = ev.target.value;
-        let visible = value.length >= (this.props.minLength || 0);
-        this.setState({value, visible});
-        this.props.onChange(value);
+    onChange({field, value}) {
+        let visible = value.length >= this.props.minLength;
+        this.showDropdown(visible, () => {
+            this.props.onChange({field, value});
+        });
     }
 
     setIndex(index) {
+        const {items, maxItems} = this.props;
         if (index < 0) {
             index = 0;
-        } else if (index >= this.props.items.length) {
-            index = this.props.items.length - 1;
+        } else if (index >= items.length) {
+            index = items.length - 1;
         }
-        this.setState({index, visible: true});
+        const page = Math.floor(index / maxItems);
+        this.showDropdown(true, () => this.setState({index, page}));
     }
 
-    noop() {}
 
     onKeyup(ev) {
-        ev.preventDefault();
+        const {visible, index} = this.state;
+        const {items, field, minLength, value} = this.props;
         switch (KEYMAP[ev.which]) {
         case 'enter':
+            if (!visible) {
+                return;
+            }
+            ev.preventDefault();
+            ev.stopPropagation();
             return this.onSelect();
         case 'escape':
+            ev.preventDefault();
             return this.onBlur();
         case 'up':
-            return this.setIndex(this.state.index - 1);
+            ev.preventDefault();
+            return this.setIndex(index - 1);
         case 'down':
-            if (!this.state.visible && this.props.items.length >= (this.props.minLength || 0)) {
-                this.props.onChange(this.state.value);
+            ev.preventDefault();
+            if (!visible && items.length >= minLength) {
+                this.onChange({field, value});
                 return this.setIndex(0);
             }
-            return this.setIndex(this.state.index + 1);
+            return this.setIndex(index + 1);
         }
     }
 
@@ -86,20 +173,36 @@ export default class DropDownInput extends Component {
     onSelect() {
         const selected = this.props.items[this.state.index];
         this.props.onSelect(selected);
-        this.setState({visible: false});
+        this.showDropdown(false);
     }
 
     onClick(index) {
         const selected = this.props.items[index];
         this.props.onSelect(selected);
-        this.setState({visible: false});
+        this.showDropdown(false);
     }
 
-    onBlur() {
-        setTimeout(() => {
-            this.setState({visible: false});
-        }, 250);
+    onBlur(ev) {
+        console.log(this.node);
+        // this.timer = setTimeout(() => {
+        //     this.setState({visible: false});
+        // }, 250);
+    }
 
+    onClickNext(ev) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        const {index} = this.state;
+        const {maxItems} = this.props;
+        this.setIndex(index + maxItems);
+    }
+
+    onClickPrev(ev) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        const {index} = this.state;
+        const {maxItems} = this.props;
+        this.setIndex(index - maxItems);
     }
 
     render() {
@@ -108,40 +211,26 @@ export default class DropDownInput extends Component {
             position: 'relative',
             verticalAlign: 'middle',
         };
+        const {index, visible, page} = this.state;
+        const {items, formatter, loading, placeholder, className, value, field, maxItems} = this.props;
+        const pages = Math.floor(items.length / maxItems);
 
 
-        // console.log(this.props.loading);
-        let formatter = this.props.formatter || DropDownInput.formatter;
-        const items = (this.props.items || [])
-            .map((item, index) => {
-                const str = formatter(item);
-                const active = index === this.state.index ? 'active' : '';
-                return (
-                    <li key={index} className={active}>
-                        <a style={{cursor: 'pointer'}}
-                              onClick={this.onClick.bind(this, index)}
-                              onTouchEnd={this.onClick.bind(this, index)}>{str}</a>
-                    </li>
-                )
-            });
-
-        if (this.props.loading) {
-            let progressbar = (
-                <li key="progress-bar">
-                    <ProgressBar visible={true} active={true} striped={true} />
-                </li>
-            );
-            items.unshift(progressbar);
-        }
         return (
-            <div style={dropDownStyle} className="open">
-                <input type="text" placeholder={this.props.placeholder || ''} className={this.props.className || ''}
-                       value={this.state.value}
-                       onKeyUp={this.onKeyup.bind(this)}
-                       onChange={this.onChange.bind(this)}
-                       onBlur={this.onBlur.bind(this)}
-                />
-                <ul className="dropdown-menu" style={{display: this.state.visible ? 'block' : 'none'}}>{items}</ul>
+            <div style={dropDownStyle} className="open" ref={this.ref}>
+                <TextInput value={value} field={field} placeholder={placeholder} className={className}
+                           onKeyDown={this.onKeyup} onChange={this.onChange}/>
+                {visible && <ul className="dropdown-menu" style={{display: 'block'}}>
+                    {loading && <li><ProgressBar striped={true} style={{height: '5px'}}/></li>}
+                    {page > 0 && <li className="menu-item" onClick={this.onClickPrev}>...</li>}
+                    {items
+                        .filter((item, i) => Math.floor(i / maxItems) === page)
+                        .map((item, i) => (
+                        <DropDownItem key={i} active={index % maxItems === i} index={i + page * maxItems    } onClick={this.onClick}
+                                      text={formatter(item)} />
+                    ))}
+                    {page < pages && <li className="menu-item" onClick={this.onClickNext}>...</li>}
+                </ul>}
             </div>
         )
     }
