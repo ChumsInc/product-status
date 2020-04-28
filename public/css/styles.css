@@ -30,6 +30,9 @@
             font-weight: 500; }
           #app .form-inline .input-autocomplete .dropdown-menu .dropdown-item .item-dropdown-item .item-description {
             flex: 0 0 auto; }
+  #app table.item-list.hide-select th:nth-child(1),
+  #app table.item-list.hide-select td:nth-child(1) {
+    display: none; }
   #app #item-list tr.checked td {
     background-color: #f7e741; }
   #app #item-list td.move {

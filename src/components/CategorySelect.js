@@ -43,7 +43,8 @@ class CategorySelect extends Component {
     }
 }
 
-const mapStateToProps = ({categories}) => {
+const mapStateToProps = (state) => {
+    const {categories} = state.app;
     return {categories};
 };
 

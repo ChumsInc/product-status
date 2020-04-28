@@ -6,6 +6,8 @@ import RowsPerPage from "./RowsPerPage";
 import FormGroup from "./FormGroup";
 import SortableTableHeader from "./SortableTableHeader";
 import SortableTableFooter from "./SortableTableFooter";
+import {noop} from "../utils";
+import CheckBoxToggle from "./CheckBoxToggle";
 
 
 const getClassName = (className, val) => {
@@ -41,22 +43,52 @@ class TableRow extends Component {
             render: PropTypes.func,
             className: PropTypes.string,
         })),
-        row: PropTypes.array,
+        useCheckBoxSelect: PropTypes.bool,
+        row: PropTypes.object,
         active: PropTypes.bool,
         onClick: PropTypes.func,
         className: PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.string]),
-
+        activeClassName: PropTypes.string,
     };
 
+    static defaultProps = {
+        fields: [],
+        useCheckBoxSelect: false,
+        row: {},
+        active: false,
+        onClick: noop,
+        className: '',
+        activeClassName: 'table-active',
+    }
+
+    constructor(props) {
+        super(props);
+        this.clickHandler = this.clickHandler.bind(this);
+    }
+
+
+    clickHandler(ev) {
+        // if (ev && !!ev.preventDefault) {
+        //     ev.preventDefault();
+        //     ev.stopPropagation();
+        // } else {
+        //     return;
+        // }
+        this.props.onClick(this.props.row);
+    }
+
     render() {
-        const {fields, row, active, onClick, className} = this.props;
+        const {fields, row, active, className, useCheckBoxSelect, activeClassName} = this.props;
         const rowClassName = getClassName(className, row);
         const _className = {
-            'table-active': active,
+            [activeClassName]: active,
             ...rowClassName
         };
         return (
-            <tr onClick={() => onClick(row)} className={classNames(_className)}>
+            <tr onClick={this.clickHandler} className={classNames(_className)}>
+                {useCheckBoxSelect && (
+                    <td><CheckBoxToggle checked={active} onChange={noop}/></td>
+                )}
                 {fields.map((col, index) => <TableRowField key={index} col={col} row={row}/>)}
             </tr>
         );
@@ -73,12 +105,14 @@ export default class SortableTable extends Component {
             className: PropTypes.string,
         })),
         data: PropTypes.array.isRequired,
+        className: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
         hasFooter: PropTypes.bool,
         footerData: PropTypes.object,
         keyField: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
         selected: PropTypes.any,
         hasPageIndicators: PropTypes.bool,
         onSelect: PropTypes.func,
+        onSelectAll: PropTypes.func,
         sorter: PropTypes.func,
         defaultSort: PropTypes.oneOfType([PropTypes.string, PropTypes.shape({
             field: PropTypes.string,
@@ -92,6 +126,10 @@ export default class SortableTable extends Component {
         rowsPerPage: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
         filtered: PropTypes.bool,
         rowClassName: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
+        useCheckBoxSelect: PropTypes.bool,
+
+        isActive: PropTypes.func.isRequired,
+        activeClassName: PropTypes.string,
 
         onChangeSort: PropTypes.func,
         onChangePage: PropTypes.func,
@@ -114,6 +152,9 @@ export default class SortableTable extends Component {
         rowsPerPage: 25,
         filtered: false,
         rowClassName: '',
+        useCheckBoxSelect: false,
+        isActive: noop,
+        activeClassName: 'table-active'
     };
 
     state = {
@@ -131,6 +172,7 @@ export default class SortableTable extends Component {
         this.onSelectRow = this.onSelectRow.bind(this);
         this.handlePageChange = this.handlePageChange.bind(this);
         this.sorter = this.sorter.bind(this);
+        this.onSelectAll = this.onSelectAll.bind(this);
     }
 
     componentDidMount() {
@@ -159,6 +201,13 @@ export default class SortableTable extends Component {
         }
     }
 
+    onSelectAll() {
+        if (this.props.onSelectAll) {
+            const {pageData} = this.visibleRows();
+            this.props.onSelectAll(pageData);
+        }
+    }
+
     handlePageChange(page) {
         this.props.onChangePage(page);
     }
@@ -181,27 +230,43 @@ export default class SortableTable extends Component {
         })
     }
 
-
-    render() {
-        const {fields, data, className, page, rowsPerPage, keyField, filtered, selected, hasFooter, footerData, rowClassName} = this.props;
-        const {sort} = this.state;
+    visibleRows() {
+        const {data, rowsPerPage, page} = this.props;
         const rows = this.sorter(data);
         const pages = Math.ceil(rows.length / rowsPerPage);
+        return {
+            page,
+            pages,
+            pageData: rows.filter((row, index) => Math.floor(index / rowsPerPage) === (page - 1))
+        }
+    }
 
+    render() {
+        const {fields, data, className, rowsPerPage, keyField, filtered, selected, hasFooter, footerData, rowClassName, useCheckBoxSelect} = this.props;
+        const {sort} = this.state;
+        const {page, pages, pageData} = this.visibleRows();
+        const areAllSelected = pageData.filter(row => this.props.isActive(row)) === pageData.length;
         return (
             <Fragment>
                 <table className={classNames("table table-sm table-hover table-sortable table-sticky", className)}>
-                    <SortableTableHeader fields={fields} sort={sort} onClickSort={this.onClickSort}/>
-                    {!!hasFooter &&
-                    <SortableTableFooter fields={fields} footerData={footerData} page={page} pages={pages}/>}
+                    <SortableTableHeader fields={fields}
+                                         sort={sort} onClickSort={this.onClickSort}
+                                         useCheckBoxSelect={useCheckBoxSelect}
+                                         onSelectAll={this.onSelectAll}/>
+                    {!!hasFooter && (
+                        <SortableTableFooter fields={fields} footerData={footerData}
+                                             page={page} pages={pages}
+                                             useCheckBoxSelect={useCheckBoxSelect}/>
+                    )}
                     <tbody>
-                    {rows
-                        .filter((row, index) => Math.ceil((index + 1) / rowsPerPage) === page)
+                    {pageData
                         .map(row => {
                             const key = typeof keyField === "function" ? keyField(row) : row[keyField];
                             return (
                                 <TableRow key={key} row={row} fields={fields}
-                                          className={rowClassName} active={key === selected}
+                                          activeClassName={this.props.activeClassName}
+                                          useCheckBoxSelect={useCheckBoxSelect}
+                                          className={rowClassName} active={this.props.isActive(row)}
                                           onClick={() => this.onSelectRow(row)}/>
                             );
                         })
@@ -211,9 +276,10 @@ export default class SortableTable extends Component {
                 <div className="page-display form-inline">
                     <RowsPerPage value={rowsPerPage} onChange={this.props.onChangeRowsPerPage}/>
                     <FormGroup label="Pages">
-                        {rows.length > 0 && <Pagination activePage={page} pages={Math.ceil(rows.length / rowsPerPage)}
-                                                        onSelect={this.handlePageChange} filtered={filtered}/>}
-                        {rows.length === 0 && <strong>No records.</strong>}
+                        {pages > 0 && <Pagination activePage={page}
+                                                  pages={pages}
+                                                  onSelect={this.handlePageChange} filtered={filtered}/>}
+                        {data.length === 0 && <strong className="ml-1">No records.</strong>}
                     </FormGroup>
                 </div>
             </Fragment>

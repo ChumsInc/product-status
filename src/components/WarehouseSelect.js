@@ -35,7 +35,8 @@ class WarehouseSelect extends Component {
     }
 }
 
-const mapStateToProps = ({warehouses}) => {
+const mapStateToProps = (state) => {
+    const {warehouses} = state.app;
     return {warehouses};
 };
 

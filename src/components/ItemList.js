@@ -7,8 +7,9 @@ import numeral from 'numeral';
 import {connect} from 'react-redux';
 import ProgressBar from "./ProgressBar";
 import SortableTable from "./SortableTable";
-import {selectItem, selectItemAll, saveItemStatus} from '../actions';
-import {noop} from '../utils';
+import {setRowsPerPage, setPage} from '../actions/app';
+import {selectItem, selectItemAll} from '../actions/items';
+import {TABS} from "../constants";
 
 export const itemListFields = [
     {field: 'ItemCode', title: 'Item'},
@@ -63,102 +64,113 @@ const rowClassName = ({QuantityOnHand, selected}) => ({
 
 class ItemList extends Component {
     static propTypes = {
-        items: PropTypes.array.isRequired,
+        visibleItems: PropTypes.array.isRequired,
+        itemCount: PropTypes.number,
+        allowSelectItems: PropTypes.bool,
         loading: PropTypes.bool,
-        itemsLoaded: PropTypes.number,
-        fields: PropTypes.array,
-        filter: PropTypes.string,
-        hideZeroOnHand: PropTypes.bool,
+        rowsPerPage: PropTypes.number,
+        page: PropTypes.number,
 
-        onSelect: PropTypes.func,
+        setRowsPerPage: PropTypes.func.isRequired,
+        setPage: PropTypes.func.isRequired,
+        selectItem: PropTypes.func.isRequired,
+        selectItemAll: PropTypes.func.isRequired,
 
     };
 
     static defaultProps = {
-        items: [],
+        visibleItems: [],
+        itemCount: 0,
+        allowSelectItems: false,
         loading: false,
-        itemsLoaded: 0,
-        fields: [],
-        filter: '',
-        hideZeroOnHand: true,
-    };
-
-    state = {
         rowsPerPage: 10,
         page: 1,
     };
 
     constructor(props) {
         super(props);
+        this.onToggleSelected = this.onToggleSelected.bind(this);
+        this.onSelectAll = this.onSelectAll.bind(this);
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if (this.props.itemsLoaded !== prevProps.itemsLoaded && this.state.page !== 1) {
-            this.setState({page: 1});
+        const {page, rowsPerPage, visibleItems, loading} = this.props;
+
+        const pages = Math.ceil(visibleItems.length / rowsPerPage);
+        if (loading === false && page > 1 && page > pages) {
+            this.props.setPage(pages === 0 ? 1 : pages);
         }
     }
 
-    getVisibleItems() {
-        const {filter, hideZeroOnHand, items} = this.props;
 
-        let itemFilter = new RegExp('^', 'i');
-        try {
-            itemFilter = new RegExp(filter, 'i');
-        } catch (err) {
-
-        }
-        return items
-            .filter(i => !hideZeroOnHand || i.QuantityOnHand !== 0)
-            .filter(i => {
-                return filter === ''
-                    || itemFilter.test(i.ItemCode) || itemFilter.test(i.WarehouseCode)
-                    || itemFilter.test(i.ItemCodeDesc)
-                    || itemFilter.test(i.Category2) || itemFilter.test(i.Category3) || itemFilter.test(i.Category4);
-            });
+    onSelectAll(rows) {
+        const keys = rows.map(item => item.key);
+        this.props.selectItemAll(keys);
     }
 
+    onToggleSelected({key, selected}) {
+        this.props.selectItem(key, !selected);
+    }
 
     render() {
-        const {loading, fields, onSelect} = this.props;
-        const {filter, page, rowsPerPage} = this.state;
+        const {loading, visibleItems, itemCount, rowsPerPage, page, allowSelectItems} = this.props;
 
-        const itemList = this.getVisibleItems();
+        const totals = {
+            Category4: 'Items:',
+            ItemStatus: 0,
+            QuantityOnHand: 0,
+            QuantityAvailableCost: 0
+        };
 
-        const totals = {Category4: onSelect ? 'Selected:' : '', ItemStatus: onSelect ? 0 : '', QuantityOnHand: 0, QuantityAvailableCost: 0};
-        itemList.map(item => {
-            if (onSelect) {
-                totals.ItemStatus += 1;
-            }
+        visibleItems.map(item => {
+            totals.ItemStatus += 1;
             totals.QuantityOnHand += item.QuantityOnHand;
             totals.QuantityAvailableCost += item.QuantityAvailableCost;
         });
 
+        totals.ItemStatus = itemCount === 0 ? 0 : `${totals.ItemStatus}/${itemCount}`;
+
         return (
             <Fragment>
                 {loading && <ProgressBar striped={true}/>}
-                <SortableTable data={itemList}
-                               fields={fields} filtered={filter !== ''} defaultSort="ItemCode"
+                <SortableTable data={visibleItems}
+                               useCheckBoxSelect={allowSelectItems}
+                               isActive={(row) => !!row.selected}
+                               activeClassName=""
+                               className={{'item-list': true}}
+                               fields={itemListFields}
+                               filtered={visibleItems.length !== itemCount}
+                               defaultSort="ItemCode"
                                sorter={itemSorter}
-                               keyField="key" rowClassName={rowClassName}
-                               onSelect={(onSelect || noop)}
-                               onChangeSort={() => this.setState({page: 1})}
-                               page={page} onChangePage={page => this.setState({page})}
+                               keyField="key"
+                               rowClassName={rowClassName}
+                               onSelect={this.onToggleSelected}
+                               onSelectAll={this.onSelectAll}
+                               onChangeSort={() => this.props.setPage(1)}
+                               page={page} onChangePage={this.props.setPage}
                                rowsPerPage={rowsPerPage}
-                               onChangeRowsPerPage={rowsPerPage => this.setState({rowsPerPage, page: 1})}
+                               onChangeRowsPerPage={this.props.setRowsPerPage}
                                hasFooter={true} footerData={totals}/>
             </Fragment>
         )
     }
 }
 
-const mapStateToProps = ({items, loading, itemsLoaded}) => {
-    return {items, loading, itemsLoaded};
+
+
+const mapStateToProps = (state) => {
+    const {rowsPerPage, page, tab} = state.app;
+    const {list, loading, itemsLoaded, visibleItems} = state.items;
+    const itemCount = list.length;
+    const allowSelectItems = tab === TABS.edit;
+    return {visibleItems, itemCount, loading, itemsLoaded, rowsPerPage, page, allowSelectItems};
 };
 
 const mapDispatchToProps = {
+    setRowsPerPage,
+    setPage,
     selectItem,
     selectItemAll,
-    saveItemStatus,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ItemList);

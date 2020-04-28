@@ -186,7 +186,7 @@ class TypeaheadInput extends Component {
         const {key} = ev;
         const {selected, start, show} = this.state;
         const {data, maxItems = DEFAULT_MAX_LIST_LENGTH} = this.props;
-        console.log(key);
+        // console.log(key);
 
         if (!(show || ['ArrowDown', 'PageDown'].includes(key))) {
             return;

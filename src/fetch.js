@@ -3,14 +3,21 @@
  */
 
 import 'whatwg-fetch';
-import pathToRegExp from 'path-to-regexp';
+import {compile} from 'path-to-regexp';
+import {getPreference} from "./preferences";
+import {STORE_TOKEN} from "./constants";
 
-self.fetch.credentials = 'include';
+fetch.credentials = 'include';
 
-export default self.fetch.bind(self);
-export const Headers = self.Headers;
-export const Request = self.Request;
-export const Response = self.Response;
+export default fetch;
+export const Headers = fetch.Headers;
+export const Request = fetch.Request;
+export const Response = fetch.Response;
+
+const getAuthHeader = () => {
+    const token = getPreference(STORE_TOKEN, null);
+    return token ? {Authorization: `Bearer ${token}`} : {};
+};
 
 export const fetchOptions = {
     PostJSON: (object) => {
@@ -18,6 +25,7 @@ export const fetchOptions = {
             credentials: 'same-origin',
             method: 'post',
             headers: {
+                ...getAuthHeader(),
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
@@ -27,7 +35,10 @@ export const fetchOptions = {
     Delete: () => {
         return {
             credentials: 'same-origin',
-            method: 'DELETE'
+            method: 'DELETE',
+            headers: {
+                ...getAuthHeader(),
+            }
         };
     }
 };
@@ -41,9 +52,25 @@ const onErrorResponse = (response) => {
     return Promise.reject(error);
 };
 
-export function fetchGET(url) {
+/**
+ *
+ * @param {String} url
+ * @param {Object} [options]
+ * @param {String} [options.cache] "default" | "force-cache" | "no-cache" | "no-store" | "only-if-cached" | "reload"
+ * @param {Object} [options.headers]
+ * @return {Promise<unknown>}
+ */
+export function fetchGET(url, options = {}) {
+    const init = {
+        credentials: 'same-origin',
+        ...options,
+        headers: {
+            ...(options.headers || {}),
+            ...getAuthHeader(),
+        }
+    };
     return new Promise((resolve, reject) => {
-        fetch(url, {credentials: 'same-origin'})
+        fetch(url, init)
             .then(onErrorResponse)
             .then(response => response.json())
             .then(response => {
@@ -60,9 +87,25 @@ export function fetchGET(url) {
     });
 }
 
-export function fetchHTML(url) {
+/**
+ *
+ * @param {String} url
+ * @param {Object} [options]
+ * @param {String} [options.cache] "default" | "force-cache" | "no-cache" | "no-store" | "only-if-cached" | "reload"
+ * @param {Object} [options.headers]
+ * @return {Promise<unknown>}
+ */
+export function fetchHTML(url, options = {}) {
+    const init = {
+        credentials: 'same-origin',
+        ...options,
+        headers: {
+            ...(options.headers || {}),
+            ...getAuthHeader(),
+        }
+    };
     return new Promise((resolve, reject) => {
-        fetch(url, {credentials: 'same-origin'})
+        fetch(url, init)
             .then(onErrorResponse)
             .then(response => response.text())
             .then(html => {
@@ -130,10 +173,9 @@ export const cacheBuster = (url = null, cacheDuration = 1) => {
  * @param {boolean} cacheBusted
  * @return {String}
  */
-export const buildPath = (path, props, cacheBusted = false, cacheDuration = 1) => {
+export const buildPath = (path, props) => {
     try {
-        const url = pathToRegExp.compile(path)(props);
-        return cacheBusted ? cacheBuster(url, cacheDuration) : url;
+        return compile(path, {encode: encodeURIComponent})(props);
     } catch (e) {
         console.trace(e.message, path, props);
         return path;

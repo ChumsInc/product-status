@@ -11,6 +11,7 @@ export default class SortableTableFooter extends Component {
             render: PropTypes.func,
             className: PropTypes.string,
         })),
+        useCheckBoxSelect: PropTypes.bool,
         footerData: PropTypes.object,
         page: PropTypes.number,
         pages: PropTypes.number,
@@ -19,16 +20,18 @@ export default class SortableTableFooter extends Component {
     static defaultProps = {
         fields: [],
         footerData: {},
+        useCheckBoxSelect: false,
     };
 
     render() {
-        const {page, pages, fields, footerData} = this.props;
+        const {page, pages, fields, footerData, useCheckBoxSelect} = this.props;
         return (
             <tfoot>
             {page < pages && <tr>
                 <td colSpan={fields.length} className="align-content-center">...</td>
             </tr>}
             <tr>
+                {useCheckBoxSelect && <td>&nbsp;</td>}
                 {fields.map(({field, render, className = ''}, index) => (
                     <td key={index} className={classNames(getClassName(className, footerData[field]))}>
                         <strong>

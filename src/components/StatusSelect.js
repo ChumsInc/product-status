@@ -34,7 +34,7 @@ class StatusSelect extends Component {
         const filteredStatusList = statusList.filter(status => {
             return allowWildCardStatus || /[^%]$/.test(status.code)
         });
-        console.log(filteredStatusList);
+
         return (
             <Select value={value} field={field} onChange={onChange} {...rest}>
                 {!allowSelectAll && <option value="">Select Status</option>}
@@ -50,7 +50,8 @@ class StatusSelect extends Component {
     }
 }
 
-const mapStateToProps = ({statusList}) => {
+const mapStateToProps = (state) => {
+    const {statusList} = state.app;
     return {statusList};
 };
 

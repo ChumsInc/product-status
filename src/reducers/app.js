@@ -1,14 +1,15 @@
-import { combineReducers } from 'redux';
+import {combineReducers} from 'redux';
+import {now} from "../utils";
 import {
     COMPANY_CHUMS, defaultSelection,
-    DISMISS_ALERT, FETCH_ADMIN_ROLE, FETCH_BASE_SKU_LIST, FETCH_CATEGORIES, FETCH_COLLECTIONS,
-    FETCH_FAILURE, FETCH_INIT, FETCH_ITEM, FETCH_ITEMS, FETCH_POST_ITEM,
-    FETCH_PRODUCT_LINES, FETCH_STATUS_LIST,
-    FETCH_SUCCESS,
-    FETCH_WAREHOUSES, SELECT_ALL_ITEMS, SELECT_ITEM,
-    SET_ALERT, SET_COMPANY, SET_TAB, TABS, UPDATE_SELECTION
-} from "./constants";
-import {now} from './utils';
+    DISMISS_ALERT,
+    FETCH_ADMIN_ROLE, FETCH_BASE_SKU_LIST, FETCH_CATEGORIES, FETCH_COLLECTIONS,
+    FETCH_FAILURE,
+    FETCH_ITEMS, FETCH_PRODUCT_LINES, FETCH_STATUS_LIST, FETCH_SUCCESS, FETCH_WAREHOUSES,
+    SET_ALERT, SET_COMPANY, SET_PAGE, SET_ROWS_PER_PAGE, SET_TAB,
+    STORE_PREF_ROWS_PER_PAGE, STORE_PREF_TAB, TABS, UPDATE_SELECTION
+} from "../constants";
+import {getPreference, setPreference} from "../preferences";
 
 
 const errorAlert = (err, actionType) => ({
@@ -33,10 +34,39 @@ const alerts = (state = [], action) => {
     }
 };
 
-const tab = (state = TABS.report, action) => {
+const rowsPerPage = (state = getPreference(STORE_PREF_ROWS_PER_PAGE, 10), action) => {
+    const {type, rowsPerPage} = action;
+    switch (type) {
+    case SET_ROWS_PER_PAGE:
+        setPreference(STORE_PREF_ROWS_PER_PAGE, rowsPerPage);
+        return rowsPerPage;
+    default:
+        return state;
+    }
+};
+
+const page = (state = 1, action) => {
+    const {type, page, status} = action;
+    switch (type) {
+    case FETCH_ITEMS:
+        if (status === FETCH_SUCCESS) {
+            return 1;
+        }
+        return state;
+    case SET_ROWS_PER_PAGE:
+        return 1;
+    case SET_PAGE:
+        return page;
+    default:
+        return state;
+    }
+};
+
+const tab = (state = getPreference(STORE_PREF_TAB, TABS.report), action) => {
     const {type, tab} = action;
     switch (type) {
     case SET_TAB:
+        setPreference(STORE_PREF_TAB, tab);
         return tab;
     default:
         return state;
@@ -126,54 +156,6 @@ const statusList = (state = [], action) => {
     }
 };
 
-const items = (state = [], action) => {
-    const {type, key, status, item, list} = action;
-    switch (type) {
-    case SELECT_ITEM:
-        const [selected] = state.filter(i => i.key === key);
-        selected.selected = status;
-        const rest = state.filter(i => i.key !== key);
-        return [{...selected}, ...rest];
-
-    case SELECT_ALL_ITEMS:
-        const items = state.map(i => {
-            i.selected = status;
-            return i;
-        });
-        return [...items];
-
-    case FETCH_ITEM:
-    case FETCH_POST_ITEM:
-        if (status === FETCH_SUCCESS) {
-            const notUpdated = state.filter(i => i.key !== item.key);
-            return [{...item}, ...notUpdated];
-        }
-        return state;
-
-    case FETCH_ITEMS:
-        return status === FETCH_SUCCESS ? [...list] : state;
-    default:
-        return state;
-    }
-};
-
-const itemsLoaded = (state = 0, action) => {
-    const {type, status} = action;
-    return type === FETCH_ITEMS && status === FETCH_SUCCESS
-        ? new Date().valueOf()
-        : state;
-};
-
-const loading = (state = false, action) => {
-    const {type, status} = action;
-    switch (type) {
-    case FETCH_ITEMS:
-    case FETCH_POST_ITEM:
-        return status === FETCH_INIT;
-    default:
-        return state;
-    }
-};
 
 const selection = (state = defaultSelection,  action) => {
     const {type, props, company} = action;
@@ -187,10 +169,11 @@ const selection = (state = defaultSelection,  action) => {
     }
 };
 
-
-const appReducer = combineReducers({
+export default combineReducers({
     alerts,
     tab,
+    rowsPerPage,
+    page,
     isAdmin,
     company,
     warehouses,
@@ -199,10 +182,5 @@ const appReducer = combineReducers({
     collections,
     baseSKUs,
     statusList,
-    items,
-    loading,
     selection,
-    itemsLoaded,
-});
-
-export default appReducer;
+})

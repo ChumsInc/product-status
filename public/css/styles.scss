@@ -57,6 +57,16 @@ $brand-danger:          #d9534f !default;
     }
   }
 
+  table.item-list {
+    &.hide-select {
+      th:nth-child(1),
+      td:nth-child(1) {
+        display: none;
+      }
+    }
+  }
+
+
   #item-list {
     tr {
       &.checked {

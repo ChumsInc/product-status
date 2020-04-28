@@ -5,7 +5,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import ItemDropDown from './ItemDropDown';
-import {fetchCompanyOptions, fetchItems, getQuery, updateSelection, setCompany} from "../actions";
+import {fetchCompanyOptions, setCompany, updateSelection} from "../actions/app";
+import {fetchItems, getQuery} from "../actions/items";
 import { connect } from 'react-redux';
 import {COMPANIES, defaultSelection} from '../constants';
 import Select from './Select';
@@ -15,6 +16,7 @@ import CategorySelect from "./CategorySelect";
 import CollectionSelect from "./CollectionSelect";
 import BaseSKUSelect from "./BaseSKUSelect";
 import StatusSelect from "./StatusSelect";
+import FormGroup from "./FormGroup";
 
 class SelectItemForm extends Component {
     static propTypes = {
@@ -31,7 +33,6 @@ class SelectItemForm extends Component {
 
         fetchCompanyOptions: PropTypes.func.isRequired,
         fetchItems: PropTypes.func.isRequired,
-        updateSelection: PropTypes.func.isRequired,
         setCompany: PropTypes.func.isRequired,
     };
 
@@ -51,9 +52,6 @@ class SelectItemForm extends Component {
 
     onChange({field, value}) {
         this.props.updateSelection({[field]: value});
-    }
-    onChangeField(field, value) {
-        this.props.dispatch(updateSelection(field, value));
     }
 
     onChangeCompany({value}) {
@@ -86,58 +84,48 @@ class SelectItemForm extends Component {
         return (
             <div>
                 <form className="form-inline block-labels hidden-print" onSubmit={this.onLoad}>
-                    <div className="form-group">
-                        <label>Company</label>
+                    <FormGroup label="Company">
                         <Select value={Company} field="Company" onChange={this.onChange}>
                             {COMPANIES.map(co => (
                                 <option key={co.code} value={co.code}>{co.name}</option>
                             ))}
                         </Select>
-                    </div>
-                    <div className="form-group">
-                        <label className="hidden-xs">Item</label>
+                    </FormGroup>
+                    <FormGroup label="Item">
                         <ItemDropDown company={Company} options={searchOptions}
                                       value={ItemCode} field="ItemCode"
                                       minLength={0}
                                       onChange={this.onChange}
                                       onSelect={this.onSelectItem} />
-                    </div>
-                    <div className="form-group">
-                        <label className="hidden-xs">Warehouse</label>
+                    </FormGroup>
+                    <FormGroup label="Warehouse">
                         <WarehouseSelect field="WarehouseCode" value={WarehouseCode} onChange={this.onChange}/>
-                    </div>
-                    <div className="form-group">
-                        <label className="hidden-xs">Prod Line</label>
+                    </FormGroup>
+                    <FormGroup label="Prod Line">
                         <ProductLineSelect value={ProductLine} field="ProductLine" onChange={this.onChange}/>
-                    </div>
-                    <div className="form-group">
-                        <label className="hidden-xs">Category</label>
+                    </FormGroup>
+                    <FormGroup label="Category">
                         <CategorySelect value={Category2} field="Category2" onChange={this.onChange}/>
-                    </div>
-                    <div className="form-group">
-                        <label className="hidden-xs">Sub Category</label>
+                    </FormGroup>
+                    <FormGroup label="Sub Category">
                         <CollectionSelect value={Category3} field="Category3" onChange={this.onChange}/>
-                    </div>
-                    <div className="form-group">
-                        <label className="hidden-xs">Base SKU</label>
+                    </FormGroup>
+                    <FormGroup label="Base SKU">
                         <BaseSKUSelect value={Category4} field="Category4" onChange={this.onChange} />
-                    </div>
-                    <div className="form-group">
-                        <label className="hidden-xs">Item Status</label>
+                    </FormGroup>
+                    <FormGroup label="Item Status">
                         <StatusSelect value={ItemStatus} field="ItemStatus"
                                       allowSelectAll allowWildCardStatus
                                       onChange={this.onChange}/>
-                    </div>
-                    <div className="form-group">
-                        <label className="hidden-xs">&nbsp;</label>
+                    </FormGroup>
+                    <FormGroup label={<span>&nbsp;</span>}>
                         <button type="submit" className="btn btn-sm btn-primary" onClick={this.onLoad}>
                             Load
                         </button>
-                    </div>
-                    <div className="form-group">
-                        <label className="hidden-xs">&nbsp;</label>
+                    </FormGroup>
+                    <FormGroup label={<span>&nbsp;</span>}>
                         <button type="button" className="btn btn-sm btn-outline-secondary" onClick={this.onDownload}>Download .xlsx</button>
-                    </div>
+                    </FormGroup>
                 </form>
             </div>
         )
@@ -145,7 +133,7 @@ class SelectItemForm extends Component {
 }
 
 const mapStateToProps = state => {
-    const {selection, warehouses, productLines, categories, collections, baseSKUs, statusList} = state;
+    const {selection, warehouses, productLines, categories, collections, baseSKUs, statusList} = state.app;
     return {
         selection,
         warehouses,
@@ -158,10 +146,10 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = {
-    updateSelection,
     fetchCompanyOptions,
     fetchItems,
     setCompany,
+    updateSelection,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(SelectItemForm);

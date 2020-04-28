@@ -36,7 +36,8 @@ class BaseSKUSelect extends Component {
     }
 }
 
-const mapStateToProps = ({baseSKUs}) => {
+const mapStateToProps = (state) => {
+    const {baseSKUs} = state.app;
     return {baseSKUs};
 };
 

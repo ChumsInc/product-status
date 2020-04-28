@@ -33,7 +33,8 @@ class CollectionSelect extends Component {
     }
 }
 
-const mapStateToProps = ({collections}) => {
+const mapStateToProps = (state) => {
+    const {collections} = state.app;
     return {collections};
 };
 

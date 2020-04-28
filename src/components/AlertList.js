@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Alert from "./Alert";
 import {connect} from 'react-redux';
-import {dismissAlert} from "../actions";
+import {dismissAlert} from "../actions/app";
 
 class AlertList extends Component {
     static propTypes = {
@@ -34,7 +34,7 @@ class AlertList extends Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
-    const {alerts} = state;
+    const {alerts} = state.app;
     return {alerts};
 };
 

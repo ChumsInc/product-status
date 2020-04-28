@@ -38,7 +38,8 @@ class ProductLineSelect extends Component {
     }
 }
 
-const mapStateToProps = ({productLines}) => {
+const mapStateToProps = (state) => {
+    const {productLines} = state.app;
     return {productLines};
 };
 

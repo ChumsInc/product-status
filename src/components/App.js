@@ -7,12 +7,13 @@ import SelectItemForm from './SelectItemForm';
 import {
     fetchCompanyOptions,
     setTab,
-} from '../actions';
+} from '../actions/app';
 import ItemReport from './ItemReport';
 import Tabs from "./Tabs";
 import {COMPANY_CHUMS, TAB_LIST, TABS} from "../constants";
 import AlertList from "./AlertList";
 import ItemEditor from "./ItemEditor";
+import ItemList from "./ItemList";
 
 
 
@@ -69,6 +70,7 @@ class App extends Component {
                     <div className="tab-content">
                         {(!isAdmin || tab === TABS.report) && <ItemReport/>}
                         {isAdmin && tab === TABS.edit && <ItemEditor />}
+                        <ItemList />
                     </div>
                 </div>
             </div>
@@ -77,7 +79,8 @@ class App extends Component {
 }
 
 
-const mapStateToProps = ({isAdmin, tab, company}) => {
+const mapStateToProps = (state) => {
+    const {isAdmin, tab, company} = state.app;
     return {isAdmin, tab, company};
 };
 

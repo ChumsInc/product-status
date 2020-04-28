@@ -3,6 +3,12 @@ export const DISMISS_ALERT = 'DISMISS_ALERT';
 
 export const SET_TAB = 'SET_TAB';
 export const SET_COMPANY = 'SET_COMPANY';
+export const SET_ROWS_PER_PAGE = 'SET_ROWS_PER_PAGE';
+export const SET_PAGE = 'SET_PAGE';
+export const SET_FILTER = 'SET_FILTER';
+export const SET_VISIBLE_ITEMS = 'SET_VISIBLE_ITEMS';
+export const TOGGLE_HIDE_ZERO_ON_HAND = 'TOGGLE_HIDE_ZERO_ON_HAND';
+export const TOGGLE_SHOW_ONLY_SELECTED = 'TOGGLE_SHOW_ONLY_SELECTED';
 
 export const FETCH_INIT = 'FETCH_INIT';
 export const FETCH_SUCCESS = 'FETCH_SUCCESS';
@@ -28,6 +34,7 @@ export const UPDATE_SELECTION = 'UPDATE_SELECTION';
 
 export const SELECT_ITEM = 'SELECT_ITEM';
 export const SELECT_ALL_ITEMS = 'SELECT_ALL_ITEMS';
+export const CLEAR_ALL_ITEMS = 'CLEAR_ALL_ITEMS';
 
 export const PATH_WAREHOUSES = '/node/search/whse/:company/';
 export const PATH_PRODUCT_LINES = '/node/search/prodline/:company/';
@@ -38,6 +45,12 @@ export const PATH_STATUS_LIST = '/node-dev/production/item/status/';
 export const PATH_ITEMS = '/node-dev/production/item/status/:Company/:ItemCode?';
 export const PATH_SAVE_ITEM_STATUS = '/node-dev/production/item/status/:Company/:ItemCode/:WarehouseCode';
 export const PATH_CHECK_ADMIN_ROLE = '/node-dev/user/validate/role/product-admin';
+
+export const STORE_TOKEN = 'com.chums.intranet.token';
+export const STORE_PREF_TAB = 'com.chums.intranet.product-status.tab';
+export const STORE_PREF_ROWS_PER_PAGE = 'com.chums.intranet.product-status.rowsPerPage';
+export const STORE_PREF_SHOW_ON_HAND = 'com.chums.intranet.product-status.showOnHand';
+export const STORE_PREF_SHOW_ONLY_SELECTED = 'com.chums.intranet.product-status.showOnlySelected';
 
 
 export const TABS = {
