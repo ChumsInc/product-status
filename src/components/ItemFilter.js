@@ -10,7 +10,7 @@ function mapStateToProps(state) {
 
 const ItemFilter = ({filter, setFilter}) => {
     return (
-        <FormGroupTextInput value={filter} onChange={({value}) => setFilter(value)} label="Filter"/>
+        <FormGroupTextInput value={filter} onChange={({value}) => setFilter(value)} label="Filter" id="if-filter"/>
     );
 }
 

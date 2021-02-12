@@ -33,7 +33,7 @@ class Select extends PureComponent {
     render() {
         const {field, value, onChange, className, options = [], children, forwardedRef, ...rest} = this.props;
         return (
-            <select className={classNames("form-control", className)}
+            <select className={classNames("form-select form-select-sm", className)}
                     ref={forwardedRef}
                     value={value}
                     onChange={this.onChange} {...rest}>

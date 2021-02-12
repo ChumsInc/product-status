@@ -46,7 +46,7 @@ class ItemEditor extends Component {
 
         return (
             <div>
-                <div className="form-inline mb-3">
+                <div className="row row--filter mb-3">
                     <ItemFilter />
                     <FilterButtons allowFilterSelected={!!selectedItemCount}/>
                     <FormGroup label="New Status">

@@ -36,15 +36,15 @@ export const SELECT_ITEM = 'SELECT_ITEM';
 export const SELECT_ALL_ITEMS = 'SELECT_ALL_ITEMS';
 export const CLEAR_ALL_ITEMS = 'CLEAR_ALL_ITEMS';
 
-export const PATH_WAREHOUSES = '/node/search/whse/:company/';
-export const PATH_PRODUCT_LINES = '/node/search/prodline/:company/';
-export const PATH_CATEGORY = '/node/search/cat2/:company/';
-export const PATH_COLLECTIONS = '/node/search/cat3/:company/';
-export const PATH_BASE_SKU_LIST = '/node/search/cat4/:company/';
-export const PATH_STATUS_LIST = '/node-dev/production/item/status/';
-export const PATH_ITEMS = '/node-dev/production/item/status/:Company/:ItemCode?';
-export const PATH_SAVE_ITEM_STATUS = '/node-dev/production/item/status/:Company/:ItemCode/:WarehouseCode';
-export const PATH_CHECK_ADMIN_ROLE = '/node-dev/user/validate/role/product-admin';
+export const PATH_WAREHOUSES = '/api/search/whse/:company/';
+export const PATH_PRODUCT_LINES = '/api/search/prodline/:company/';
+export const PATH_CATEGORY = '/api/search/cat2/:company/';
+export const PATH_COLLECTIONS = '/api/search/cat3/:company/';
+export const PATH_BASE_SKU_LIST = '/api/search/cat4/:company/';
+export const PATH_STATUS_LIST = '/api/operations/production/item/status/';
+export const PATH_ITEMS = '/api/operations/production/item/status/:Company/:ItemCode?';
+export const PATH_SAVE_ITEM_STATUS = '/api/operations/production/item/status/:Company/:ItemCode/:WarehouseCode';
+export const PATH_CHECK_ADMIN_ROLE = '/api/user/validate/role/product-admin';
 
 export const STORE_TOKEN = 'com.chums.intranet.token';
 export const STORE_PREF_TAB = 'com.chums.intranet.product-status.tab';

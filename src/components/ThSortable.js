@@ -46,13 +46,19 @@ export default class ThSortable extends Component {
     }
     render() {
         const {currentSort, field, noSort, className, children} = this.props;
+        const sortClass = {
+            'no-sort': !!noSort,
+            'sortable': !noSort,
+            sorted: !noSort && currentSort.field === field,
+            'sorted-asc': !noSort && currentSort.field === field && currentSort.asc,
+            'sorted-desc': !noSort && currentSort.field === field && !currentSort.asc,
+        }
         return noSort
-            ? (<th className={classNames(className, 'no-sort')}>{children}</th>)
+            ? (<th className={classNames(className, sortClass)}>{children}</th>)
             : (
-                <th className={classNames(className, {sorted: currentSort.field === field, desc: currentSort.asc === false})}
+                <th className={classNames(className, sortClass)}
                     onClick={this.onClick}>
                     {children}
-                    {currentSort.field === field && <SortIcon asc={currentSort.asc}/>}
                 </th>
             )
     }

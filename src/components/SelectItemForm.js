@@ -71,63 +71,60 @@ class SelectItemForm extends Component {
     onDownload(ev) {
         ev.preventDefault();
         const {Company, ItemCode, ...queryProps} = this.props.selection;
-        const url = `/node-dev/production/item/status-xlsx/:company/:itemcode?:query`
+        window.location = `/api/operations/production/item/status-xlsx/:company/:itemcode?:query`
             .replace(':company', encodeURIComponent(Company))
             .replace(':itemcode', encodeURIComponent(ItemCode))
             .replace(':query', getQuery(queryProps));
-        window.location = url;
     }
 
     render() {
         const { Company, WarehouseCode, ItemCode, ProductLine, Category2, Category3, Category4, ItemStatus } = this.props.selection;
         const searchOptions = getQuery(this.props);
         return (
-            <div>
-                <form className="form-inline block-labels hidden-print" onSubmit={this.onLoad}>
-                    <FormGroup label="Company">
-                        <Select value={Company} field="Company" onChange={this.onChange}>
-                            {COMPANIES.map(co => (
-                                <option key={co.code} value={co.code}>{co.name}</option>
-                            ))}
-                        </Select>
-                    </FormGroup>
-                    <FormGroup label="Item">
-                        <ItemDropDown company={Company} options={searchOptions}
-                                      value={ItemCode} field="ItemCode"
-                                      minLength={0}
-                                      onChange={this.onChange}
-                                      onSelect={this.onSelectItem} />
-                    </FormGroup>
-                    <FormGroup label="Warehouse">
-                        <WarehouseSelect field="WarehouseCode" value={WarehouseCode} onChange={this.onChange}/>
-                    </FormGroup>
-                    <FormGroup label="Prod Line">
-                        <ProductLineSelect value={ProductLine} field="ProductLine" onChange={this.onChange}/>
-                    </FormGroup>
-                    <FormGroup label="Category">
-                        <CategorySelect value={Category2} field="Category2" onChange={this.onChange}/>
-                    </FormGroup>
-                    <FormGroup label="Sub Category">
-                        <CollectionSelect value={Category3} field="Category3" onChange={this.onChange}/>
-                    </FormGroup>
-                    <FormGroup label="Base SKU">
-                        <BaseSKUSelect value={Category4} field="Category4" onChange={this.onChange} />
-                    </FormGroup>
-                    <FormGroup label="Item Status">
-                        <StatusSelect value={ItemStatus} field="ItemStatus"
-                                      allowSelectAll allowWildCardStatus
-                                      onChange={this.onChange}/>
-                    </FormGroup>
-                    <FormGroup label={<span>&nbsp;</span>}>
-                        <button type="submit" className="btn btn-sm btn-primary" onClick={this.onLoad}>
-                            Load
-                        </button>
-                    </FormGroup>
-                    <FormGroup label={<span>&nbsp;</span>}>
-                        <button type="button" className="btn btn-sm btn-outline-secondary" onClick={this.onDownload}>Download .xlsx</button>
-                    </FormGroup>
-                </form>
-            </div>
+            <form className="row g-3 block-labels hidden-print row--filter" onSubmit={this.onLoad}>
+                <FormGroup label="Company">
+                    <Select value={Company} field="Company" onChange={this.onChange}>
+                        {COMPANIES.map(co => (
+                            <option key={co.code} value={co.code}>{co.name}</option>
+                        ))}
+                    </Select>
+                </FormGroup>
+                <FormGroup label="Item">
+                    <ItemDropDown company={Company} options={searchOptions}
+                                  value={ItemCode} field="ItemCode"
+                                  minLength={0}
+                                  onChange={this.onChange}
+                                  onSelect={this.onSelectItem} />
+                </FormGroup>
+                <FormGroup label="Warehouse" htmlFor="sif-warehouse">
+                    <WarehouseSelect field="WarehouseCode" value={WarehouseCode} onChange={this.onChange} id="sif-warehouse"/>
+                </FormGroup>
+                <FormGroup label="Prod Line" htmlFor="sif-pl">
+                    <ProductLineSelect value={ProductLine} field="ProductLine" onChange={this.onChange} id="sif-pl"/>
+                </FormGroup>
+                <FormGroup label="Category" htmlFor="sif-category">
+                    <CategorySelect value={Category2} field="Category2" onChange={this.onChange} id="sif-category"/>
+                </FormGroup>
+                <FormGroup label="Sub Category" htmlFor="sif-subcategory">
+                    <CollectionSelect value={Category3} field="Category3" onChange={this.onChange} id="sif-subcategory"/>
+                </FormGroup>
+                <FormGroup label="Base SKU" htmlFor="sif-base-sku">
+                    <BaseSKUSelect value={Category4} field="Category4" onChange={this.onChange} id="sif-base-sku"/>
+                </FormGroup>
+                <FormGroup label="Item Status" htmlFor="sif-status">
+                    <StatusSelect value={ItemStatus} field="ItemStatus" id="sif-status"
+                                  allowSelectAll allowWildCardStatus
+                                  onChange={this.onChange}/>
+                </FormGroup>
+                <FormGroup label={<span>&nbsp;</span>}>
+                    <button type="submit" className="btn btn-sm btn-primary" onClick={this.onLoad}>
+                        Load
+                    </button>
+                </FormGroup>
+                <FormGroup label={<span>&nbsp;</span>}>
+                    <button type="button" className="btn btn-sm btn-outline-secondary" onClick={this.onDownload}>Download .xlsx</button>
+                </FormGroup>
+            </form>
         )
     }
 }

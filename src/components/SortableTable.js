@@ -273,13 +273,13 @@ export default class SortableTable extends Component {
                     }
                     </tbody>
                 </table>
-                <div className="page-display form-inline">
+                <div className="page-display row row--filter">
                     <RowsPerPage value={rowsPerPage} onChange={this.props.onChangeRowsPerPage}/>
                     <FormGroup label="Pages">
                         {pages > 0 && <Pagination activePage={page}
                                                   pages={pages}
                                                   onSelect={this.handlePageChange} filtered={filtered}/>}
-                        {data.length === 0 && <strong className="ml-1">No records.</strong>}
+                        {data.length === 0 && <strong className="form-control form-control-sm form-control-plaintext">No records.</strong>}
                     </FormGroup>
                 </div>
             </Fragment>

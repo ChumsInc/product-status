@@ -1,58 +1,89 @@
 #app {
-  margin-bottom: 50px; }
-  #app .form-inline.block-labels .form-group {
-    flex-direction: column;
-    align-items: flex-start; }
-    #app .form-inline.block-labels .form-group .form-control {
-      margin-left: 0; }
-    #app .form-inline.block-labels .form-group label {
-      display: inline-block;
-      margin-bottom: 0.25rem;
-      font-size: 0.85rem; }
-    #app .form-inline.block-labels .form-group select {
-      max-width: 10rem; }
-  #app .form-inline .input-autocomplete {
-    position: relative; }
-    #app .form-inline .input-autocomplete .dropdown-menu {
-      width: 25rem; }
-      #app .form-inline .input-autocomplete .dropdown-menu .dropdown-item {
-        cursor: pointer;
-        padding: 0 0.5rem; }
-        #app .form-inline .input-autocomplete .dropdown-menu .dropdown-item.active, #app .form-inline .input-autocomplete .dropdown-menu .dropdown-item:hover {
-          background-color: #337ab7;
-          color: white; }
-        #app .form-inline .input-autocomplete .dropdown-menu .dropdown-item .item-dropdown-item {
-          display: flex;
-          flex-direction: row;
-          justify-content: flex-start; }
-          #app .form-inline .input-autocomplete .dropdown-menu .dropdown-item .item-dropdown-item .item-code {
-            flex: 0 0 8rem;
-            font-weight: 500; }
-          #app .form-inline .input-autocomplete .dropdown-menu .dropdown-item .item-dropdown-item .item-description {
-            flex: 0 0 auto; }
-  #app table.item-list.hide-select th:nth-child(1),
-  #app table.item-list.hide-select td:nth-child(1) {
-    display: none; }
-  #app #item-list tr.checked td {
-    background-color: #f7e741; }
-  #app #item-list td.move {
-    background-color: #d9534f;
-    color: #ffffff;
-    font-weight: bold;
-    text-align: center; }
-  #app .save-form.form-inline .form-group {
-    display: inline-block; }
-  @media (max-width: 767px) {
-    #app .save-form {
-      width: 100%; }
-      #app .save-form .new-bin {
-        width: 6em; } }
-  @media print {
-    #app table {
-      width: 100%; }
-      #app table thead, #app table tfoot {
-        display: table-header-group; }
-      #app table th, #app table td {
-        font-size: xx-small; } }
+  margin-bottom: 50px;
+}
+#app ul.pagination {
+  margin-bottom: 0;
+}
+#app .row.row--filter {
+  align-items: flex-end;
+}
+#app .row.row--filter .col-auto select {
+  max-width: 10rem;
+}
+#app .row.row--filter .col-auto select option {
+  font-size: small;
+}
+#app .row.row--filter .form-label {
+  font-size: small;
+}
+#app .row.row--filter .input-autocomplete {
+  position: relative;
+}
+#app .row.row--filter .input-autocomplete .dropdown-menu {
+  width: 25rem;
+  font-size: small;
+}
+#app .row.row--filter .input-autocomplete .dropdown-menu .dropdown-item {
+  cursor: pointer;
+  padding: 0 0.5rem;
+}
+#app .row.row--filter .input-autocomplete .dropdown-menu .dropdown-item.active, #app .row.row--filter .input-autocomplete .dropdown-menu .dropdown-item:hover {
+  background-color: #337ab7;
+  color: white;
+}
+#app .row.row--filter .input-autocomplete .dropdown-menu .dropdown-item .item-dropdown-item {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+}
+#app .row.row--filter .input-autocomplete .dropdown-menu .dropdown-item .item-dropdown-item .item-code {
+  flex: 0 0 8rem;
+  font-weight: 500;
+}
+#app .row.row--filter .input-autocomplete .dropdown-menu .dropdown-item .item-dropdown-item .item-description {
+  flex: 0 0 auto;
+}
+#app table.item-list .form-check {
+  margin-bottom: 0;
+  min-height: unset;
+}
+#app table.item-list .form-check .form-check-input {
+  margin-top: 0;
+}
+#app table.item-list.hide-select th:nth-child(1),
+#app table.item-list.hide-select td:nth-child(1) {
+  display: none;
+}
+#app #item-list tr.checked td {
+  background-color: #f7e741;
+}
+#app #item-list td.move {
+  background-color: #d9534f;
+  color: #ffffff;
+  font-weight: bold;
+  text-align: center;
+}
+#app .save-form.form-inline .form-group {
+  display: inline-block;
+}
+@media (max-width: 767px) {
+  #app .save-form {
+    width: 100%;
+  }
+  #app .save-form .new-bin {
+    width: 6em;
+  }
+}
+@media print {
+  #app table {
+    width: 100%;
+  }
+  #app table thead, #app table tfoot {
+    display: table-header-group;
+  }
+  #app table th, #app table td {
+    font-size: xx-small;
+  }
+}
 
 /*# sourceMappingURL=styles.css.map */

@@ -1,39 +1,20 @@
-import { combineReducers } from 'redux';
+import {combineReducers} from 'redux';
 import {
     CLEAR_ALL_ITEMS,
-    COMPANY_CHUMS,
-    defaultSelection,
-    DISMISS_ALERT,
-    FETCH_ADMIN_ROLE,
-    FETCH_BASE_SKU_LIST,
-    FETCH_CATEGORIES,
-    FETCH_COLLECTIONS,
-    FETCH_FAILURE,
     FETCH_INIT,
     FETCH_ITEM,
     FETCH_ITEMS,
     FETCH_POST_ITEM,
-    FETCH_PRODUCT_LINES,
-    FETCH_STATUS_LIST,
     FETCH_SUCCESS,
-    FETCH_WAREHOUSES,
     SELECT_ALL_ITEMS,
     SELECT_ITEM,
-    SET_ALERT,
-    SET_COMPANY, SET_FILTER,
-    SET_PAGE,
-    SET_ROWS_PER_PAGE,
-    SET_TAB, SET_VISIBLE_ITEMS,
-    STORE_PREF_ROWS_PER_PAGE,
-    STORE_PREF_SHOW_ON_HAND, STORE_PREF_SHOW_ONLY_SELECTED,
-    STORE_PREF_TAB,
-    TABS,
-    TOGGLE_HIDE_ZERO_ON_HAND, TOGGLE_SHOW_ONLY_SELECTED,
-    UPDATE_SELECTION
+    SET_FILTER,
+    SET_VISIBLE_ITEMS,
+    STORE_PREF_SHOW_ON_HAND,
+    TOGGLE_HIDE_ZERO_ON_HAND,
+    TOGGLE_SHOW_ONLY_SELECTED
 } from "../constants";
-import {now} from '../utils';
 import {getPreference, setPreference} from "../preferences";
-
 
 
 const list = (state = [], action) => {
@@ -97,7 +78,7 @@ const filter = (state = '', action) => {
 };
 
 const hideZeroOnHand = (state = getPreference(STORE_PREF_SHOW_ON_HAND, true), action) => {
-    const {type, } = action;
+    const {type,} = action;
     switch (type) {
     case TOGGLE_HIDE_ZERO_ON_HAND:
         setPreference(STORE_PREF_SHOW_ON_HAND, !state);
@@ -108,7 +89,7 @@ const hideZeroOnHand = (state = getPreference(STORE_PREF_SHOW_ON_HAND, true), ac
 };
 
 const showOnlySelected = (state = false, action) => {
-    const {type, } = action;
+    const {type,} = action;
     switch (type) {
     case TOGGLE_SHOW_ONLY_SELECTED:
         return !state;
@@ -134,7 +115,6 @@ const visibleItems = (state = [], action) => {
         return state;
     }
 };
-
 
 
 export default combineReducers({

@@ -21,10 +21,10 @@ class WarehouseSelect extends Component {
     };
 
     render() {
-        const {warehouses, field, value, onChange} = this.props;
+        const {warehouses, field, value, onChange, ...rest} = this.props;
 
         return (
-            <Select value={value} field={field} onChange={onChange}>
+            <Select value={value} field={field} onChange={onChange} {...rest} >
                 <option value="%">ALL</option>
                 {warehouses.map(warehouse => (
                     <option key={warehouse.WarehouseCode}

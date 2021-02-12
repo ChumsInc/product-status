@@ -25,7 +25,6 @@ export const fetchOptions = {
             credentials: 'same-origin',
             method: 'post',
             headers: {
-                ...getAuthHeader(),
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
@@ -37,7 +36,6 @@ export const fetchOptions = {
             credentials: 'same-origin',
             method: 'DELETE',
             headers: {
-                ...getAuthHeader(),
             }
         };
     }
@@ -66,7 +64,6 @@ export function fetchGET(url, options = {}) {
         ...options,
         headers: {
             ...(options.headers || {}),
-            ...getAuthHeader(),
         }
     };
     return new Promise((resolve, reject) => {
@@ -101,7 +98,6 @@ export function fetchHTML(url, options = {}) {
         ...options,
         headers: {
             ...(options.headers || {}),
-            ...getAuthHeader(),
         }
     };
     return new Promise((resolve, reject) => {

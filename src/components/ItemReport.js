@@ -9,7 +9,7 @@ import FilterButtons from "./FilterButtons";
 const ItemReport = () => {
     return (
         <div>
-            <div className="form-inline mb-3">
+            <div className="row row--filter g-3 mb-3">
                 <ItemFilter />
                 <FilterButtons />
             </div>

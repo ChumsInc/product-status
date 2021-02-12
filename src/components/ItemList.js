@@ -26,6 +26,12 @@ export const itemListFields = [
         render: ({QuantityOnHand}) => numeral(QuantityOnHand).format('0,0'),
         className: 'right'
     },
+    // {
+    //     field: 'QuantityOnPurchaseOrder',
+    //     title: 'Qty On PO',
+    //     render: ({QuantityOnPurchaseOrder}) => numeral(QuantityOnPurchaseOrder).format('0,0'),
+    //     className: 'right'
+    // },
     {
         field: 'QuantityAvailable',
         title: 'Qty Available',
@@ -119,12 +125,16 @@ class ItemList extends Component {
             Category4: 'Items:',
             ItemStatus: 0,
             QuantityOnHand: 0,
-            QuantityAvailableCost: 0
+            // QuantityOnPurchaseOrder: 0,
+            QuantityAvailable: 0,
+            QuantityAvailableCost: 0,
         };
 
         visibleItems.map(item => {
             totals.ItemStatus += 1;
             totals.QuantityOnHand += item.QuantityOnHand;
+            // totals.QuantityOnPurchaseOrder += item.QuantityOnPurchaseOrder;
+            totals.QuantityAvailable += item.QuantityAvailable;
             totals.QuantityAvailableCost += item.QuantityAvailableCost;
         });
 

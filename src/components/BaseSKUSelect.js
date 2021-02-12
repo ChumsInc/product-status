@@ -22,10 +22,10 @@ class BaseSKUSelect extends Component {
     };
 
     render() {
-        const {baseSKUs, field, value, onChange} = this.props;
+        const {baseSKUs, field, value, onChange, ...rest} = this.props;
 
         return (
-            <Select value={value} field={field} onChange={onChange}>
+            <Select value={value} field={field} onChange={onChange} {...rest}>
                 <option value="%">ALL</option>
                 {baseSKUs.map(sku => (
                     <option key={sku.id || sku.Category4}

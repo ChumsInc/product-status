@@ -22,10 +22,10 @@ class ProductLineSelect extends Component {
     };
 
     render() {
-        const {productLines, field, value, onChange} = this.props;
+        const {productLines, field, value, onChange, ...rest} = this.props;
 
         return (
-            <Select value={value} field={field} onChange={onChange}>
+            <Select value={value} field={field} onChange={onChange} {...rest}>
                 <option value="%">ALL</option>
                 {productLines
                     .filter(pl => pl.active)

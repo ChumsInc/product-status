@@ -17,7 +17,7 @@ export default class FormGroup extends PureComponent {
         inline: false,
         colWidth: 0,
         className: '',
-        labelClassName: '',
+        labelClassName: 'form-label',
         label: null,
         helpText: null,
     };
@@ -26,7 +26,7 @@ export default class FormGroup extends PureComponent {
         const {label, htmlFor, className = '', labelClassName, colWidth, children, inline, helpText} = this.props;
         const defaultClassName = {
             'form-row': !(inline || colWidth === 0 || className.split(' ').includes('form-group')),
-            'form-group': inline || colWidth === 0
+            'col-auto': inline || colWidth === 0
         };
 
         const colLabelClassName = (!!colWidth && colWidth < 12)

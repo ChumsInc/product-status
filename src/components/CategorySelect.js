@@ -25,10 +25,10 @@ class CategorySelect extends Component {
     };
 
     render() {
-        const {categories, field, value, onChange} = this.props;
+        const {categories, field, value, onChange, ...rest} = this.props;
 
         return (
-            <Select value={value} field={field} onChange={onChange}>
+            <Select value={value} field={field} onChange={onChange} {...rest}>
                 <option value="%">ALL</option>
                 {categories
                     .sort(categorySort)

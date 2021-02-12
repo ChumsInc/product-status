@@ -8,7 +8,7 @@ import {buildPath, fetchGET} from '../fetch';
 import TypeaheadInput from "./TypeaheadInput";
 import classNames from 'classnames';
 
-export const PATH_SEARCH_ITEMS = '/node/search/item/:company/:search';
+export const PATH_SEARCH_ITEMS = '/api/search/item/:company/:search';
 
 const MIN_LENGTH = 2;
 

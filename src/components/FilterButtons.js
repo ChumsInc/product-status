@@ -26,7 +26,7 @@ const FilterButtons = ({hideZeroOnHand, showOnlySelected,
             <div className="btn-group btn-group-sm ml-1">
                 <button type="button" className={classNames('btn', btnOnHand)}
                         onClick={toggleShowOnlyOnHand}>
-                    Only On Hand
+                    {hideZeroOnHand ? 'Only On Hand' : 'All Items'}
                 </button>
                 {!!allowFilterSelected && !!isAdmin && (
                     <button type="button" className={classNames('btn', btnOnlySelected)}

@@ -7,29 +7,29 @@ $brand-danger:          #d9534f !default;
 #app {
   margin-bottom: 50px;
 
-  .form-inline {
-    &.block-labels {
-      .form-group {
-        flex-direction: column;
-        align-items: flex-start;
-        .form-control {
-          margin-left: 0;
-        }
-        label {
-          display: inline-block;
-          margin-bottom: 0.25rem;
-          font-size: 0.85rem;
-        }
-        select {
-          max-width: 10rem;
+  ul.pagination {
+    margin-bottom: 0;
+  }
+  .row.row--filter {
+    align-items: flex-end;
+    .col-auto {
+      select {
+        max-width: 10rem;
+        option {
+          font-size: small;
         }
       }
+    }
+
+    .form-label {
+      font-size: small;
     }
 
     .input-autocomplete {
       position: relative;
       .dropdown-menu {
         width: 25rem;
+        font-size: small;
         .dropdown-item {
           cursor: pointer;
           padding: 0 0.5rem;
@@ -58,6 +58,13 @@ $brand-danger:          #d9534f !default;
   }
 
   table.item-list {
+    .form-check {
+      margin-bottom: 0;
+      min-height: unset;
+      .form-check-input {
+        margin-top: 0;
+      }
+    }
     &.hide-select {
       th:nth-child(1),
       td:nth-child(1) {

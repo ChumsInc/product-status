@@ -20,10 +20,10 @@ class CollectionSelect extends Component {
     };
 
     render() {
-        const {collections, field, value, onChange} = this.props;
+        const {collections, field, value, onChange, ...rest} = this.props;
 
         return (
-            <Select value={value} field={field} onChange={onChange}>
+            <Select value={value} field={field} onChange={onChange} {...rest}>
                 <option value="%">ALL</option>
                 {collections.map(c => (
                     <option key={c.Category3} value={c.Category3}>{c.Category3}</option>
