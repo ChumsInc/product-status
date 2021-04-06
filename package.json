@@ -1,6 +1,6 @@
 {
   "name": "product-status",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "main": "index.js",
   "scripts": {
     "start": "webpack serve --config webpack.dev.js --progress",
@@ -21,8 +21,8 @@
     "whatwg-fetch": "^3.5.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.12.10",
-    "@babel/core": "~7.12.9",
+    "@babel/cli": "^7.13.14",
+    "@babel/core": "^7.13.14",
     "@babel/plugin-proposal-class-properties": "^7.12.1",
     "@babel/plugin-transform-async-to-generator": "^7.12.1",
     "@babel/plugin-transform-regenerator": "^7.12.1",
