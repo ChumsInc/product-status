@@ -63,9 +63,10 @@ const itemSorter = ({list, field, asc}) => {
 };
 
 
-const rowClassName = ({QuantityOnHand, selected}) => ({
-    'table-warning': !selected && QuantityOnHand === 0,
+const rowClassName = ({QuantityOnHand, selected, ProductType, InactiveItem}) => ({
+    'table-warning': !selected && QuantityOnHand === 0 && !(ProductType === 'D' || InactiveItem === 'Y'),
     'table-info': selected,
+    'text-danger': ProductType === 'D' || InactiveItem === 'Y'
 });
 
 class ItemList extends Component {

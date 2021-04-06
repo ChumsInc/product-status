@@ -14,7 +14,7 @@ enable_error_reporting(true);
 $bodyPath = "/apps/product-status";
 $title = "Product Status";
 
-$ui = new WebUI($bodyPath, $title, '', true, true);
+$ui = new WebUI($bodyPath, $title, '', true, 5);
 $ui->version = "2017.02.08.1331";
 $ui->setBodyClass('container-fluid');
 

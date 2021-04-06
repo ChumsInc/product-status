@@ -41,7 +41,7 @@ module.exports = {
                     chunks: 'all',
                 },
                 chums: {
-                    test: /[\\/]common-components[\\/]/,
+                    test: /[\\/](common|chums)-components[\\/]/,
                     name: 'chums',
                     chunks: 'all',
                 },

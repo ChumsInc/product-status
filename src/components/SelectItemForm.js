@@ -22,6 +22,7 @@ class SelectItemForm extends Component {
     static propTypes = {
         selection: PropTypes.shape({
             Company: PropTypes.string,
+            ProductType: PropTypes.string,
             WarehouseCode: PropTypes.string,
             ItemCode: PropTypes.string,
             ProductLine: PropTypes.string,
@@ -78,7 +79,7 @@ class SelectItemForm extends Component {
     }
 
     render() {
-        const { Company, WarehouseCode, ItemCode, ProductLine, Category2, Category3, Category4, ItemStatus } = this.props.selection;
+        const { Company, WarehouseCode, ItemCode, ProductLine, Category2, Category3, Category4, ItemStatus, ProductType } = this.props.selection;
         const searchOptions = getQuery(this.props);
         return (
             <form className="row g-3 block-labels hidden-print row--filter" onSubmit={this.onLoad}>
@@ -95,6 +96,16 @@ class SelectItemForm extends Component {
                                   minLength={0}
                                   onChange={this.onChange}
                                   onSelect={this.onSelectItem} />
+                </FormGroup>
+                <FormGroup label="Product Type" htmlFor="sif-product-type">
+
+                    <Select field="ProductType" value={ProductType} onChange={this.onChange} id="sif-product-type">
+                        <option value="">FG/RM/Kit</option>
+                        <option value="F">Finished Goods</option>
+                        <option value="K">Kits</option>
+                        <option value="R">Raw Materials</option>
+                        <option value="D">Discontinued</option>
+                    </Select>
                 </FormGroup>
                 <FormGroup label="Warehouse" htmlFor="sif-warehouse">
                     <WarehouseSelect field="WarehouseCode" value={WarehouseCode} onChange={this.onChange} id="sif-warehouse"/>

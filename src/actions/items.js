@@ -19,7 +19,7 @@ import {filterVisibleItems, itemKey} from "../utils";
 let debounceFilterTimer = null;
 
 export const getQuery = (params) => {
-    const keys = ['WarehouseCode', 'ProductLine', 'Category2', 'Category3', 'Category4', 'ItemStatus'];
+    const keys = ['WarehouseCode', 'ProductLine', 'Category2', 'Category3', 'Category4', 'ItemStatus', 'ProductType'];
     return Object.keys(params)
         .filter(key => keys.includes(key))
         .filter(key => params[key] !== '' && params[key] !== '%')

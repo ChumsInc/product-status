@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Fragment} from 'react';
 import {connect} from 'react-redux';
 import classNames from "classnames";
 import FormGroup from "./FormGroup";
@@ -22,20 +22,38 @@ const FilterButtons = ({hideZeroOnHand, showOnlySelected,
         'btn-outline-info': !showOnlySelected
     };
     return (
-        <FormGroup label="Show">
-            <div className="btn-group btn-group-sm ml-1">
-                <button type="button" className={classNames('btn', btnOnHand)}
-                        onClick={toggleShowOnlyOnHand}>
-                    {hideZeroOnHand ? 'Only On Hand' : 'All Items'}
-                </button>
-                {!!allowFilterSelected && !!isAdmin && (
-                    <button type="button" className={classNames('btn', btnOnlySelected)}
-                            onClick={toggleShowOnlySelected}>
-                        Only Selected
-                    </button>
-                )}
-            </div>
-        </FormGroup>
+        <Fragment>
+            <FormGroup label="Available">
+                <div className="btn-group btn-group-sm me-3">
+                    <input type="radio" className="btn-check" name="btn-show-onhand" id="ps-list--show-onhand"
+                           checked={hideZeroOnHand} onChange={toggleShowOnlyOnHand} />
+                    <label className={classNames('btn', {'btn-outline-secondary': !hideZeroOnHand, 'btn-secondary': hideZeroOnHand})}
+                           htmlFor="ps-list--show-onhand">Show On Hand</label>
+
+                    <input type="radio" className="btn-check" name="btn-show-onhand" id="ps-list--show-all"
+                           checked={!hideZeroOnHand} onChange={toggleShowOnlyOnHand} />
+                    <label className={classNames('btn', {'btn-outline-secondary': hideZeroOnHand, 'btn-secondary': !hideZeroOnHand})}
+                           htmlFor="ps-list--show-all">Show All</label>
+
+                </div>
+            </FormGroup>
+            {!!allowFilterSelected && !!isAdmin && (
+                <FormGroup label="Selections">
+                    <div className="btn-group btn-group-sm me-3">
+                        <input type="radio" className="btn-check" id="ps-list--selections-show-selected"
+                               checked={showOnlySelected} onChange={toggleShowOnlySelected} />
+                        <label className={classNames('btn', {'btn-outline-primary': !showOnlySelected, 'btn-primary': showOnlySelected})}
+                               htmlFor="ps-list--selections-show-selected">Show Selected</label>
+
+                        <input type="radio" className="btn-check" id="ps-list--selections-show-all"
+                               checked={!showOnlySelected} onChange={toggleShowOnlySelected} />
+                        <label className={classNames('btn', {'btn-outline-primary': showOnlySelected, 'btn-primary': !showOnlySelected})}
+                               htmlFor="ps-list--selections-show-all">Show All</label>
+                    </div>
+                </FormGroup>
+            )}
+
+        </Fragment>
     );
 }
 

@@ -75,6 +75,7 @@ export const defaultSelection = {
     Category2: '',
     Category3: '',
     Category4: '',
-    ItemStatus: 'D%'
+    ItemStatus: 'D%',
+    ProductType: '',
 };
 

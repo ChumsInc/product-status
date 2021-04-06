@@ -287,7 +287,7 @@ class TypeaheadInput extends Component {
         const {selected, start, show} = this.state;
         return (
             <div className="input-autocomplete">
-                <input type="text" className={classNames("form-control form-control-sm", className)}
+                <input type="search" className={classNames("form-control form-control-sm", className)}
                        value={value} required={required}
                        onChange={this.onChange} placeholder={placeholder}
                        onKeyDown={this.onKeyDown}
