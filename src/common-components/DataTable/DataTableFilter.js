@@ -15,6 +15,13 @@ export default class DataTableFilter extends Component {
         classNames: PropTypes.any
     };
 
+    constructor(props) {
+        super(props);
+        this.onToggleInactive = this.onToggleInactive.bind(this);
+        this.onClickReload = this.onClickReload.bind(this);
+        this.onChangeFilter = this.onChangeFilter.bind(this);
+    }
+
     onChangeFilter(ev) {
         this.props.onChangeFilter(ev.target.value);
     }
@@ -32,7 +39,7 @@ export default class DataTableFilter extends Component {
             return (
                 <div className="checkbox">
                     <label>
-                        <input type="checkbox" checked={this.props.showInactive} onChange={::this.onToggleInactive}/>
+                        <input type="checkbox" checked={this.props.showInactive} onChange={this.onToggleInactive}/>
                         Show Inactive
                     </label>
                 </div>
@@ -44,7 +51,7 @@ export default class DataTableFilter extends Component {
     renderReload() {
         if (this.props.onReload !== undefined) {
             return (
-                <button type="btn" className="btn btn-primary" onClick={::this.onClickReload}>Reload</button>
+                <button type="btn" className="btn btn-primary" onClick={this.onClickReload}>Reload</button>
             )
         }
         return null;
@@ -57,7 +64,7 @@ export default class DataTableFilter extends Component {
                     <label>Filter</label>
                     <input type="text" className="form-control" value={this.props.filter}
                            placeholder="Filter this list"
-                           onChange={::this.onChangeFilter} />
+                           onChange={this.onChangeFilter} />
                 </div>
                 {this.renderInactive()}
                 {this.props.children || []}

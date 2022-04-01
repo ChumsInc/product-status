@@ -17,24 +17,22 @@ const localProxy = {
 module.exports = merge(common, {
     mode: 'development',
     devServer: {
-        contentBase: [path.join(__dirname, 'public'), __dirname],
+        allowedHosts: 'auto',
+        static: [
+            {directory: path.join(process.cwd(), 'public'), watch: false},
+            {directory: process.cwd(), watch: false}
+        ],
         hot: true,
         proxy: {
             '/api': {...localProxy},
             '/images/': {...localProxy},
-            '/timeclock/': {...localProxy},
-            '/pdf/': {...localProxy},
-            '/files/': {...localProxy},
-            '/node_modules/': {...localProxy},
-            '/node-chums/': {...localProxy},
             '/node-dev/': {...localProxy},
             '/node-sage/': {...localProxy},
             '/sage/': {...localProxy},
             '/version': {...localProxy},
-        }
+        },
+        watchFiles: 'src/**/*',
     },
     devtool: 'eval-source-map',
-    plugins: [
-        new webpack.HotModuleReplacementPlugin(),
-    ]
+    plugins: []
 });

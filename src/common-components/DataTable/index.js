@@ -11,7 +11,6 @@ import classNames from 'classnames';
 import Pagination from './Pagination';
 
 export {ThSortable, ProgressBar, Pagination};
-export DataTableFilter from './DataTableFilter';
 
 export default class DataTable extends Component {
     static propTypes = {
@@ -34,7 +33,8 @@ export default class DataTable extends Component {
             asc: true,
             page: 1,
         };
-        this.onSetPage = ::this.onSetPage;
+        this.sortRows = this.sortRows.bind(this);
+        this.onSetPage = this.onSetPage.bind(this);
     }
 
     componentWillMount() {
@@ -167,7 +167,7 @@ export default class DataTable extends Component {
                 totals[key] = {sum: 0, ct: 0};
             });
         const rows = data
-            .sort(::this.sortRows)
+            .sort(this.sortRows)
             .map(row => {
                 Object.keys(totals)
                     .forEach(key => {

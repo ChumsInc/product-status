@@ -6,7 +6,7 @@ import PropTypes from 'prop-types'
 import {connect} from 'react-redux';
 import FormGroup from "./FormGroup";
 import {clearSelections, saveSelected} from '../actions/items';
-import StatusSelect from "./StatusSelect";
+import StatusSelect from "../ducks/filters/ProductStatusSelect";
 import ItemFilter from "./ItemFilter";
 import FilterButtons from "./FilterButtons";
 
@@ -50,8 +50,8 @@ class ItemEditor extends Component {
                     <ItemFilter />
                     <FilterButtons allowFilterSelected={!!selectedItemCount}/>
                     <FormGroup label="New Status">
-                        <StatusSelect value={newItemStatus} allowNoStatus={true}
-                                      onChange={({value}) => this.setState({newItemStatus: value})} />
+                        <StatusSelect value={newItemStatus}
+                                      onChange={(ev) => this.setState({newItemStatus: ev.target.value})} />
                     </FormGroup>
                     <FormGroup>
                         <button type="button"

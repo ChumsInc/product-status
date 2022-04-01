@@ -33,7 +33,7 @@ export default class Pagination extends Component {
 
     constructor() {
         super();
-        this.onSelect = ::this.onSelect;
+        this.onSelect = this.onSelect.bind(this);
     }
 
     onSelect(page) {

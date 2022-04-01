@@ -10,12 +10,12 @@ import {fetchItems, getQuery} from "../actions/items";
 import { connect } from 'react-redux';
 import {COMPANIES, defaultSelection} from '../constants';
 import Select from './Select';
-import WarehouseSelect from "./WarehouseSelect";
-import ProductLineSelect from "./ProductLineSelect";
-import CategorySelect from "./CategorySelect";
-import CollectionSelect from "./CollectionSelect";
-import BaseSKUSelect from "./BaseSKUSelect";
-import StatusSelect from "./StatusSelect";
+import WarehouseFilter from "../ducks/filters/WarehouseFilter";
+import ProductLineFilter from "../ducks/filters/ProductLineFilter";
+import CategoryFilter from "../ducks/filters/CategoryFilter";
+import CollectionFilter from "../ducks/filters/CollectionFilter";
+import BaseSKUFilter from "../ducks/filters/BaseSKUFilter";
+import ProductStatusFilter from "../ducks/filters/ProductStatusFilter";
 import FormGroup from "./FormGroup";
 
 class SelectItemForm extends Component {
@@ -83,13 +83,6 @@ class SelectItemForm extends Component {
         const searchOptions = getQuery(this.props);
         return (
             <form className="row g-3 block-labels hidden-print row--filter" onSubmit={this.onLoad}>
-                <FormGroup label="Company">
-                    <Select value={Company} field="Company" onChange={this.onChange}>
-                        {COMPANIES.map(co => (
-                            <option key={co.code} value={co.code}>{co.name}</option>
-                        ))}
-                    </Select>
-                </FormGroup>
                 <FormGroup label="Item">
                     <ItemDropDown company={Company} options={searchOptions}
                                   value={ItemCode} field="ItemCode"
@@ -108,24 +101,22 @@ class SelectItemForm extends Component {
                     </Select>
                 </FormGroup>
                 <FormGroup label="Warehouse" htmlFor="sif-warehouse">
-                    <WarehouseSelect field="WarehouseCode" value={WarehouseCode} onChange={this.onChange} id="sif-warehouse"/>
+                    <WarehouseFilter id="sif-warehouse"/>
                 </FormGroup>
                 <FormGroup label="Prod Line" htmlFor="sif-pl">
-                    <ProductLineSelect value={ProductLine} field="ProductLine" onChange={this.onChange} id="sif-pl"/>
+                    <ProductLineFilter id="sif-pl"/>
                 </FormGroup>
                 <FormGroup label="Category" htmlFor="sif-category">
-                    <CategorySelect value={Category2} field="Category2" onChange={this.onChange} id="sif-category"/>
+                    <CategoryFilter id="sif-category"/>
                 </FormGroup>
                 <FormGroup label="Sub Category" htmlFor="sif-subcategory">
-                    <CollectionSelect value={Category3} field="Category3" onChange={this.onChange} id="sif-subcategory"/>
+                    <CollectionFilter id="sif-subcategory"/>
                 </FormGroup>
                 <FormGroup label="Base SKU" htmlFor="sif-base-sku">
-                    <BaseSKUSelect value={Category4} field="Category4" onChange={this.onChange} id="sif-base-sku"/>
+                    <BaseSKUFilter id="sif-base-sku"/>
                 </FormGroup>
                 <FormGroup label="Item Status" htmlFor="sif-status">
-                    <StatusSelect value={ItemStatus} field="ItemStatus" id="sif-status"
-                                  allowSelectAll allowWildCardStatus
-                                  onChange={this.onChange}/>
+                    <ProductStatusFilter id="sif-status"/>
                 </FormGroup>
                 <FormGroup label={<span>&nbsp;</span>}>
                     <button type="submit" className="btn btn-sm btn-primary" onClick={this.onLoad}>

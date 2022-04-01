@@ -19,8 +19,14 @@ export default class DownloadReportForm extends Component {
         ItemStatus: PropTypes.string.isRequired,
     };
 
+    constructor(props) {
+        super(props);
+        this.onSubmit = this.onSubmit.bind(this);
+    }
+
+
     onSubmit(ev) {
-        ReactDOM.findDOMNode(this.dlForm).submit();
+        // ReactDOM.findDOMNode(this.dlForm).submit();
         ev.preventDefault();
         ev.stopPropagation();
     }
@@ -31,7 +37,7 @@ export default class DownloadReportForm extends Component {
             <form method="get"
                   action={`/node-dev/production/item/status-xlsx/${encodeURIComponent(Company)}/${encodeURIComponent(ItemCode)}`}
                   style={{display: 'inline'}}
-                  onSubmit={::this.onSubmit}
+                  onSubmit={this.onSubmit}
                   ref={(form) => { this.dlForm = form; }} >
                 <input type="hidden" name="WarehouseCode" value={WarehouseCode} />
                 <input type="hidden" name="ProductLine" value={ProductLine} />
@@ -41,7 +47,7 @@ export default class DownloadReportForm extends Component {
                 <input type="hidden" name="ItemStatus" value={ItemStatus} />
                 <div className="form-group">
                     <label className="hidden-xs">&nbsp;</label>
-                    <button type="submit" className="btn btn-primary" onClick={::this.onSubmit}>
+                    <button type="submit" className="btn btn-primary" onClick={this.onSubmit}>
                         Download .xlsx
                     </button>
                 </div>
