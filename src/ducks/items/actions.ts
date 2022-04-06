@@ -1,26 +1,37 @@
-import {buildPath, fetchGET, fetchPOST} from "../../fetch";
+import {PATH_ITEMS, PATH_SAVE_ITEM_STATUS} from "../../constants";
+import {Filter, selectFilter} from "../filters";
+import {ItemsAction} from "./types";
+import {ThunkAction} from "redux-thunk";
+import {RootState} from "../index";
 import {
-    CLEAR_ALL_ITEMS,
-    FETCH_FAILURE,
-    FETCH_INIT,
-    FETCH_ITEMS,
-    FETCH_POST_ITEM,
-    FETCH_SUCCESS,
-    PATH_ITEMS,
-    PATH_SAVE_ITEM_STATUS,
-    SELECT_ALL_ITEMS,
-    SELECT_ITEM,
-    SET_FILTER, SET_VISIBLE_ITEMS,
-    TOGGLE_HIDE_ZERO_ON_HAND,
-    TOGGLE_SHOW_ONLY_SELECTED
-} from "../../constants";
-import {filterVisibleItems, itemKey} from "../../utils";
-import {Filter} from "../filters";
+    itemsFetchFailed,
+    itemsFetchRequested,
+    itemsFetchSucceeded,
+    itemsSaveFailed,
+    itemsSaveRequested,
+    itemsSaveSucceeded, itemsSetFilterInactive,
+    itemsSetFilterOnHand,
+    itemsSetFilterSelected, itemsSetNextStatus,
+    itemsSetSearch,
+    itemsSetSelected, setEconomicOrderQty, setMaximumOnHandQty, setMinimumOrderQty, setReorderMethod, setReorderPointQty
+} from "./actionTypes";
+import {selectChangedItems, selectItemsLoading, selectSelectedItems} from "./selectors";
+import {fetchJSON} from "chums-ducks";
+import {ItemRecord} from "../../types";
+import pLimit from 'p-limit';
 
-export const getQuery = (filter:Filter):URLSearchParams => {
+interface ItemsThunkAction extends ThunkAction<any, RootState, unknown, ItemsAction> {
+}
+
+const URL_SAVE_REORDER_OPTIONS = `/sage/api/operations/item-reorder-options.php`;
+
+export const getQuery = (filter: Filter): URLSearchParams => {
     const params = new URLSearchParams();
-    const {productType, warehouse, productLine, category, collection, baseSKU, status} = filter;
+    const {itemCode, productType, warehouse, productLine, category, collection, baseSKU, status} = filter;
     params.set('productType', productType);
+    if (itemCode) {
+        params.set('itemCode', itemCode);
+    }
     if (warehouse) {
         params.set('warehouse', warehouse)
     }
@@ -42,85 +53,139 @@ export const getQuery = (filter:Filter):URLSearchParams => {
     return params;
 };
 
-export const fetchItems = () => (dispatch, getState) => {
-    const state = getState();
-    const {Company, ItemCode, ...params} = state.app.selection;
+export const fetchItemsAction = (): ItemsThunkAction =>
+    async (dispatch, getState) => {
+        try {
+            const state = getState();
+            if (selectItemsLoading(state)) {
+                return;
+            }
+            dispatch({type: itemsFetchRequested});
+            const params = getQuery(selectFilter(state));
+            const url = PATH_ITEMS.replace(':Company', 'chums') + `?${params.toString()}`;
+            const {result} = await fetchJSON<{ result: ItemRecord[] }>(url, {cache: 'no-cache'});
+            dispatch({type: itemsFetchSucceeded, payload: {items: result}});
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                console.log("fetchItemsAction()", error.message);
+                return dispatch({type: itemsFetchFailed, payload: {error, context: itemsFetchRequested}})
+            }
+            console.error("fetchItemsAction()", error);
+        }
+    }
 
-    const query = getQuery(params);
-    const url = buildPath(PATH_ITEMS, {Company, ItemCode: ItemCode  || null}) + '?' + query;
-
-    dispatch({type: FETCH_ITEMS, status: FETCH_INIT});
-    fetchGET(url, {cache: 'no-cache'})
-        .then(response => {
-            const list = response.result.map(r => {
-                const key = itemKey(r);
-                const ItemCost = r.QuantityOnHand * r.AverageUnitCost;
-                return {...r, Company, key, ItemCost, selected: false};
+export const saveItemStatusAction = (item: ItemRecord): ItemsThunkAction =>
+    async (dispatch, getState) => {
+        try {
+            const state = getState();
+            if (selectItemsLoading(state)) {
+                return;
+            }
+            dispatch({type: itemsSaveRequested});
+            const url = PATH_SAVE_ITEM_STATUS
+                .replace(':Company', 'chums')
+                .replace(':ItemCode', item.ItemCode)
+                .replace(':WarehouseCode', item.WarehouseCode);
+            const {ItemStatus} = item;
+            const body = {ItemStatus};
+            const {result} = await fetchJSON<{ result: ItemRecord[] }>(url, {
+                method: 'post',
+                body: JSON.stringify(body)
             });
-            dispatch({type: FETCH_ITEMS, status: FETCH_SUCCESS, list});
-            dispatch(setVisibleItems());
-        })
-        .catch(err => {
-            console.log('fetchItems()', err);
-            dispatch({type: FETCH_ITEMS, status: FETCH_FAILURE, err});
-        });
-};
+            if (result.length) {
+                dispatch({type: itemsSaveSucceeded, payload: {item: result[0]}});
+            } else {
+                dispatch({type: itemsSaveSucceeded});
+            }
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                console.log("saveItemStatusAction()", error.message);
+                return dispatch({type: itemsSaveFailed, payload: {error, context: itemsSaveRequested}})
+            }
+            console.error("saveItemStatusAction()", error);
+        }
+    }
 
-export const saveSelected = (newStatus) => (dispatch, getState) => {
-    const {items} = getState();
-    const selected = items.list.filter(item => !!item.selected);
-    selected.forEach(item => dispatch(saveItemStatus(item, newStatus)))
-};
+export const saveAllSelectedAction = (newStatus: string): ItemsThunkAction =>
+    async (dispatch, getState) => {
+        const state = getState();
+        if (selectItemsLoading(state)) {
+            return;
+        }
+        const items = selectSelectedItems(state)
+        for await (const item of items) {
+            dispatch(saveItemStatusAction({...item, ItemStatus: newStatus}));
+        }
+    };
 
-export const saveItemStatus = (item, newStatus) => (dispatch, getState) => {
-    const {Company, ItemCode, WarehouseCode} = item;
-    const url = buildPath(PATH_SAVE_ITEM_STATUS, {Company, ItemCode, WarehouseCode});
-    const data = {ItemStatus: newStatus};
-    dispatch({type: FETCH_POST_ITEM, status: FETCH_INIT});
-    return fetchPOST(url, data)
-        .then(response => {
-            const {result} = response;
-            result.map(item => {
-                item.key = itemKey(item);
-                item.ItemCost = item.QuantityOnHand * item.AverageUnitCost;
-                item.selected = false;
-                item.Company = Company;
-                dispatch({type: FETCH_POST_ITEM, status:FETCH_SUCCESS, item});
-                dispatch(setVisibleItems());
-            });
-        })
-        .catch(err => {
-            dispatch({type: FETCH_POST_ITEM, status: FETCH_FAILURE, err});
-        });
-};
+export const selectItemAction = (key: string, force?: boolean): ItemsAction => ({
+    type: itemsSetSelected,
+    payload: {itemKeys: [key], force}
+});
 
-export const selectItem = (key, status) => ({type: SELECT_ITEM, key, status});
-export const selectItemAll = (keys) => (dispatch, getState) => {
-    dispatch({type: SELECT_ALL_ITEMS, keys});
-    dispatch(setVisibleItems());
-}
-export const setFilter = (filter) => (dispatch, getState) => {
-    clearTimeout(debounceFilterTimer);
-    dispatch({type: SET_FILTER, filter});
-    debounceFilterTimer = setTimeout(() => {
-        dispatch(setVisibleItems());
-    }, 500);
-}
-export const toggleShowOnlyOnHand = () => (dispatch, getState) => {
-    dispatch({type: TOGGLE_HIDE_ZERO_ON_HAND});
-    dispatch(setVisibleItems());
-}
-export const toggleShowOnlySelected = () => (dispatch, getState) => {
-    dispatch({type: TOGGLE_SHOW_ONLY_SELECTED});
-    dispatch(setVisibleItems());
-}
-export const clearSelections = () => (dispatch) => {
-    dispatch({type: CLEAR_ALL_ITEMS});
-    dispatch(setVisibleItems());
-}
+export const selectItemsAction = (itemKeys: string[], force: boolean): ItemsAction => ({
+    type: itemsSetSelected,
+    payload: {itemKeys, force}
+});
+export const itemsSetFilterAction = (value: string) => ({type: itemsSetSearch, payload: {value}});
 
-export const setVisibleItems = () => (dispatch, getState) => {
-    const {items} = getState();
-    const visibleItems = filterVisibleItems(items);
-    dispatch({type: SET_VISIBLE_ITEMS, visibleItems});
+export const itemsSetFilterOnHandAction = (force: boolean) => ({type: itemsSetFilterOnHand, payload: {force}});
+export const itemsSetFilterInactiveAction = (force: boolean) => ({type: itemsSetFilterInactive, payload: {force}});
+export const itemsSetFilterSelectedAction = (force: boolean) => ({type: itemsSetFilterSelected, payload: {force}});
+
+export const setNewStatusAction = (value:string) => ({type: itemsSetNextStatus, payload: {value}});
+
+export const setReorderMethodAction = (key: string, value:string):ItemsAction => ({type: setReorderMethod, payload: {itemKeys: [key], value}});
+export const setReorderPointAction = (key: string, quantity:number):ItemsAction => ({type: setReorderPointQty, payload: {itemKeys: [key], quantity}})
+export const setMinimumOrderAction = (key: string, quantity:number):ItemsAction => ({type: setMinimumOrderQty, payload: {itemKeys: [key], quantity}})
+export const setEconomicOrderAction = (key: string, quantity:number):ItemsAction => ({type: setEconomicOrderQty, payload: {itemKeys: [key], quantity}})
+export const setMaximumOnHandAction = (key: string, quantity:number):ItemsAction => ({type: setMaximumOnHandQty, payload: {itemKeys: [key], quantity}})
+
+
+export const saveChangedItemsAction = ():ItemsThunkAction =>
+    async (dispatch, getState) => {
+        try {
+            const state = getState();
+            if (selectItemsLoading(state)) {
+                return;
+            }
+            const items = selectChangedItems(state);
+            const limit = pLimit(3);
+            dispatch({type: itemsSaveRequested});
+            for await (const item of items) {
+                const updatedItem = await saveItemReorderOptions(item);
+                dispatch({type: itemsSaveSucceeded, payload: {item: updatedItem}});
+            }
+        } catch(error:unknown) {
+            if (error instanceof Error) {
+                console.log("saveChangedItemsAction()", error.message);
+                return dispatch({type:itemsSaveFailed, payload: {error, context: itemsSaveRequested}})
+            }
+            console.error("saveChangedItemsAction()", error);
+        }
+    }
+
+export async function saveItemReorderOptions(item:ItemRecord):Promise<ItemRecord> {
+    try {
+        const {ItemCode, WarehouseCode, ReorderMethod, ReorderPointQty, EconomicOrderQty, MaximumOnHandQty, MinimumOrderQty} = item;
+        const body = {
+            Company: 'CHI',
+            ItemCode,
+            WarehouseCode, ReorderMethod, ReorderPointQty, EconomicOrderQty, MaximumOnHandQty, MinimumOrderQty
+        }
+        const response = await fetchJSON(URL_SAVE_REORDER_OPTIONS, {method: 'POST', body: JSON.stringify(body)});
+        console.log(response);
+        const params = new URLSearchParams();
+        params.set('itemCode', `^${ItemCode}$`)
+        params.set('warehouseCode', WarehouseCode);
+        const url = PATH_ITEMS.replace(':Company', 'chums') + `?${params.toString()}`;
+        const {result} = await fetchJSON<{ result: ItemRecord[] }>(url, {cache: 'no-cache'});
+        return result[0];
+    } catch(err:unknown) {
+        if (err instanceof Error) {
+            console.log("saveItemReporderOptions()", err.message);
+            return Promise.reject(err);
+        }
+        return Promise.reject(new Error('Unable to save item'));
+    }
 }

@@ -20,7 +20,7 @@
     "noEmit": false,
     "jsx": "react",
     "outDir": "./dist/",
-    "declaration": true,
+    "declaration": false,
     "noImplicitAny": true,
     "sourceMap": true
   },

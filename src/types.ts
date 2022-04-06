@@ -57,6 +57,14 @@ export interface PrimaryVendorRecord {
     VendorName: string,
 }
 
+export interface ItemStatusHistory {
+    date: string,
+    status: string|null,
+    user: number
+}
+
+export type ReorderMethod = 'E'|'M'|'R'|null;
+
 export interface ItemRecord {
     ItemCode: string,
     ItemCodeDesc: string,
@@ -68,10 +76,25 @@ export interface ItemRecord {
     InactiveItem: 'Y'|'N',
     WarehouseCode: string,
     QuantityOnHand: number,
+    // QuantityOnSalesOrder: number,
+    // QuantityOnBackOrder: number,
+    // QuantityOnPurchaseOrder: number,
+    // QuantityOnWorkOrder: number,
+    // QuantityRequiredForWO: number,
+    // QuantityOnMaterialReq: number,
     QuantityAvailable: number,
     StandardUnitCost: number,
     AverageUnitCost: number,
     QuantityAvailableCost: number,
     selected?: boolean,
     changed?:boolean,
+    ItemStatus: string,
+    BinLocation: string|null,
+    ReorderMethod: ReorderMethod,
+    ReorderPointQty: number,
+    EconomicOrderQty: number,
+    MaximumOnHandQty: number,
+    MinimumOrderQty: number,
+    PrimaryVendorNo: string,
+    ItemStatusHistory?: ItemStatusHistory[],
 }

@@ -1,7 +1,7 @@
 import {combineReducers} from "redux";
 import {alertsReducer, pagesReducer, sortableTablesReducer, tabsReducer} from 'chums-ducks';
-import {default as appReducer} from '../reducers/app';
-import {default as itemsReducer} from '../reducers/items';
+import {default as appReducer} from './app';
+import {default as itemsReducer} from './items';
 import {default as filtersReducer} from './filters';
 
 const rootReducer = combineReducers({

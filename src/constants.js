@@ -42,7 +42,7 @@ export const PATH_CATEGORY = '/api/search/cat2/:company/';
 export const PATH_COLLECTIONS = '/api/search/cat3/:company/';
 export const PATH_BASE_SKU_LIST = '/api/search/cat4/:company/';
 export const PATH_STATUS_LIST = '/api/operations/production/item/status/';
-export const PATH_ITEMS = '/api/operations/production/item/status/:Company/:ItemCode?';
+export const PATH_ITEMS = '/api/operations/production/item/status/:Company/';
 export const PATH_SAVE_ITEM_STATUS = '/api/operations/production/item/status/:Company/:ItemCode/:WarehouseCode';
 export const PATH_CHECK_ADMIN_ROLE = '/api/user/validate/role/product-admin';
 
@@ -50,6 +50,7 @@ export const STORE_TOKEN = 'com.chums.intranet.token';
 export const STORE_PREF_TAB = 'com.chums.intranet.product-status.tab';
 export const STORE_PREF_ROWS_PER_PAGE = 'com.chums.intranet.product-status.rowsPerPage';
 export const STORE_PREF_SHOW_ON_HAND = 'com.chums.intranet.product-status.showOnHand';
+export const STORE_PREF_SHOW_INACTIVE = 'com.chums.intranet.product-status.showInactive';
 export const STORE_PREF_SHOW_ONLY_SELECTED = 'com.chums.intranet.product-status.showOnlySelected';
 
 

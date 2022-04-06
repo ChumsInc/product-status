@@ -33,6 +33,7 @@ export interface FiltersThunkAction extends ThunkAction<any, RootState, unknown,
 }
 
 export interface Filter {
+    itemCode: string,
     productType: string,
     warehouse: string,
     productLine: string,
@@ -44,6 +45,7 @@ export interface Filter {
     primaryVendor: string,
 }
 
+export const filtersSetItemCode = 'filters/setItemCode';
 export const filtersFetchRequested = 'filters/fetchRequested';
 export const filtersFetchSucceeded = 'filters/FetchSucceeded';
 export const filtersFetchFailed = 'filters/fetchFailed';
@@ -108,6 +110,7 @@ export const fetchFiltersAction = (): FiltersThunkAction =>
         }
     }
 
+export const filterSetItemCodeAction = (value:string):FiltersAction => ({type: filtersSetItemCode, payload: {value}});
 export const filterSetProductTypeAction = (value: string):FiltersAction => ({type: filterSetProductType, payload: {value}});
 export const filtersSetWarehouseAction = (value: string):FiltersAction => ({type: filterSetWarehouse, payload: {value}});
 export const filterSetCategoryAction = (value: string):FiltersAction => ({type: filterSetCategory, payload: {value}});
@@ -128,6 +131,7 @@ const sortCountryOfOriginRecord = (a: CountryOfOriginRecord, b: CountryOfOriginR
 const sortPrimaryVendorRecord = (a: PrimaryVendorRecord, b: PrimaryVendorRecord) => a.PrimaryVendorNo > b.PrimaryVendorNo ? 1 : -1;
 
 export const defaultFilter: Filter = {
+    itemCode: '',
     productType: 'FKR',
     warehouse: '',
     productLine: '',
@@ -155,6 +159,8 @@ const filterReducer = (state: Filter = defaultFilter, action: FiltersAction): Fi
     const {type, payload} = action;
     const value = payload?.value || '';
     switch (type) {
+    case filtersSetItemCode:
+        return {...state, itemCode: value};
     case filterSetProductType:
         return {...state, productType: value || 'FKR'}
     case filterSetWarehouse:
