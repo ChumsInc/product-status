@@ -30,7 +30,7 @@ export const selectFilteredItems = createSelector(
         return list.filter(item => searchRegexp.test(item.ItemCode) || searchRegexp.test(item.ItemCodeDesc))
             .filter(item => inactive ? item.InactiveItem === 'Y' : (item.InactiveItem !== 'Y' || item.QuantityOnHand !== 0 || item.QuantityAvailable !== 0))
             .filter(item => !onHand || item.QuantityOnHand > 0)
-            .filter(item => !onlySelected || item.selected)
+            .filter(item => !onlySelected || item.selected || item.changed)
             .sort(itemSorter(sort as ItemSorterProps));
     });
 

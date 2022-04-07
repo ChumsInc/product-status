@@ -1,4 +1,4 @@
-import React, {ChangeEvent} from 'react';
+import React, {ChangeEvent, useEffect, useState} from 'react';
 import {ItemRecord} from "../../types";
 import {useDispatch} from "react-redux";
 import {setEconomicOrderAction, setMaximumOnHandAction, setMinimumOrderAction, setReorderPointAction} from "./actions";
@@ -12,22 +12,37 @@ export interface OrderQuantityInputProps {
 
 const OrderQuantityInput:React.FC<OrderQuantityInputProps> = ({itemKey, field, quantity}) => {
     const dispatch = useDispatch();
+    const [value, setValue] = useState(quantity);
+    useEffect(() => {
+        setValue(quantity);
+    }, [quantity])
 
     const changeHandler = (ev:ChangeEvent<HTMLInputElement>) => {
+        setValue(ev.target.valueAsNumber);
+    }
+
+    const blurHandler = () => {
+        if (value === quantity) {
+            return;
+        }
         switch (field) {
         case 'ReorderPointQty':
-            return dispatch(setReorderPointAction(itemKey, ev.target.valueAsNumber));
+            dispatch(setReorderPointAction(itemKey, value));
+            return;
         case 'MinimumOrderQty':
-            return dispatch(setMinimumOrderAction(itemKey, ev.target.valueAsNumber));
+            dispatch(setMinimumOrderAction(itemKey, value));
+            return;
         case 'EconomicOrderQty':
-            return dispatch(setEconomicOrderAction(itemKey, ev.target.valueAsNumber));
+            dispatch(setEconomicOrderAction(itemKey, value));
+            return;
         case 'MaximumOnHandQty':
-            return dispatch(setMaximumOnHandAction(itemKey, ev.target.valueAsNumber));
+            dispatch(setMaximumOnHandAction(itemKey, value));
+            return;
         }
     }
 
     return (
-        <Input type="number" min={0} max={9999999} step={1} onChange={changeHandler} value={quantity} bsSize="sm"/>
+        <Input type="number" min={0} max={9999999} step={1} onChange={changeHandler} onBlur={blurHandler} value={value} bsSize="sm"/>
     )
 }
 

@@ -121,6 +121,7 @@ export const filterSetPrimaryVendorAction = (value: string):FiltersAction => ({t
 export const filterSetBaseSKUAction = (value: string):FiltersAction => ({type: filterSetBaseSKU, payload: {value}});
 export const filterSetProductStatusAction = (value: string):FiltersAction => ({type: filterSetProductStatus, payload: {value}});
 
+
 const sortWarehouseRecord = (a: WarehouseRecord, b: WarehouseRecord) => a.WarehouseCode > b.WarehouseCode ? 1 : -1;
 const sortProductLineRecord = (a: ProductLineRecord, b: ProductLineRecord) => a.ProductLine > b.ProductLine ? 1 : -1;
 const sortCategoryRecord = (a: CategoryRecord, b: CategoryRecord) => a.Category2 > b.Category2 ? 1 : -1;

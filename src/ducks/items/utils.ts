@@ -25,6 +25,7 @@ export const itemSorter = (sort:ItemSorterProps) => (a:ItemRecord, b:ItemRecord)
     case 'ReorderPointQty':
         return (a[sort.field] - b[sort.field]) * (sort.ascending ? 1 : -1);
     case 'changed':
+        return ((a.changed ? 1 : 0 ) - (b.changed ? 1 : 0))  * (sort.ascending ? 1 : -1);
     case 'selected':
     case 'ItemStatusHistory':
         return (itemKey(a) > itemKey(b) ? 1 : -1);
