@@ -16,6 +16,7 @@ import ItemCodeFilter from "./ItemCodeFilter";
 import {selectItemsLoading} from "../items/selectors";
 import {fetchItemsAction} from "../items/actions";
 import DownloadButton from "./DownloadButton";
+import VendorFilter from "./VendorFilter";
 
 const SelectItemForm:React.FC = () => {
     const dispatch = useDispatch();
@@ -48,6 +49,9 @@ const SelectItemForm:React.FC = () => {
             </FormGroup>
             <FormGroup label="Prod Line" htmlFor="sif-pl">
                 <ProductLineFilter id="sif-pl"/>
+            </FormGroup>
+            <FormGroup label="Vendor" htmlFor="sif-vendor">
+                <VendorFilter id="sif-vendor"/>
             </FormGroup>
             <FormGroup label="Category" htmlFor="sif-category">
                 <CategoryFilter id="sif-category"/>
