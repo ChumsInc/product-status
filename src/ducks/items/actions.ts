@@ -27,7 +27,7 @@ const URL_SAVE_REORDER_OPTIONS = `/sage/api/operations/item-reorder-options.php`
 
 export const getQuery = (filter: Filter): URLSearchParams => {
     const params = new URLSearchParams();
-    const {itemCode, productType, warehouse, productLine, category, collection, baseSKU, status} = filter;
+    const {itemCode, productType, warehouse, productLine, category, collection, baseSKU, status, primaryVendor} = filter;
     params.set('productType', productType);
     if (itemCode) {
         params.set('itemCode', itemCode);
@@ -37,6 +37,9 @@ export const getQuery = (filter: Filter): URLSearchParams => {
     }
     if (productLine) {
         params.set('pl', productLine);
+    }
+    if (primaryVendor) {
+        params.set('vendor', primaryVendor);
     }
     if (category) {
         params.set('cat', category);

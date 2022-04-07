@@ -17,13 +17,15 @@ import ItemSelectedCheckbox from "./ItemSelectedCheckbox";
 import SelectAllCheckbox from "./SelectAllCheckbox";
 import ReorderMethodSelect from "./ReorderMethodSelect";
 import OrderQuantityInput from "./OrderQuantityInput";
+import classNames from "classnames";
 
 
 const fields: ItemTableField[] = [
     {
-        field: 'ItemCode',
-        title: (<SelectAllCheckbox/>),
-        render: (row) => <ItemSelectedCheckbox itemKey={itemKey(row)} selected={row.selected}/>
+        field: 'changed',
+        title: (<span className="bi-check-circle"/>),
+        render: (row) => (<span className={classNames({'bi-check-circle-fill': row.changed, 'bi-circle': !row.changed})} />),
+        sortable: true,
     },
     {field: 'ItemCode', title: 'Item', sortable: true},
     {field: 'WarehouseCode', title: 'Whse', sortable: true},
