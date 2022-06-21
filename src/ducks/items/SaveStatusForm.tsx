@@ -14,6 +14,9 @@ const SaveStatusForm:React.FC = () => {
 
     const submitHandler = (ev:FormEvent) => {
         ev.preventDefault();
+        if (nextStatus === '' && !window.confirm(`Are you sure you want to remove the status from: ${selectedItems.map(i => i.ItemCode).join(', ')}?`)) {
+            return;
+        }
         dispatch(saveAllSelectedAction(nextStatus));
     }
 
@@ -22,7 +25,7 @@ const SaveStatusForm:React.FC = () => {
             <div className="col-auto">
                 <div className="input-group input-group-sm">
                     <span className="input-group-text">Next Status</span>
-                    <ProductStatusSelect value={nextStatus} required onChange={changeHandler} />
+                    <ProductStatusSelect value={nextStatus} onChange={changeHandler} />
                 </div>
             </div>
             <div className="col-auto">
