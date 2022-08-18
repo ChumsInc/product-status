@@ -5,6 +5,7 @@
   "scripts": {
     "start": "webpack serve --config webpack.dev.js --progress",
     "build": "webpack --config webpack.prod.js --progress --env production",
+    "build-test": "webpack --config webpack.prod-test.js --progress --env production",
     "version": "auto-changelog -p && git add CHANGELOG.md"
   },
   "dependencies": {
