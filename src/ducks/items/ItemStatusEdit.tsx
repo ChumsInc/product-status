@@ -4,7 +4,7 @@
 import React from 'react';
 import ItemListFilterBar from "./ItemListFilterBar";
 import ItemStatusEditList from "./ItemStatusEditList";
-import {ErrorBoundary} from "chums-ducks";
+import {ErrorBoundary} from "chums-components";
 import SaveStatusForm from "./SaveStatusForm";
 
 

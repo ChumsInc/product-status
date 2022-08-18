@@ -4,7 +4,10 @@ import ItemListFilterOnHand from "./ItemListFilterOnHand";
 import ItemListFilterSelected from "./ItemListFilterSelected";
 import ItemListFilterInactive from "./ItemListFilterInactive";
 
-const ItemListFilterBar: React.FC = ({children}) => {
+export interface ItemListFilterBarProps {
+    children?: React.ReactNode
+}
+const ItemListFilterBar = ({children}:ItemListFilterBarProps) => {
 
     return (
         <div className="row g-3 align-items-baseline mb-3">

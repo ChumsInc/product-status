@@ -1,7 +1,7 @@
 import React, {ChangeEvent, useEffect, useRef, useState} from 'react';
 import {useDispatch, useSelector} from "react-redux";
 import {selectFilteredItems} from "./selectors";
-import {selectPagedData} from "chums-ducks";
+import {selectPagedData} from "chums-connected-components";
 import {itemStatusTableKey} from "./actionTypes";
 import {ItemRecord} from "../../types";
 import {itemKey} from "./utils";

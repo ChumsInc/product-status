@@ -1,6 +1,7 @@
-import {ActionInterface, ActionPayload, SortableTableField, SorterProps} from "chums-ducks";
+import {SortableTableField, SortProps} from "chums-components";
 import {ItemRecord} from "../../types";
 import {Filter} from "../filters";
+import {ActionInterface, ActionPayload} from "chums-connected-components";
 
 export interface ItemsPayload extends ActionPayload {
     items?:ItemRecord[],
@@ -21,7 +22,7 @@ export interface ItemsAction extends ActionInterface {
 
 export type ItemField = keyof ItemRecord;
 
-export interface ItemSorterProps extends SorterProps {
+export interface ItemSorterProps extends SortProps {
     field: ItemField
 }
 

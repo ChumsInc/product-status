@@ -1,5 +1,5 @@
 import {combineReducers} from 'redux'
-import {ActionInterface, ActionPayload, fetchJSON} from "chums-ducks";
+import {fetchJSON} from "chums-components";
 import {
     BaseSKURecord,
     CategoryRecord,
@@ -12,6 +12,7 @@ import {
 } from "../../types";
 import {ThunkAction} from "redux-thunk";
 import {RootState} from "../index";
+import {ActionInterface, ActionPayload} from "chums-connected-components";
 
 export interface FiltersPayload extends ActionPayload {
     warehouseList?: WarehouseRecord[],

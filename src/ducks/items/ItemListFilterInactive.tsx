@@ -1,7 +1,7 @@
-import React from 'react';
+import React, {ChangeEvent} from 'react';
 import {useDispatch, useSelector} from "react-redux";
 import {selectItemsFilterInactive} from "./selectors";
-import {FormCheck} from "chums-ducks";
+import {FormCheck} from "chums-components";
 import {itemsSetFilterInactiveAction} from "./actions";
 
 
@@ -11,7 +11,7 @@ const ItemListFilterInactive: React.FC = () => {
 
     return (
         <FormCheck type="checkbox" label="Show Only Inactive" checked={checked}
-                   onClick={() => dispatch(itemsSetFilterInactiveAction(!checked))}/>
+                   onChange={(ev:ChangeEvent<HTMLInputElement>) => dispatch(itemsSetFilterInactiveAction(ev.target.checked))}/>
     )
 }
 

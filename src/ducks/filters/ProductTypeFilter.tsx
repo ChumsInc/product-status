@@ -1,7 +1,7 @@
 import React, {ChangeEvent} from 'react';
 import {useDispatch, useSelector} from "react-redux";
 import {filterSetProductTypeAction, selectFilter} from "./index";
-import {Select} from "chums-ducks";
+import {Select} from "chums-components";
 
 const ProductTypeFilter:React.FC<{id:string}> = ({id}) => {
     const dispatch = useDispatch();

@@ -1,7 +1,7 @@
-import React from 'react';
+import React, {ChangeEvent} from 'react';
 import {useDispatch, useSelector} from "react-redux";
 import {selectItemsFilterOnHand} from "./selectors";
-import {FormCheck} from "chums-ducks";
+import {FormCheck} from "chums-components";
 import {itemsSetFilterOnHandAction} from "./actions";
 
 
@@ -11,7 +11,7 @@ const ItemListFilterOnHand:React.FC = () => {
 
     return(
         <FormCheck type="checkbox" label="Show Only On Hand" checked={checked}
-                   onClick={() => dispatch(itemsSetFilterOnHandAction(!checked))} />
+                   onChange={(ev:ChangeEvent<HTMLInputElement>) => dispatch(itemsSetFilterOnHandAction(ev.target.checked))} />
     )
 }
 

@@ -16,7 +16,7 @@ import {
     itemsSetSelected, setEconomicOrderQty, setMaximumOnHandQty, setMinimumOrderQty, setReorderMethod, setReorderPointQty
 } from "./actionTypes";
 import {selectChangedItems, selectItemsLoading, selectSelectedItems} from "./selectors";
-import {fetchJSON} from "chums-ducks";
+import {fetchJSON} from "chums-components";
 import {ItemRecord} from "../../types";
 import pLimit from 'p-limit';
 

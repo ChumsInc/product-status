@@ -1,10 +1,10 @@
 import React from 'react';
 import {useDispatch, useSelector} from "react-redux";
 import {selectProductStatusList} from "../filters";
-import {Select} from "chums-ducks";
+import {Select} from "chums-components";
 import {selectNextStatus} from "./selectors";
 
-const ProductStatusSelect:React.FC<{id:string}> = () => {
+const ProductStatusSelect: React.FC<{ id: string }> = () => {
     const dispatch = useDispatch();
     const nextStatus = useSelector(selectNextStatus);
     const list = useSelector(selectProductStatusList);
