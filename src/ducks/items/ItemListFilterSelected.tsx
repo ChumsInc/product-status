@@ -1,7 +1,7 @@
-import React from 'react';
+import React, {ChangeEvent} from 'react';
 import {useDispatch, useSelector} from "react-redux";
 import {selectFilterOnlySelected} from "./selectors";
-import {FormCheck} from "chums-ducks";
+import {FormCheck} from "chums-components";
 import {itemsSetFilterSelectedAction} from "./actions";
 
 
@@ -11,7 +11,7 @@ const ItemListFilterSelected: React.FC = () => {
 
     return (
         <FormCheck type="checkbox" label="Show Only Seleced" checked={checked}
-                   onClick={() => dispatch(itemsSetFilterSelectedAction(!checked))}/>
+                   onChange={(ev:ChangeEvent<HTMLInputElement>) => dispatch(itemsSetFilterSelectedAction(ev.target.checked))}/>
     )
 }
 

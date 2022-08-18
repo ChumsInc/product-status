@@ -1,18 +1,19 @@
 import React, {ChangeEvent, FormEvent, useState} from 'react';
-import {useDispatch, useSelector} from "react-redux";
-import {selectNextStatus, selectSelectedItems} from "./selectors";
+import {useSelector} from "react-redux";
+import {selectSelectedItems} from "./selectors";
 import ProductStatusSelect from "../filters/ProductStatusSelect";
 import {saveAllSelectedAction} from "./actions";
+import {useAppDispatch} from "../../app/configureStore";
 
 
-const SaveStatusForm:React.FC = () => {
-    const dispatch = useDispatch();
+const SaveStatusForm: React.FC = () => {
+    const dispatch = useAppDispatch();
     const selectedItems = useSelector(selectSelectedItems);
     const [nextStatus, setNextStatus] = useState('');
 
-    const changeHandler = (ev:ChangeEvent<HTMLSelectElement>) => setNextStatus(ev.target.value);
+    const changeHandler = (ev: ChangeEvent<HTMLSelectElement>) => setNextStatus(ev.target.value);
 
-    const submitHandler = (ev:FormEvent) => {
+    const submitHandler = (ev: FormEvent) => {
         ev.preventDefault();
         if (nextStatus === '' && !window.confirm(`Are you sure you want to remove the status from: ${selectedItems.map(i => i.ItemCode).join(', ')}?`)) {
             return;
@@ -25,7 +26,7 @@ const SaveStatusForm:React.FC = () => {
             <div className="col-auto">
                 <div className="input-group input-group-sm">
                     <span className="input-group-text">Next Status</span>
-                    <ProductStatusSelect value={nextStatus} onChange={changeHandler} />
+                    <ProductStatusSelect value={nextStatus} onChange={changeHandler}/>
                 </div>
             </div>
             <div className="col-auto">

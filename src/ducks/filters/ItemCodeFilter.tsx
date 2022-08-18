@@ -2,7 +2,7 @@ import React, {ChangeEvent, InputHTMLAttributes, useEffect, useState, FocusEvent
 import {useDispatch, useSelector} from 'react-redux';
 import {filterSetItemCodeAction, selectFilter} from "./index";
 import FilterInput from "./FilterInput";
-import ItemDataList from "chums-ducks/dist/components/ItemDataList";
+import {ItemDataList} from 'chums-components'
 
 
 const ItemCodeFilter: React.FC<InputHTMLAttributes<HTMLInputElement>> = ({

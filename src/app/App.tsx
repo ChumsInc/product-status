@@ -1,17 +1,19 @@
-import React, {useEffect} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
-import SelectItemForm from '../ducks/filters/SelectItemForm';
-import ItemReport from '../ducks/items/ItemReport';
-import AppTabs, {TAB_EDIT, TAB_NOTES, TAB_REORDER, TAB_VIEW, tabKey} from "./Tabs";
-import {AlertList, selectCurrentTab} from "chums-ducks";
-import {fetchFiltersAction} from "../ducks/filters";
+import React, {useEffect} from "react";
+import {useDispatch, useSelector} from "react-redux";
 import {checkIsAdminAction, selectIsAdmin} from "../ducks/app";
+import AppTabs, {TAB_EDIT, TAB_NOTES, TAB_REORDER, TAB_VIEW, tabKey} from "./Tabs";
+import {fetchFiltersAction} from "../ducks/filters";
+import SelectItemForm from "../ducks/filters/SelectItemForm";
+import ItemReport from "../ducks/items/ItemReport";
 import ItemStatusEdit from "../ducks/items/ItemStatusEdit";
-import NotesTabContent from "./NotesTabContent";
 import ItemReorderEdit from "../ducks/items/ItemReorderEdit";
+import NotesTabContent from "../components/NotesTabContent";
+import {AlertList, selectCurrentTab} from "chums-connected-components";
+import {useAppDispatch} from "./configureStore";
+
 
 const App: React.FC = () => {
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     const isAdmin = useSelector(selectIsAdmin);
     const tab = useSelector(selectCurrentTab(tabKey))
 
@@ -36,8 +38,3 @@ const App: React.FC = () => {
 }
 
 export default App;
-
-
-/*
-@todo - still need to work the code to push teh new statuses up to the server, was in Item.js but is deprecated
- */

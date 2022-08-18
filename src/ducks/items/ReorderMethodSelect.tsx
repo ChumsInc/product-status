@@ -1,7 +1,7 @@
 import React, {ChangeEvent} from "react";
 import {useDispatch} from "react-redux";
 import {setReorderMethodAction} from "./actions";
-import {Select} from "chums-ducks";
+import {Select} from "chums-components";
 
 export interface ReorderMethodSelectProps {
     itemKey: string,

@@ -1,7 +1,6 @@
-import React, {ChangeEvent, InputHTMLAttributes, SelectHTMLAttributes} from 'react';
+import React, {ChangeEvent} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {filterSetBaseSKUAction, filterSetCategoryAction, selectBaseSKUList, selectFilter} from "./index";
-import {Select} from "chums-ducks";
+import {filterSetBaseSKUAction, selectFilter} from "./index";
 import FilterInput, {FilterInputContainerProps} from "./FilterInput";
 import BaseSKUDataList from "./BaseSKUDataList";
 

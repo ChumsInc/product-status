@@ -4,7 +4,7 @@
 import React from 'react';
 import ItemListFilterBar from "./ItemListFilterBar";
 import ItemStatusList from "./ItemStatusList";
-import {ErrorBoundary} from "chums-ducks";
+import {ErrorBoundary} from "chums-components";
 
 
 const ItemReport: React.FC = () => {

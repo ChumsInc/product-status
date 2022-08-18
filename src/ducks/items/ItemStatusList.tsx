@@ -1,22 +1,21 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {ItemTableField} from "./types";
 import numeral from "numeral";
 import {useDispatch, useSelector} from "react-redux";
 import {selectFilteredItems, selectItemListLength, selectItemsLoading} from "./selectors";
 import {
     addPageSetAction,
-    LoadingProgressBar,
-    PagerDuck,
-    selectPagedData,
-    SortableTable,
-    tableAddedAction
-} from "chums-ducks";
+    ConnectedPager,
+    ConnectedTable,
+    selectPagedData, selectPageSet, setPageAction,
+    tableAddedAction,
+} from "chums-connected-components";
 import {itemStatusTableKey} from "./actionTypes";
 import {itemKey, rowClassName} from "./utils";
-import ItemSelectedCheckbox from "./ItemSelectedCheckbox";
+import {LoadingProgressBar, pageFilter} from "chums-components";
 
 
-const fields:ItemTableField[] = [
+const fields: ItemTableField[] = [
     {field: 'ItemCode', title: 'Item', sortable: true},
     {field: 'WarehouseCode', title: 'Whse', sortable: true},
     {field: 'ItemCodeDesc', title: 'Description', sortable: true},
@@ -56,25 +55,38 @@ const fields:ItemTableField[] = [
 
 ]
 
-const ItemStatusList:React.FC = () => {
+const ItemStatusList: React.FC = () => {
     const dispatch = useDispatch();
-    useEffect(() => {
-        dispatch(tableAddedAction({key: itemStatusTableKey, field: 'ItemCode', ascending: true}));
-        dispatch(addPageSetAction({key: itemStatusTableKey}));
-    }, [])
     const loading = useSelector(selectItemsLoading);
     const list = useSelector(selectFilteredItems);
     const listLength = useSelector(selectItemListLength);
-    const pageList = useSelector(selectPagedData(itemStatusTableKey, list));
+    const {page, rowsPerPage} = useSelector(selectPageSet(itemStatusTableKey));
+    const [pagedList, setPagedList] = useState(list.filter(pageFilter(page, rowsPerPage)));
+
+    useEffect(() => {
+        setPagedList(list.filter(pageFilter(page, rowsPerPage)));
+    }, [list, page,rowsPerPage]);
+
+    const sortChangeHandler = () => {
+        dispatch(setPageAction({key: itemStatusTableKey, page: 1}))
+    }
+
+    const [selected, setSelected] = useState<string | null>(null)
 
     return (
         <div>
-            {loading && <LoadingProgressBar animated striped  />}
-            <SortableTable tableKey={itemStatusTableKey} keyField={itemKey} fields={fields} data={pageList}
-                           rowClassName={rowClassName} className="table-sticky" />
-            <PagerDuck pageKey={itemStatusTableKey} dataLength={list.length} filtered={list.length < listLength}/>
+            {loading && <LoadingProgressBar animated striped/>}
+            <ConnectedTable tableKey={itemStatusTableKey} keyField={itemKey} fields={fields} data={pagedList}
+                            defaultSort={{field: 'ItemCode', ascending: true}}
+                            onChangeSort={sortChangeHandler}
+                            selected={(row) => itemKey(row) === selected}
+                            onSelectRow={(row) => setSelected(itemKey(row))}
+                            rowClassName={rowClassName} className="table-sticky"/>
+            <ConnectedPager pageSetKey={itemStatusTableKey} dataLength={list.length}
+                            onChangeRowsPerPage={sortChangeHandler}
+                            filtered={list.length < listLength}/>
         </div>
     )
 }
 
-export default ItemStatusList;
+export default React.memo(ItemStatusList);

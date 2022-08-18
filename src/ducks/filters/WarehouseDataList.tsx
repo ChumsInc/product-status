@@ -1,10 +1,9 @@
-import React, {ChangeEvent, SelectHTMLAttributes} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
-import {filtersSetWarehouseAction, selectFilter, selectWarehouseList} from "./index";
-import {Select} from "chums-ducks";
+import React from 'react';
+import {useSelector} from 'react-redux';
+import {selectWarehouseList} from "./index";
 
 
-const WarehouseDataList: React.FC<{ id:string }> = ({id}) => {
+const WarehouseDataList: React.FC<{ id: string }> = ({id}) => {
     const warehouseList = useSelector(selectWarehouseList);
 
     return (

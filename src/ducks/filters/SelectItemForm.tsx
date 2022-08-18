@@ -3,7 +3,7 @@
  */
 
 import React, {FormEvent} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
+import {useSelector} from 'react-redux';
 import WarehouseFilter from "./WarehouseFilter";
 import ProductLineFilter from "./ProductLineFilter";
 import CategoryFilter from "./CategoryFilter";
@@ -17,12 +17,13 @@ import {selectItemsLoading} from "../items/selectors";
 import {fetchItemsAction} from "../items/actions";
 import DownloadButton from "./DownloadButton";
 import VendorFilter from "./VendorFilter";
+import {useAppDispatch} from "../../app/configureStore";
 
-const SelectItemForm:React.FC = () => {
-    const dispatch = useDispatch();
+const SelectItemForm: React.FC = () => {
+    const dispatch = useAppDispatch();
     const loading = useSelector(selectItemsLoading);
 
-    const onDownload = (ev:MouseEvent) => {
+    const onDownload = (ev: MouseEvent) => {
         ev.preventDefault();
         // const {Company, ItemCode, ...queryProps} = this.props.selection;
         // window.location = `/api/operations/production/item/status-xlsx/:company/:itemcode?:query`
@@ -31,18 +32,18 @@ const SelectItemForm:React.FC = () => {
         //     .replace(':query', getQuery(queryProps));
     }
 
-    const submitHandler = (ev:FormEvent) => {
+    const submitHandler = (ev: FormEvent) => {
         ev.preventDefault();
         dispatch(fetchItemsAction());
     }
 
     return (
-        <form className="row g-3 block-labels hidden-print row--filter" onSubmit={submitHandler}>
-            <FormGroup label="Item">
-                <ItemCodeFilter />
+        <form className="row g-3 hidden-print row--filter align-items-baseline" onSubmit={submitHandler}>
+            <FormGroup label="Item" >
+                <ItemCodeFilter/>
             </FormGroup>
             <FormGroup label="Product Type" htmlFor="sif-product-type">
-                <ProductTypeFilter id="sif-product-type" />
+                <ProductTypeFilter id="sif-product-type"/>
             </FormGroup>
             <FormGroup label="Warehouse" htmlFor="sif-warehouse">
                 <WarehouseFilter id="sif-warehouse"/>
@@ -71,7 +72,7 @@ const SelectItemForm:React.FC = () => {
                 </button>
             </FormGroup>
             <FormGroup label={<span>&nbsp;</span>}>
-                <DownloadButton />
+                <DownloadButton/>
             </FormGroup>
         </form>
     )

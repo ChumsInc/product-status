@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from "react-redux";
 import {selectItemSearchFilter} from "./selectors";
-import {Input, InputGroup} from "chums-ducks";
+import {Input, InputGroup} from "chums-components";
 import {itemsSetFilterAction} from "./actions";
 
 const ItemListSearchInput:React.FC = () => {
@@ -37,4 +37,4 @@ const ItemListSearchInput:React.FC = () => {
     )
 }
 
-export default ItemListSearchInput;
+export default React.memo(ItemListSearchInput);

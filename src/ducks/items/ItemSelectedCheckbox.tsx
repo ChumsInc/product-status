@@ -1,6 +1,6 @@
-import React from 'react';
+import React, {ChangeEvent} from 'react';
 import {useDispatch, useSelector} from "react-redux";
-import {FormCheck} from "chums-ducks";
+import {FormCheck} from "chums-components";
 import {selectItemAction} from "./actions";
 import {selectIsAdmin} from "../app";
 
@@ -14,10 +14,10 @@ const ItemSelectedCheckbox:React.FC<ItemSelectedCheckboxProps> = ({itemKey, sele
     if (!isAdmin) {
         return null;
     }
-    const changeHandler = () => {
-        dispatch(selectItemAction(itemKey, !selected));
+    const changeHandler = (ev:ChangeEvent<HTMLInputElement>) => {
+        dispatch(selectItemAction(itemKey, ev.target.checked));
     }
 
-    return (<FormCheck label="" checked={selected} onClick={changeHandler} type="checkbox" />)
+    return (<FormCheck label="" checked={selected || false} onChange={changeHandler} type="checkbox" />)
 }
 export default ItemSelectedCheckbox;

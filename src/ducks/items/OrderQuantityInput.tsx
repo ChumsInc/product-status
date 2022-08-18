@@ -2,7 +2,7 @@ import React, {ChangeEvent, useEffect, useState} from 'react';
 import {ItemRecord} from "../../types";
 import {useDispatch} from "react-redux";
 import {setEconomicOrderAction, setMaximumOnHandAction, setMinimumOrderAction, setReorderPointAction} from "./actions";
-import {Input} from "chums-ducks";
+import {Input} from "chums-components";
 
 export interface OrderQuantityInputProps {
     itemKey: string,

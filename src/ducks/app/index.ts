@@ -1,8 +1,9 @@
 import {combineReducers} from "redux";
-import {ActionInterface, ActionPayload, fetchJSON} from "chums-ducks";
+import {fetchJSON} from "chums-components";
 import {ThunkAction} from "redux-thunk";
 import {RootState} from "../index";
 import {PATH_CHECK_ADMIN_ROLE} from "../../constants";
+import {ActionInterface, ActionPayload} from "chums-connected-components";
 
 export interface AppPayload extends ActionPayload {
     isAdmin?: boolean,
