@@ -1,5 +1,5 @@
-import {InProcessStatus, ItemRecord} from "../../types";
-import {itemKey, itemSorter} from "./utils";
+import {InProcessStatus, ItemRecord, SavingStatus} from "../../types";
+import {itemKey, itemSorter, updateItemInArray} from "./utils";
 import {QueryStatus} from "@reduxjs/toolkit/query";
 import {getPreference, localStorageKeys, setPreference} from "../../api/preferences";
 import {createReducer} from "@reduxjs/toolkit";
@@ -50,6 +50,8 @@ const initialState: ItemsState = {
     rowsPerPage: getPreference(localStorageKeys.rowsPerPage, 25),
 }
 
+const updateItemSaving = (status: SavingStatus) => (item: ItemRecord) => ({...item, saving: status});
+
 const itemsReducer = createReducer(initialState, builder => {
     builder
         .addCase(loadItems.pending, (state) => {
@@ -63,18 +65,15 @@ const itemsReducer = createReducer(initialState, builder => {
             state.list = action.payload.sort(itemSorter(state.sort));
         })
         .addCase(saveItemStatus.pending, (state, action) => {
-            const iKey = itemKey(action.meta.arg);
-            state.list = [
-                ...state.list.filter(item => itemKey(item) !== iKey),
-                ...state.list.filter(item => itemKey(item) === iKey).map(item => ({...item, saving: InProcessStatus.saving}))
-            ].sort(itemSorter(state.sort))
+            state.list = updateItemInArray(state.list, [itemKey(action.meta.arg)], updateItemSaving(InProcessStatus.saving))
+                .sort(itemSorter(state.sort));
         })
         .addCase(saveItemStatus.rejected, (state, action) => {
-            state.list = [
-                ...state.list.filter(item => itemKey(item) !== itemKey(action.meta.arg)),
-                ...state.list.filter(item => itemKey(item) === itemKey(action.meta.arg))
-                    .map(item => ({...item, queryStatus: QueryStatus.rejected}))
-            ].sort(itemSorter(state.sort))
+            state.list = updateItemInArray(
+                state.list,
+                [itemKey(action.meta.arg)],
+                updateItemSaving(QueryStatus.rejected)
+            ).sort(itemSorter(state.sort));
         })
         .addCase(saveItemStatus.fulfilled, (state, action) => {
             const list = state.list.filter(item => itemKey(item) !== itemKey(action.meta.arg));
@@ -85,18 +84,15 @@ const itemsReducer = createReducer(initialState, builder => {
         })
         .addCase(saveMultipleItemStatus.pending, (state, action) => {
             const itemKeys = action.meta.arg.map(item => itemKey(item));
-            state.list = [
-                ...state.list.filter(item => !itemKeys.includes(itemKey(item))),
-                ...state.list.filter(item => itemKeys.includes(itemKey(item)))
-                    .map(item => ({...item, saving: QueryStatus.pending}))
-            ].sort(itemSorter(state.sort));
-            state.loading = QueryStatus.pending;
+            state.list = updateItemInArray(state.list, itemKeys, updateItemSaving(QueryStatus.pending))
+                .sort(itemSorter(state.sort));
+            state.saving = QueryStatus.pending;
         })
         .addCase(saveMultipleItemStatus.rejected, (state) => {
-            state.loading = QueryStatus.rejected;
+            state.saving = QueryStatus.rejected;
         })
         .addCase(saveMultipleItemStatus.fulfilled, (state) => {
-            state.loading = QueryStatus.fulfilled;
+            state.saving = QueryStatus.fulfilled;
         })
         .addCase(toggleFilterOnHand, (state, action) => {
             setPreference(localStorageKeys.filterOnHand, action.payload ?? !state.filterOnHand);
@@ -114,39 +110,39 @@ const itemsReducer = createReducer(initialState, builder => {
             state.page = 0;
         })
         .addCase(toggleSelected, (state, action) => {
-            state.list = [
-                ...state.list.filter(item => itemKey(item) !== itemKey(action.payload)),
-                ...state.list.filter(item => itemKey(item) === itemKey(action.payload))
-                    .map(item => ({...item, selected: action.payload.selected ?? !item.selected}))
-            ].sort(itemSorter(state.sort));
+            state.list = updateItemInArray(
+                state.list,
+                [itemKey(action.payload)],
+                (item) => ({...item, selected: action.payload.selected ?? !item.selected})
+            ).sort(itemSorter(state.sort));
         })
         .addCase(selectMultipleItems, (state, action) => {
-            state.list = [
-                ...state.list.filter(item => !action.payload.keys.includes(itemKey(item))),
-                ...state.list.filter(item => action.payload.keys.includes(itemKey(item)))
-                    .map(item => ({...item, selected: action.payload.selected ?? !item.selected}))
-            ].sort(itemSorter(state.sort));
+            state.list = updateItemInArray(
+                state.list,
+                action.payload.keys,
+                (item) => ({...item, selected: action.payload.selected ?? !item.selected})
+            ).sort(itemSorter(state.sort));
         })
         .addCase(setReorderOptions, (state, action) => {
-            state.list = [
-                ...state.list.filter(item => itemKey(item) !== itemKey(action.payload)),
-                ...state.list.filter(item => itemKey(item) === itemKey(action.payload))
-                    .map(item => ({...item, ...action.payload, changed: true}))
-            ].sort(itemSorter(state.sort));
+            state.list = updateItemInArray(
+                state.list,
+                [itemKey(action.payload)],
+                (item) => ({...item, ...action.payload, changed: true})
+            ).sort(itemSorter(state.sort));
         })
         .addCase(saveItemReorder.pending, (state, action) => {
-            state.list = [
-                ...state.list.filter(item => itemKey(item) !== itemKey(action.meta.arg)),
-                ...state.list.filter(item => itemKey(item) !== itemKey(action.meta.arg))
-                    .map(item => ({...item, saving: InProcessStatus.saving}))
-            ].sort(itemSorter(state.sort));
+            state.list = updateItemInArray(
+                state.list,
+                [itemKey(action.meta.arg)],
+                (item) => ({...item, saving: InProcessStatus.saving})
+            ).sort(itemSorter(state.sort));
         })
         .addCase(saveItemReorder.rejected, (state, action) => {
-            state.list = [
-                ...state.list.filter(item => itemKey(item) !== itemKey(action.meta.arg)),
-                ...state.list.filter(item => itemKey(item) !== itemKey(action.meta.arg))
-                    .map(item => ({...item, saving: QueryStatus.rejected}))
-            ].sort(itemSorter(state.sort));
+            state.list = updateItemInArray(
+                state.list,
+                [itemKey(action.meta.arg)],
+                (item) => ({...item, saving: QueryStatus.rejected})
+            ).sort(itemSorter(state.sort));
         })
         .addCase(saveItemReorder.fulfilled, (state, action) => {
             const list = state.list.filter(item => itemKey(item) !== itemKey(action.meta.arg));
@@ -157,14 +153,14 @@ const itemsReducer = createReducer(initialState, builder => {
         })
         .addCase(saveMultipleItemReorder.pending, (state, action) => {
             const itemKeys = action.meta.arg.map(item => itemKey(item));
-            state.list = [
-                ...state.list.filter(item => !itemKeys.includes(itemKey(item))),
-                ...state.list.filter(item => itemKeys.includes(itemKey(item)))
-                    .map(item => ({...item, saving: QueryStatus.pending}))
-            ].sort(itemSorter(state.sort));
+            state.list = updateItemInArray(
+                state.list,
+                itemKeys,
+                (item) => ({...item, saving: QueryStatus.pending})
+            ).sort(itemSorter(state.sort));
             state.saving = QueryStatus.pending;
         })
-        .addCase(saveMultipleItemReorder.fulfilled, (state, action) => {
+        .addCase(saveMultipleItemReorder.fulfilled, (state) => {
             state.saving = QueryStatus.fulfilled;
         })
         .addCase(saveMultipleItemReorder.rejected, (state) => {

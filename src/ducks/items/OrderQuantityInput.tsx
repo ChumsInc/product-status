@@ -36,7 +36,7 @@ const OrderQuantityInput: React.FC<OrderQuantityInputProps> = ({itemKey, field, 
     }
 
     return (
-        <Input type="number" value={value}
+        <Input type="number" value={value} className="text-end"
                onChange={changeHandler} onBlur={blurHandler}
                min={0} max={9999999} step={1}
                bsSize="sm"/>

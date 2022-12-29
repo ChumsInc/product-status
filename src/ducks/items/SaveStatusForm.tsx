@@ -22,6 +22,7 @@ const SaveStatusForm: React.FC = () => {
         }
         const items = selectedItems.map(item => ({...item, ItemStatus: nextStatus}))
         dispatch(saveMultipleItemStatus(items));
+        setNextStatus('');
     }
 
     return (

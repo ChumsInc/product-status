@@ -1,6 +1,5 @@
 import {configureStore} from '@reduxjs/toolkit'
 import {combineReducers} from "redux";
-import {pageSetsReducer, tablesReducer, tabsReducer} from "chums-connected-components";
 import {TypedUseSelectorHook, useDispatch, useSelector} from "react-redux";
 
 import {default as appReducer} from '../ducks/app';
@@ -13,9 +12,6 @@ const rootReducer = combineReducers({
     app: appReducer,
     filters: filtersReducer,
     items: itemsReducer,
-    pageSets: pageSetsReducer,
-    tables: tablesReducer,
-    tabs: tabsReducer,
 });
 
 const store = configureStore({

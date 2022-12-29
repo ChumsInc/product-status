@@ -1,5 +1,4 @@
 import React from 'react';
-import {ItemTableField} from "./types";
 import numeral from "numeral";
 import {itemKeyProps} from "./utils";
 import ReorderMethodSelect from "./ReorderMethodSelect";
@@ -7,9 +6,11 @@ import OrderQuantityInput from "./OrderQuantityInput";
 import classNames from "classnames";
 import SortableItemList from "./SortableItemList";
 import ItemLink from "./ItemLink";
+import {SortableTableField} from "chums-components";
+import {ItemRecord} from "../../types";
 
 
-const fields: ItemTableField[] = [
+const fields: SortableTableField<ItemRecord>[] = [
     {
         field: 'changed',
         title: (<span className="bi-check-circle"/>),

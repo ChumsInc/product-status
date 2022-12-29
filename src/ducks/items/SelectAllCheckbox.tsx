@@ -1,8 +1,6 @@
 import React, {ChangeEvent, useEffect, useRef, useState} from 'react';
 import {useDispatch, useSelector} from "react-redux";
-import {selectFilteredItems} from "./selectors";
-import {selectPagedData} from "chums-connected-components";
-import {itemStatusTableKey} from "./actionTypes";
+import {selectFilteredItems, selectPage, selectRowsPerPage} from "./selectors";
 import {ItemRecord} from "../../types";
 import {itemKey} from "./utils";
 import {selectMultipleItems} from "./actions";
@@ -14,20 +12,22 @@ function isIndeterminate(qtyChecked: number, qtyRecords: number) {
 const SelectAllCheckbox: React.FC = () => {
     const dispatch = useDispatch();
     const list = useSelector(selectFilteredItems);
-    const pagedList: ItemRecord[] = useSelector(selectPagedData(itemStatusTableKey, list));
+    const page = useSelector(selectPage);
+    const rowsPerPage = useSelector(selectRowsPerPage);
+    const [pagedList, setPagedList] = useState<ItemRecord[]>(list.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage));
     const [qtyChecked, setQtyChecked] = useState(pagedList.filter(row => row.selected).length);
     const [checked, setChecked] = useState<boolean>(qtyChecked > 0 && qtyChecked === pagedList.length);
     const [indeterminate, setIndeterminate] = useState(isIndeterminate(qtyChecked, pagedList.length));
     const ref = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
-        setQtyChecked(pagedList.filter(row => row.selected).length);
-    }, [pagedList.filter(row => row.selected).length]);
-
-    useEffect(() => {
-        setIndeterminate(isIndeterminate(qtyChecked, pagedList.length));
+        const pagedList = list.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+        const qtyChecked = pagedList.filter(row => row.selected).length
+        setPagedList(pagedList);
+        setQtyChecked(qtyChecked);
         setChecked(qtyChecked > 0 && qtyChecked === pagedList.length);
-    }, [qtyChecked, pagedList.length]);
+        setIndeterminate(isIndeterminate(qtyChecked, pagedList.length))
+    }, [page, rowsPerPage, list]);
 
     useEffect(() => {
         if (ref.current) {

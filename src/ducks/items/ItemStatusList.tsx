@@ -1,34 +1,27 @@
 import React from 'react';
-import {ItemTableField} from "./types";
 import numeral from "numeral";
-import {useSelector} from "react-redux";
-import {
-    selectFilteredItems,
-    selectItemListLength,
-    selectItemsLoading,
-    selectPage,
-    selectRowsPerPage,
-    selectSort
-} from "./selectors";
-import {itemKey} from "./utils";
-import {LoadingProgressBar, SortableTable, SortProps, TablePagination} from "chums-components";
-import {setPage, setRowsPerPage, setSort} from "./actions";
+import {SortableTableField} from "chums-components";
 import {ItemRecord} from "../../types";
-import {useAppDispatch} from "../../app/configureStore";
 import ProductStatusBadges from "./ProductStatusBadges";
 import SortableItemList from "./SortableItemList";
 import ItemLink from "./ItemLink";
 
 
-const fields: ItemTableField[] = [
-    {field: 'ItemCode', title: 'Item', sortable: true, render: (item) => <ItemLink ItemCode={item.ItemCode} />},
+const fields: SortableTableField<ItemRecord>[] = [
+    {field: 'ItemCode', title: 'Item', sortable: true, render: (item) => <ItemLink ItemCode={item.ItemCode}/>},
     {field: 'WarehouseCode', title: 'Whse', sortable: true},
     {field: 'ItemCodeDesc', title: 'Description', sortable: true},
     {field: 'ProductLine', title: 'P/L', sortable: true},
     {field: 'Category2', title: 'Category', sortable: true},
     {field: 'Category3', title: 'Collection', sortable: true},
     {field: 'Category4', title: 'SKU', sortable: true},
-    {field: 'ItemStatus', title: 'Status', className: 'status-container', sortable: true, render: (row) => (<ProductStatusBadges item={row} />)},
+    {
+        field: 'ItemStatus',
+        title: 'Status',
+        className: 'status-container',
+        sortable: true,
+        render: (row) => (<ProductStatusBadges item={row}/>)
+    },
     {
         field: 'QuantityOnHand',
         title: 'Qty On Hand',
@@ -62,7 +55,7 @@ const fields: ItemTableField[] = [
 
 const ItemStatusList: React.FC = () => {
     return (
-        <SortableItemList fields={fields} />
+        <SortableItemList fields={fields}/>
     )
 }
 

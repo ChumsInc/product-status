@@ -4,7 +4,7 @@ import React, {
     InputHTMLAttributes,
     KeyboardEvent,
     ReactNode,
-    useEffect, useLayoutEffect,
+    useEffect,
     useRef,
     useState,
 } from 'react';
@@ -19,7 +19,7 @@ export interface AutoCompleteProps<T = any> extends InputHTMLAttributes<HTMLInpu
     onChangeRecord: (value: T | undefined) => void;
     renderItem: (value: T) => ReactNode;
     itemKey: (value: T) => string | number;
-    helpText?: string|null;
+    helpText?: string | null;
     itemStyle?: CSSProperties;
     filter: (value: string) => (element: T) => boolean;
 }
@@ -41,7 +41,7 @@ export default function AutoComplete<T = any>({
     const [arrowElement, setArrowElement] = useState<HTMLDivElement | null>(null);
     const [inputElement, setInputElement] = useState<HTMLInputElement | null>(null);
     const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(null);
-    const [values, setValues] = useState<T[]>(data.slice(0,50));
+    const [values, setValues] = useState<T[]>(data.slice(0, 50));
     const [open, setOpen] = useState(false);
     const [index, setIndex] = useState(-1);
     const [minWidth, setMinWidth] = useState<string>('100px');
@@ -139,11 +139,12 @@ export default function AutoComplete<T = any>({
                     <ul className={classNames('list-group fade', {show: open})}>
                         {values
                             .map((value, i) => (
-                            <li key={itemKey(value)} className={classNames('list-group-item', {active: index === i})}
-                                style={itemStyle} onClick={() => clickHandler(value)}>
-                                {renderItem(value)}
-                            </li>
-                        ))}
+                                <li key={itemKey(value)}
+                                    className={classNames('list-group-item', {active: index === i})}
+                                    style={itemStyle} onClick={() => clickHandler(value)}>
+                                    {renderItem(value)}
+                                </li>
+                            ))}
                     </ul>
                 </div>
             )}

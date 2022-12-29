@@ -6,14 +6,12 @@ import {InProcessStatus, ItemRecord} from "../../types";
 
 
 export const selectItemList = (state: RootState) => state.items.list;
-export const selectItemListLength = (state: RootState) => state.items.list.length;
 export const selectItemsLoading = (state: RootState) => state.items.loading === QueryStatus.pending;
 export const selectItemsSaving = (state: RootState) => state.items.saving === QueryStatus.pending;
 export const selectItemSearchFilter = (state: RootState) => state.items.search;
 export const selectItemsFilterOnHand = (state: RootState) => state.items.filterOnHand;
 export const selectItemsFilterInactive = (state: RootState) => state.items.filterInactive;
 export const selectFilterOnlySelected = (state: RootState) => state.items.filterOnlySelected;
-export const selectNextStatus = (state: RootState) => state.items.nextStatus;
 
 
 export const selectPage = (state:RootState) => state.items.page;

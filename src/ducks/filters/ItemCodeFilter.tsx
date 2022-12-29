@@ -1,8 +1,6 @@
 import React, {ChangeEvent, InputHTMLAttributes, useEffect, useState} from 'react';
 import {useSelector} from 'react-redux';
 import {filterItemCode, selectFilter, selectItemCode} from "./index";
-import FilterInput from "./FilterInput";
-import {ItemDataList} from 'chums-components'
 import {useAppDispatch} from "../../app/configureStore";
 import AutoComplete from "./AutoComplete";
 import {ProductSearchItem} from "chums-types";
@@ -74,7 +72,6 @@ const ItemCodeFilter = ({
             setTimeoutHandle(() => t);
         }
     }, [value, filter]);
-
 
 
     const changeHandler = (ev: ChangeEvent<HTMLInputElement>) => {
