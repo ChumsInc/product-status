@@ -1,8 +1,8 @@
 import React, {ChangeEvent, FormEvent, useState} from 'react';
 import {useSelector} from "react-redux";
-import {selectSelectedItems} from "./selectors";
+import {selectItemsLoading, selectItemsSaving, selectSelectedItems} from "./selectors";
 import ProductStatusSelect from "../filters/ProductStatusSelect";
-import {saveAllSelectedAction} from "./actions";
+import {saveMultipleItemStatus} from "./actions";
 import {useAppDispatch} from "../../app/configureStore";
 
 
@@ -10,6 +10,8 @@ const SaveStatusForm: React.FC = () => {
     const dispatch = useAppDispatch();
     const selectedItems = useSelector(selectSelectedItems);
     const [nextStatus, setNextStatus] = useState('');
+    const saving = useSelector(selectItemsSaving);
+    const loading = useSelector(selectItemsLoading);
 
     const changeHandler = (ev: ChangeEvent<HTMLSelectElement>) => setNextStatus(ev.target.value);
 
@@ -18,7 +20,8 @@ const SaveStatusForm: React.FC = () => {
         if (nextStatus === '' && !window.confirm(`Are you sure you want to remove the status from: ${selectedItems.map(i => i.ItemCode).join(', ')}?`)) {
             return;
         }
-        dispatch(saveAllSelectedAction(nextStatus));
+        const items = selectedItems.map(item => ({...item, ItemStatus: nextStatus}))
+        dispatch(saveMultipleItemStatus(items));
     }
 
     return (
@@ -31,7 +34,7 @@ const SaveStatusForm: React.FC = () => {
             </div>
             <div className="col-auto">
                 <button type="submit" className="btn btn-sm btn-primary"
-                        disabled={selectedItems.length === 0}>
+                        disabled={selectedItems.length === 0 || saving || loading}>
                     Save Status ({selectedItems.length})
                 </button>
             </div>

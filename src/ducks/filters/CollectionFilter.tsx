@@ -1,28 +1,40 @@
 import React, {ChangeEvent, InputHTMLAttributes} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
-import {filterSetCollectionAction, selectCollectionList, selectFilter} from "./index";
-import FilterInput from "./FilterInput";
-import CollectionDataList from "./CollectionDataList";
+import {useSelector} from 'react-redux';
+import {filterCollection, selectCollection, selectCollectionList} from "./index";
+import AutoComplete from "./AutoComplete";
+import {CollectionRecord} from "../../types";
+import {useAppDispatch} from "../../app/configureStore";
 
+const CollectionAutoComplete = AutoComplete<CollectionRecord>;
+const collectionFilter = (value: string) => (element: CollectionRecord) => {
+    let regex = /^/;
+    try {
+        regex = new RegExp(`\\b${value}`, 'i')
+    } catch(err:unknown) {
+    }
+    return !value
+        || regex.test(element.Category3);
+}
 
-const CollectionFilter: React.FC<InputHTMLAttributes<HTMLInputElement>> = ({
-                                                                               id = 'filter-collection',
-                                                                               value, //discard item prop
-                                                                               children,
-                                                                               ...props
-                                                                           }) => {
-    const dispatch = useDispatch();
-    const {collection} = useSelector(selectFilter);
+const CollectionFilter = ({id = 'filter-collection', ...props}: InputHTMLAttributes<HTMLInputElement>) => {
+    const dispatch = useAppDispatch();
+    const value = useSelector(selectCollection);
+    const list = useSelector(selectCollectionList);
+
 
     const changeHandler = (ev: ChangeEvent<HTMLInputElement>) => {
-        dispatch(filterSetCollectionAction(ev.target.value));
+        dispatch(filterCollection(ev.target.value));
     }
-    const listId = `${id}--datalist`;
+
+    const recordChangeHandler = (value?: CollectionRecord) => dispatch(filterCollection(value?.Category3 ?? ''))
+
     return (
-        <FilterInput value={collection} onChange={changeHandler} list={listId} {...props}>
-            <CollectionDataList id={listId}/>
-        </FilterInput>
-    );
+        <CollectionAutoComplete {...props} id={id}
+                                value={value} onChange={changeHandler}
+                                data={list} onChangeRecord={recordChangeHandler}
+                                renderItem={value => value.Category3} itemKey={value => value.Category3}
+                                filter={collectionFilter}/>
+    )
 }
 
 export default React.memo(CollectionFilter);

@@ -1,29 +1,63 @@
-import React, {ChangeEvent, InputHTMLAttributes} from 'react';
-import {useDispatch, useSelector} from "react-redux";
-import {filterSetProductLineAction, selectFilter, selectProductLineList} from "./index";
-import FilterInput from "./FilterInput";
-import ProductLineDataList from "./ProductLineDataList";
+import React, {ChangeEvent, InputHTMLAttributes, useEffect, useState} from 'react';
+import {useSelector} from "react-redux";
+import {filterProductLine, selectProductLine, selectProductLineList} from "./index";
+import AutoComplete from "./AutoComplete";
+import {useAppDispatch} from "../../app/configureStore";
+import {ProductLine} from "chums-types";
 
+const ProductLineAutoComplete = AutoComplete<ProductLine>;
 
-const ProductLineFilter: React.FC<InputHTMLAttributes<HTMLInputElement>> = ({
-                                                                                id = 'filter--category',
-                                                                                children,
-                                                                                ...props
-                                                                            }) => {
-    const dispatch = useDispatch();
-    const {productLine} = useSelector(selectFilter);
-    const productLineList = useSelector(selectProductLineList);
+const ProductLineItem = ({ProductLine, ProductLineDesc}: ProductLine) => (
+    <>
+        <div className="me-3"><strong>{ProductLine}</strong></div>
+        <div>{ProductLineDesc}</div>
+    </>
+)
 
-    const changeHandler = (ev: ChangeEvent<HTMLInputElement>) => {
-        dispatch(filterSetProductLineAction(ev.target.value));
+const productLineFilter = (value: string) => (element: ProductLine) => {
+    let regex = /^/;
+    try {
+        regex = new RegExp(value, 'i')
+    } catch (err: unknown) {
     }
-    const listId = `${id}--list`
-    return (
-        <FilterInput value={productLine} onChange={changeHandler} list={listId}
-                     id={id}>
-            <ProductLineDataList id={listId}/>
-        </FilterInput>
-    );
+
+    return !value
+        || element.ProductLine.toLowerCase().startsWith(value.toLowerCase())
+        || regex.test(element.ProductLineDesc);
 }
 
-export default React.memo(ProductLineFilter);
+
+const ProductLineFilter = ({
+                               id = 'filter--category',
+                               children,
+                               ...props
+                           }: InputHTMLAttributes<HTMLInputElement>) => {
+    const dispatch = useAppDispatch();
+    const value = useSelector(selectProductLine);
+    const productLineList = useSelector(selectProductLineList);
+
+    const [helpText, setHelpText] = useState<string | null>(null);
+
+    useEffect(() => {
+        const [pl] = productLineList.filter(pl => pl.ProductLine === value)
+        setHelpText(pl?.ProductLineDesc ?? null);
+    }, [value])
+
+    const changeHandler = (ev: ChangeEvent<HTMLInputElement>) => {
+        dispatch(filterProductLine(ev.target.value));
+    }
+
+    return (
+        <ProductLineAutoComplete {...props}
+                                 value={value} data={productLineList}
+                                 onChange={changeHandler} id={id}
+                                 onChangeRecord={value => dispatch(filterProductLine(value?.ProductLine ?? ''))}
+                                 itemStyle={{display: 'flex'}}
+                                 renderItem={ProductLineItem}
+                                 filter={productLineFilter}
+                                 helpText={helpText}
+                                 itemKey={value => value.ProductLine}/>
+    )
+}
+
+export default ProductLineFilter;

@@ -1,11 +1,12 @@
 import {configureStore} from '@reduxjs/toolkit'
 import {combineReducers} from "redux";
-import {alertsReducer, pageSetsReducer, tablesReducer, tabsReducer} from "chums-connected-components";
+import {pageSetsReducer, tablesReducer, tabsReducer} from "chums-connected-components";
 import {TypedUseSelectorHook, useDispatch, useSelector} from "react-redux";
 
 import {default as appReducer} from '../ducks/app';
 import {default as itemsReducer} from '../ducks/items';
 import {default as filtersReducer} from '../ducks/filters';
+import alertsReducer from "../ducks/alerts";
 
 const rootReducer = combineReducers({
     alerts: alertsReducer,

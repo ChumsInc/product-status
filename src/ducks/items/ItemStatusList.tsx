@@ -1,29 +1,34 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import {ItemTableField} from "./types";
 import numeral from "numeral";
-import {useDispatch, useSelector} from "react-redux";
-import {selectFilteredItems, selectItemListLength, selectItemsLoading} from "./selectors";
+import {useSelector} from "react-redux";
 import {
-    addPageSetAction,
-    ConnectedPager,
-    ConnectedTable,
-    selectPagedData, selectPageSet, setPageAction,
-    tableAddedAction,
-} from "chums-connected-components";
-import {itemStatusTableKey} from "./actionTypes";
-import {itemKey, rowClassName} from "./utils";
-import {LoadingProgressBar, pageFilter} from "chums-components";
+    selectFilteredItems,
+    selectItemListLength,
+    selectItemsLoading,
+    selectPage,
+    selectRowsPerPage,
+    selectSort
+} from "./selectors";
+import {itemKey} from "./utils";
+import {LoadingProgressBar, SortableTable, SortProps, TablePagination} from "chums-components";
+import {setPage, setRowsPerPage, setSort} from "./actions";
+import {ItemRecord} from "../../types";
+import {useAppDispatch} from "../../app/configureStore";
+import ProductStatusBadges from "./ProductStatusBadges";
+import SortableItemList from "./SortableItemList";
+import ItemLink from "./ItemLink";
 
 
 const fields: ItemTableField[] = [
-    {field: 'ItemCode', title: 'Item', sortable: true},
+    {field: 'ItemCode', title: 'Item', sortable: true, render: (item) => <ItemLink ItemCode={item.ItemCode} />},
     {field: 'WarehouseCode', title: 'Whse', sortable: true},
     {field: 'ItemCodeDesc', title: 'Description', sortable: true},
     {field: 'ProductLine', title: 'P/L', sortable: true},
     {field: 'Category2', title: 'Category', sortable: true},
     {field: 'Category3', title: 'Collection', sortable: true},
     {field: 'Category4', title: 'SKU', sortable: true},
-    {field: 'ItemStatus', title: 'Status', className: 'status-container', sortable: true},
+    {field: 'ItemStatus', title: 'Status', className: 'status-container', sortable: true, render: (row) => (<ProductStatusBadges item={row} />)},
     {
         field: 'QuantityOnHand',
         title: 'Qty On Hand',
@@ -56,37 +61,9 @@ const fields: ItemTableField[] = [
 ]
 
 const ItemStatusList: React.FC = () => {
-    const dispatch = useDispatch();
-    const loading = useSelector(selectItemsLoading);
-    const list = useSelector(selectFilteredItems);
-    const listLength = useSelector(selectItemListLength);
-    const {page, rowsPerPage} = useSelector(selectPageSet(itemStatusTableKey));
-    const [pagedList, setPagedList] = useState(list.filter(pageFilter(page, rowsPerPage)));
-
-    useEffect(() => {
-        setPagedList(list.filter(pageFilter(page, rowsPerPage)));
-    }, [list, page,rowsPerPage]);
-
-    const sortChangeHandler = () => {
-        dispatch(setPageAction({key: itemStatusTableKey, page: 1}))
-    }
-
-    const [selected, setSelected] = useState<string | null>(null)
-
     return (
-        <div>
-            {loading && <LoadingProgressBar animated striped/>}
-            <ConnectedTable tableKey={itemStatusTableKey} keyField={itemKey} fields={fields} data={pagedList}
-                            defaultSort={{field: 'ItemCode', ascending: true}}
-                            onChangeSort={sortChangeHandler}
-                            selected={(row) => itemKey(row) === selected}
-                            onSelectRow={(row) => setSelected(itemKey(row))}
-                            rowClassName={rowClassName} className="table-sticky"/>
-            <ConnectedPager pageSetKey={itemStatusTableKey} dataLength={list.length}
-                            onChangeRowsPerPage={sortChangeHandler}
-                            filtered={list.length < listLength}/>
-        </div>
+        <SortableItemList fields={fields} />
     )
 }
 
-export default React.memo(ItemStatusList);
+export default ItemStatusList;

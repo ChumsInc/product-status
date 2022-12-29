@@ -1,199 +1,191 @@
-import {combineReducers} from "redux";
-import {ItemRecord, ReorderMethod} from "../../types";
-import {ItemsAction} from "./types";
+import {InProcessStatus, ItemRecord} from "../../types";
+import {itemKey, itemSorter} from "./utils";
+import {QueryStatus} from "@reduxjs/toolkit/query";
+import {getPreference, localStorageKeys, setPreference} from "../../api/preferences";
+import {createReducer} from "@reduxjs/toolkit";
 import {
-    itemsFetchFailed,
-    itemsFetchRequested,
-    itemsFetchSucceeded,
-    itemsSaveFailed,
-    itemsSaveRequested,
-    itemsSaveSucceeded, itemsSetFilterInactive,
-    itemsSetFilterOnHand,
-    itemsSetFilterSelected,
-    itemsSetNextStatus,
-    itemsSetSearch,
-    itemsSetSelected,
-    setEconomicOrderQty,
-    setMaximumOnHandQty,
-    setMinimumOrderQty,
-    setReorderMethod,
-    setReorderPointQty
-} from "./actionTypes";
-import {
-    itemKey,
-    itemKeySorter,
-    updateEconomicOrderQty,
-    updateItemInArray,
-    updateItemSelected,
-    updateItemStatus,
-    updateMaximumOnHandQty,
-    updateMinimumOrderQty,
-    updateReorderMethod,
-    updateReorderPointQty
-} from "./utils";
-import {getPreference, setPreference} from "../../preferences";
-import {STORE_PREF_SHOW_ON_HAND, STORE_PREF_SHOW_INACTIVE, STORE_PREF_SHOW_ONLY_SELECTED} from "../../constants";
+    loadItems,
+    saveItemReorder,
+    saveItemStatus,
+    saveMultipleItemReorder,
+    saveMultipleItemStatus,
+    searchItems,
+    selectMultipleItems,
+    setPage,
+    setReorderOptions,
+    setRowsPerPage,
+    setSort,
+    toggleFilterActive,
+    toggleFilterOnHand,
+    toggleFilterSelected,
+    toggleSelected
+} from "./actions";
+import {SortProps} from "chums-components";
 
-
-const listReducer = (state: ItemRecord[] = [], action: ItemsAction): ItemRecord[] => {
-    const {type, payload} = action;
-    switch (type) {
-    case itemsFetchSucceeded:
-        if (payload?.items) {
-            return payload.items.sort(itemKeySorter)
-        }
-        return [];
-    case itemsSaveSucceeded:
-        if (payload?.item) {
-            const item = payload.item;
-            return updateItemInArray(state, [itemKey(payload.item)], () => item);
-        }
-        return state;
-    case itemsSetNextStatus:
-        if (payload?.itemKeys) {
-            const itemKeys = payload.itemKeys || [];
-            return updateItemInArray(state, itemKeys, updateItemStatus(payload.status || ''))
-        }
-        return state;
-    case itemsSetSelected:
-        if (payload?.itemKeys) {
-            const itemKeys = payload.itemKeys || [];
-            return updateItemInArray(state, itemKeys, updateItemSelected(payload.force));
-        }
-        return state;
-    case setReorderMethod:
-        if (payload?.itemKeys) {
-            const itemKeys = payload.itemKeys || [];
-            return updateItemInArray(state, itemKeys, updateReorderMethod(payload.value as ReorderMethod))
-        }
-        return state;
-    case setReorderPointQty:
-        if (payload?.itemKeys) {
-            const itemKeys = payload.itemKeys || [];
-            return updateItemInArray(state, itemKeys, updateReorderPointQty(payload.quantity));
-        }
-        return state;
-    case setEconomicOrderQty:
-        if (payload?.itemKeys) {
-            const itemKeys = payload.itemKeys || [];
-            return updateItemInArray(state, itemKeys, updateEconomicOrderQty(payload.quantity));
-        }
-        return state;
-    case setMinimumOrderQty:
-        if (payload?.itemKeys) {
-            const itemKeys = payload.itemKeys || [];
-            return updateItemInArray(state, itemKeys, updateMinimumOrderQty(payload.quantity));
-        }
-        return state;
-    case setMaximumOnHandQty:
-        if (payload?.itemKeys) {
-            const itemKeys = payload.itemKeys || [];
-            return updateItemInArray(state, itemKeys, updateMaximumOnHandQty(payload.quantity));
-        }
-        return state;
-    default:
-        return state;
-    }
+export interface ItemsState {
+    list: ItemRecord[];
+    loading: QueryStatus;
+    saving: QueryStatus;
+    search: string;
+    nextStatus: string;
+    filterOnHand: boolean;
+    filterInactive: boolean;
+    filterOnlySelected: boolean;
+    sort: SortProps<ItemRecord>;
+    page: number;
+    rowsPerPage: number;
 }
 
-const loadingReducer = (state: boolean = false, action: ItemsAction): boolean => {
-    switch (action.type) {
-    case itemsFetchRequested:
-        return true;
-    case itemsFetchSucceeded:
-    case itemsFetchFailed:
-        return false;
-    default:
-        return state;
-    }
+const initialState: ItemsState = {
+    list: [],
+    loading: QueryStatus.uninitialized,
+    saving: QueryStatus.uninitialized,
+    search: '',
+    nextStatus: '',
+    filterOnHand: getPreference(localStorageKeys.filterOnHand, false),
+    filterInactive: getPreference(localStorageKeys.filterInactive, true),
+    filterOnlySelected: getPreference(localStorageKeys.filterOnlySelected, false),
+    sort: {field: 'ItemCode', ascending: true},
+    page: 0,
+    rowsPerPage: getPreference(localStorageKeys.rowsPerPage, 25),
 }
 
-const savingReducer = (state: boolean = false, action: ItemsAction): boolean => {
-    switch (action.type) {
-    case itemsSaveRequested:
-        return true;
-    case itemsSaveSucceeded:
-    case itemsSaveFailed:
-        return false;
-    default:
-        return state;
-    }
-}
-
-
-const searchReducer = (state: string = '', action: ItemsAction): string => {
-    switch (action.type) {
-    case itemsSetSearch:
-        return action.payload?.value || '';
-    default:
-        return '';
-    }
-}
-
-const filterInactiveReducer = (state: boolean = getPreference(STORE_PREF_SHOW_INACTIVE, false), action: ItemsAction) => {
-    const {type, payload} = action;
-    switch (type) {
-    case itemsSetFilterInactive: {
-        const nextState = payload?.force === undefined ? !state : payload.force;
-        setPreference(STORE_PREF_SHOW_INACTIVE, nextState);
-        return nextState;
-    }
-    default:
-        return state;
-    }
-};
-
-const filterOnHandReducer = (state: boolean = getPreference(STORE_PREF_SHOW_ON_HAND, true), action: ItemsAction) => {
-    const {type, payload} = action;
-    switch (type) {
-    case itemsSetFilterOnHand: {
-        const nextState = payload?.force === undefined ? !state : payload.force;
-        setPreference(STORE_PREF_SHOW_ON_HAND, nextState);
-        return nextState;
-    }
-    default:
-        return state;
-    }
-};
-
-const filterOnlySelectedReducer = (state: boolean = getPreference(STORE_PREF_SHOW_ONLY_SELECTED, false), action: ItemsAction) => {
-    const {type, payload} = action;
-    switch (type) {
-    case itemsSetFilterSelected: {
-        const nextState = payload?.force === undefined ? !state : payload.force;
-        setPreference(STORE_PREF_SHOW_ONLY_SELECTED, nextState);
-        return nextState;
-    }
-    case itemsFetchSucceeded:
-        setPreference(STORE_PREF_SHOW_ONLY_SELECTED, false);
-        return false;
-    default:
-        return state;
-    }
-}
-
-const nextStatusReducer = (state:string = '', action:ItemsAction):string => {
-    const {type, payload} = action;
-    switch (type) {
-    case itemsSetNextStatus:
-        return payload?.value || '';
-    default:
-        return state;
-    }
-}
-
-const reorderPointQtyReducer = (state:number = 0, action:ItemsAction):number => {
-    return 0;
-}
-
-export default combineReducers({
-    list: listReducer,
-    loading: loadingReducer,
-    saving: savingReducer,
-    search: searchReducer,
-    nextStatus: nextStatusReducer,
-
-    filterOnHand: filterOnHandReducer,
-    filterInactive: filterInactiveReducer,
-    filterOnlySelected: filterOnlySelectedReducer,
+const itemsReducer = createReducer(initialState, builder => {
+    builder
+        .addCase(loadItems.pending, (state) => {
+            state.loading = QueryStatus.pending;
+        })
+        .addCase(loadItems.rejected, (state) => {
+            state.loading = QueryStatus.rejected;
+        })
+        .addCase(loadItems.fulfilled, (state, action) => {
+            state.loading = QueryStatus.fulfilled;
+            state.list = action.payload.sort(itemSorter(state.sort));
+        })
+        .addCase(saveItemStatus.pending, (state, action) => {
+            const iKey = itemKey(action.meta.arg);
+            state.list = [
+                ...state.list.filter(item => itemKey(item) !== iKey),
+                ...state.list.filter(item => itemKey(item) === iKey).map(item => ({...item, saving: InProcessStatus.saving}))
+            ].sort(itemSorter(state.sort))
+        })
+        .addCase(saveItemStatus.rejected, (state, action) => {
+            state.list = [
+                ...state.list.filter(item => itemKey(item) !== itemKey(action.meta.arg)),
+                ...state.list.filter(item => itemKey(item) === itemKey(action.meta.arg))
+                    .map(item => ({...item, queryStatus: QueryStatus.rejected}))
+            ].sort(itemSorter(state.sort))
+        })
+        .addCase(saveItemStatus.fulfilled, (state, action) => {
+            const list = state.list.filter(item => itemKey(item) !== itemKey(action.meta.arg));
+            if (action.payload) {
+                list.push(action.payload);
+            }
+            state.list = list.sort(itemSorter(state.sort))
+        })
+        .addCase(saveMultipleItemStatus.pending, (state, action) => {
+            const itemKeys = action.meta.arg.map(item => itemKey(item));
+            state.list = [
+                ...state.list.filter(item => !itemKeys.includes(itemKey(item))),
+                ...state.list.filter(item => itemKeys.includes(itemKey(item)))
+                    .map(item => ({...item, saving: QueryStatus.pending}))
+            ].sort(itemSorter(state.sort));
+            state.loading = QueryStatus.pending;
+        })
+        .addCase(saveMultipleItemStatus.rejected, (state) => {
+            state.loading = QueryStatus.rejected;
+        })
+        .addCase(saveMultipleItemStatus.fulfilled, (state) => {
+            state.loading = QueryStatus.fulfilled;
+        })
+        .addCase(toggleFilterOnHand, (state, action) => {
+            setPreference(localStorageKeys.filterOnHand, action.payload ?? !state.filterOnHand);
+            state.filterOnHand = action.payload ?? !state.filterOnHand;
+            state.page = 0;
+        })
+        .addCase(toggleFilterActive, (state, action) => {
+            setPreference(localStorageKeys.filterInactive, action.payload ?? !state.filterInactive);
+            state.filterInactive = action.payload ?? !state.filterInactive;
+            state.page = 0;
+        })
+        .addCase(toggleFilterSelected, (state, action) => {
+            setPreference(localStorageKeys.filterOnlySelected, action.payload ?? !state.filterOnlySelected);
+            state.filterOnlySelected = action.payload ?? !state.filterOnlySelected;
+            state.page = 0;
+        })
+        .addCase(toggleSelected, (state, action) => {
+            state.list = [
+                ...state.list.filter(item => itemKey(item) !== itemKey(action.payload)),
+                ...state.list.filter(item => itemKey(item) === itemKey(action.payload))
+                    .map(item => ({...item, selected: action.payload.selected ?? !item.selected}))
+            ].sort(itemSorter(state.sort));
+        })
+        .addCase(selectMultipleItems, (state, action) => {
+            state.list = [
+                ...state.list.filter(item => !action.payload.keys.includes(itemKey(item))),
+                ...state.list.filter(item => action.payload.keys.includes(itemKey(item)))
+                    .map(item => ({...item, selected: action.payload.selected ?? !item.selected}))
+            ].sort(itemSorter(state.sort));
+        })
+        .addCase(setReorderOptions, (state, action) => {
+            state.list = [
+                ...state.list.filter(item => itemKey(item) !== itemKey(action.payload)),
+                ...state.list.filter(item => itemKey(item) === itemKey(action.payload))
+                    .map(item => ({...item, ...action.payload, changed: true}))
+            ].sort(itemSorter(state.sort));
+        })
+        .addCase(saveItemReorder.pending, (state, action) => {
+            state.list = [
+                ...state.list.filter(item => itemKey(item) !== itemKey(action.meta.arg)),
+                ...state.list.filter(item => itemKey(item) !== itemKey(action.meta.arg))
+                    .map(item => ({...item, saving: InProcessStatus.saving}))
+            ].sort(itemSorter(state.sort));
+        })
+        .addCase(saveItemReorder.rejected, (state, action) => {
+            state.list = [
+                ...state.list.filter(item => itemKey(item) !== itemKey(action.meta.arg)),
+                ...state.list.filter(item => itemKey(item) !== itemKey(action.meta.arg))
+                    .map(item => ({...item, saving: QueryStatus.rejected}))
+            ].sort(itemSorter(state.sort));
+        })
+        .addCase(saveItemReorder.fulfilled, (state, action) => {
+            const list = state.list.filter(item => itemKey(item) !== itemKey(action.meta.arg));
+            if (action.payload) {
+                list.push(action.payload);
+            }
+            state.list = list.sort(itemSorter(state.sort));
+        })
+        .addCase(saveMultipleItemReorder.pending, (state, action) => {
+            const itemKeys = action.meta.arg.map(item => itemKey(item));
+            state.list = [
+                ...state.list.filter(item => !itemKeys.includes(itemKey(item))),
+                ...state.list.filter(item => itemKeys.includes(itemKey(item)))
+                    .map(item => ({...item, saving: QueryStatus.pending}))
+            ].sort(itemSorter(state.sort));
+            state.saving = QueryStatus.pending;
+        })
+        .addCase(saveMultipleItemReorder.fulfilled, (state, action) => {
+            state.saving = QueryStatus.fulfilled;
+        })
+        .addCase(saveMultipleItemReorder.rejected, (state) => {
+            state.saving = QueryStatus.rejected;
+        })
+        .addCase(setPage, (state, action) => {
+            state.page = action.payload;
+        })
+        .addCase(setRowsPerPage, (state, action) => {
+            state.page = 0;
+            state.rowsPerPage = action.payload;
+        })
+        .addCase(setSort, (state, action) => {
+            state.sort = action.payload;
+            state.page = 0;
+            state.list = state.list.sort(itemSorter(state.sort));
+        })
+        .addCase(searchItems, (state, action) => {
+            state.page = 0;
+            state.search = action.payload;
+        })
 })
+
+export default itemsReducer;

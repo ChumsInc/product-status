@@ -8,7 +8,7 @@ import {ErrorBoundary} from "chums-components";
 import SaveStatusForm from "./SaveStatusForm";
 
 
-const ItemReport: React.FC = () => {
+const ItemStatusEdit: React.FC = () => {
     return (
         <ErrorBoundary>
             <ItemListFilterBar>
@@ -21,4 +21,4 @@ const ItemReport: React.FC = () => {
     )
 }
 
-export default ItemReport;
+export default ItemStatusEdit;

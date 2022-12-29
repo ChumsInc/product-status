@@ -1,10 +1,10 @@
-import {combineReducers} from 'redux'
 import {fetchJSON} from "chums-components";
 import {
     BaseSKURecord,
     CategoryRecord,
     CollectionRecord,
     CountryOfOriginRecord,
+    FiltersList,
     PrimaryVendorRecord,
     ProductLineRecord,
     ProductStatusRecord,
@@ -13,6 +13,127 @@ import {
 import {ThunkAction} from "redux-thunk";
 import {RootState} from "../index";
 import {ActionInterface, ActionPayload} from "chums-connected-components";
+import {QueryStatus} from "@reduxjs/toolkit/query";
+import {createAction, createAsyncThunk, createReducer} from "@reduxjs/toolkit";
+import {fetchFilters} from "../../api/filters";
+import {
+    BaseSKU,
+    CountryOfOrigin, PrimaryVendor,
+    ProductCategory,
+    ProductCollection,
+    ProductLine, ProductSearchItem,
+    ProductStatus,
+    Warehouse
+} from "chums-types";
+
+export interface FiltersState {
+    filter:Filter;
+    queryStatus: QueryStatus;
+    warehouse: Warehouse[];
+    productLine: ProductLine[],
+    category: ProductCategory[],
+    collection: ProductCollection[],
+    baseSKU: BaseSKU[],
+    productStatus: ProductStatus[],
+    countryOfOrigin: CountryOfOrigin[],
+    primaryVendor: PrimaryVendor[],
+    items:ProductSearchItem[],
+}
+
+export const defaultFilter: Filter = {
+    itemCode: '',
+    productType: 'FKR',
+    warehouse: '',
+    productLine: '',
+    category: '',
+    collection: '',
+    baseSKU: '',
+    productStatus: '',
+    countryOfOrigin: '',
+    primaryVendor: '',
+}
+
+export const initialFiltersState:FiltersState = {
+    filter: {...defaultFilter},
+    queryStatus: QueryStatus.uninitialized,
+    warehouse: [],
+    productLine: [],
+    category: [],
+    collection: [],
+    baseSKU: [],
+    productStatus: [],
+    countryOfOrigin: [],
+    primaryVendor: [],
+    items: [],
+}
+
+export const filterItemCode = createAction<string>('filters/filter/itemCode');
+export const filterProductType = createAction<string>('filters/filter/productType');
+export const filterWarehouse = createAction<string>('filters/filter/warehouse');
+export const filterCategory = createAction<string>('filters/filter/category');
+export const filterCollection = createAction<string>('filters/filter/collection');
+export const filterCountryOfOrigin = createAction<string>('filters/filter/countryOfOrigin');
+export const filterProductLine = createAction<string>('filters/filter/productLine');
+export const filterPrimaryVendor = createAction<string>('filters/filter/primaryVendor');
+export const filterBaseSKU = createAction<string>('filters/filter/baseSKU');
+export const filterProductStatus = createAction<string>('filters/filter/productStatus');
+
+export const loadFilters = createAsyncThunk<FiltersList>(
+    'filters/load',
+    async () => {
+        return await fetchFilters();
+    }
+)
+
+const filtersReducer = createReducer(initialFiltersState, (builder) => {
+    builder
+        .addCase(loadFilters.pending, (state) => {
+            state.queryStatus = QueryStatus.pending;
+        })
+        .addCase(loadFilters.rejected, (state) => {
+            state.queryStatus = QueryStatus.rejected;
+        })
+        .addCase(loadFilters.fulfilled, (state, action) => {
+            state.warehouse = action.payload.warehouseList.sort(sortWarehouseRecord);
+            state.productLine = action.payload.productLineList.sort(sortProductLineRecord);
+            state.category = action.payload.categoryList.sort(sortCategoryRecord);
+            state.collection = action.payload.collectionList.sort(sortCollectionRecord);
+            state.baseSKU = action.payload.baseSKUList.sort(sortBaseSKU);
+            state.productStatus = action.payload.productStatusList.sort(sortProductStatusRecord);
+            state.countryOfOrigin = action.payload.countryOfOriginList.sort(sortCountryOfOriginRecord);
+            state.primaryVendor = action.payload.primaryVendorList.sort(sortPrimaryVendorRecord);
+        })
+        .addCase(filterItemCode, (state, action) => {
+            state.filter.itemCode = action.payload;
+        })
+        .addCase(filterProductType, (state, action) => {
+            state.filter.productType = action.payload;
+        })
+        .addCase(filterWarehouse, (state, action) => {
+            state.filter.warehouse = action.payload;
+        })
+        .addCase(filterCategory, (state, action) => {
+            state.filter.category = action.payload;
+        })
+        .addCase(filterCollection, (state, action) => {
+            state.filter.collection = action.payload;
+        })
+        .addCase(filterCountryOfOrigin, (state, action) => {
+            state.filter.countryOfOrigin = action.payload;
+        })
+        .addCase(filterProductLine, (state, action) => {
+            state.filter.productLine = action.payload;
+        })
+        .addCase(filterPrimaryVendor, (state, action) => {
+            state.filter.primaryVendor = action.payload;
+        })
+        .addCase(filterBaseSKU, (state, action) => {
+            state.filter.baseSKU = action.payload;
+        })
+        .addCase(filterProductStatus, (state, action) => {
+            state.filter.productStatus = action.payload;
+        })
+});
 
 export interface FiltersPayload extends ActionPayload {
     warehouseList?: WarehouseRecord[],
@@ -33,7 +154,7 @@ export interface FiltersAction extends ActionInterface {
 export interface FiltersThunkAction extends ThunkAction<any, RootState, unknown, FiltersAction> {
 }
 
-export interface Filter {
+export interface Filter extends Record<string, string> {
     itemCode: string,
     productType: string,
     warehouse: string,
@@ -41,7 +162,7 @@ export interface Filter {
     category: string,
     collection: string,
     baseSKU: string,
-    status: string,
+    productStatus: string,
     countryOfOrigin: string,
     primaryVendor: string,
 }
@@ -60,56 +181,6 @@ export const filterSetProductStatus = 'filters/setProductStatus';
 export const filterSetCountryOfOrigin = 'filters/setCountryOfOrigin';
 export const filterSetPrimaryVendor = 'filters/setPrimaryVendor';
 
-interface FiltersResponse {
-    warehouses: WarehouseRecord[],
-    productLines: ProductLineRecord[],
-    categories: CategoryRecord[],
-    collections: CollectionRecord[],
-    baseSKUs: BaseSKURecord[],
-    primaryVendor: PrimaryVendorRecord[],
-    countryOfOrigin: CountryOfOriginRecord[],
-    productStatusList: ProductStatusRecord[],
-}
-
-export const fetchFiltersAction = (): FiltersThunkAction =>
-    async (dispatch, getState) => {
-        try {
-            const state = getState();
-            if (selectFiltersLoading(state)) {
-                return;
-            }
-            dispatch({type: filtersFetchRequested});
-            const {
-                warehouses,
-                productLines,
-                categories,
-                collections,
-                baseSKUs,
-                primaryVendor,
-                countryOfOrigin,
-                productStatusList
-            } = await fetchJSON<FiltersResponse>('/api/search/item/filters/CHI/');
-            dispatch({
-                type: filtersFetchSucceeded,
-                payload: {
-                    warehouseList: warehouses,
-                    productLineList: productLines,
-                    categoryList: categories,
-                    collectionList: collections,
-                    baseSKUList: baseSKUs,
-                    primaryVendorList: primaryVendor,
-                    countryOfOriginList: countryOfOrigin,
-                    productStatusList
-                }
-            });
-        } catch (error: unknown) {
-            if (error instanceof Error) {
-                console.log("fetchFiltersAction()", error.message);
-                return dispatch({type: filtersFetchFailed, payload: {error, context: filtersFetchRequested}})
-            }
-            console.error("fetchFiltersAction()", error);
-        }
-    }
 
 export const filterSetItemCodeAction = (value:string):FiltersAction => ({type: filtersSetItemCode, payload: {value}});
 export const filterSetProductTypeAction = (value: string):FiltersAction => ({type: filterSetProductType, payload: {value}});
@@ -123,194 +194,39 @@ export const filterSetBaseSKUAction = (value: string):FiltersAction => ({type: f
 export const filterSetProductStatusAction = (value: string):FiltersAction => ({type: filterSetProductStatus, payload: {value}});
 
 
-const sortWarehouseRecord = (a: WarehouseRecord, b: WarehouseRecord) => a.WarehouseCode > b.WarehouseCode ? 1 : -1;
-const sortProductLineRecord = (a: ProductLineRecord, b: ProductLineRecord) => a.ProductLine > b.ProductLine ? 1 : -1;
-const sortCategoryRecord = (a: CategoryRecord, b: CategoryRecord) => a.Category2 > b.Category2 ? 1 : -1;
-const sortCollectionRecord = (a: CollectionRecord, b: CollectionRecord) => a.Category3 > b.Category3 ? 1 : -1;
-const sortBaseSKURecord = (a: BaseSKURecord, b: BaseSKURecord) => a.Category4 > b.Category4 ? 1 : -1;
+const sortWarehouseRecord = (a: Warehouse, b: Warehouse) => a.WarehouseCode > b.WarehouseCode ? 1 : -1;
+const sortProductLineRecord = (a: ProductLine, b: ProductLine) => a.ProductLine > b.ProductLine ? 1 : -1;
+const sortCategoryRecord = (a: ProductCategory, b: ProductCategory) => a.Category2 > b.Category2 ? 1 : -1;
+const sortCollectionRecord = (a: ProductCollection, b: ProductCollection) => a.Category3 > b.Category3 ? 1 : -1;
+const sortBaseSKU = (a: BaseSKU, b: BaseSKU) => a.Category4 > b.Category4 ? 1 : -1;
 const sortProductStatusRecord = (a: ProductStatusRecord, b: ProductStatusRecord) => a.code > b.code ? 1 : -1;
 const sortCountryOfOriginRecord = (a: CountryOfOriginRecord, b: CountryOfOriginRecord) => a.countryOfOrigin > b.countryOfOrigin ? 1 : -1;
 const sortPrimaryVendorRecord = (a: PrimaryVendorRecord, b: PrimaryVendorRecord) => a.PrimaryVendorNo > b.PrimaryVendorNo ? 1 : -1;
 
-export const defaultFilter: Filter = {
-    itemCode: '',
-    productType: 'FKR',
-    warehouse: '',
-    productLine: '',
-    category: '',
-    collection: '',
-    baseSKU: '',
-    status: '',
-    countryOfOrigin: '',
-    primaryVendor: '',
-}
 
 export const selectFilter = (state: RootState) => state.filters.filter;
-export const selectFiltersLoading = (state: RootState) => state.filters.loading;
+
+export const selectItemCode = (state:RootState) => state.filters.filter.itemCode;
+export const selectProductType = (state:RootState) => state.filters.filter.productType;
+export const selectWarehouse = (state:RootState) => state.filters.filter.warehouse;
+export const selectProductLine = (state:RootState) => state.filters.filter.productLine;
+export const selectCategory = (state:RootState) => state.filters.filter.category;
+export const selectCollection = (state:RootState) => state.filters.filter.collection;
+export const selectBaseSKU = (state:RootState) => state.filters.filter.baseSKU;
+export const selectProductStatus = (state:RootState) => state.filters.filter.productStatus;
+export const selectCountryOfOrigin = (state:RootState) => state.filters.filter.countryOfOrigin;
+export const selectPrimaryVendor = (state:RootState) => state.filters.filter.primaryVendor;
+
+export const selectFiltersLoading = (state: RootState) => state.filters.queryStatus === QueryStatus.pending;
 export const selectWarehouseList = (state: RootState) => state.filters.warehouse;
+export const selectActiveWarehouseList = (state:RootState) => state.filters.warehouse.filter(whs => whs.WarehouseStatus === 'A');
+
 export const selectProductLineList = (state: RootState) => state.filters.productLine;
 export const selectCategoryList = (state: RootState) => state.filters.category;
 export const selectCollectionList = (state: RootState) => state.filters.collection;
 export const selectBaseSKUList = (state: RootState) => state.filters.baseSKU;
-export const selectProductStatusList = (state: RootState) => state.filters.status;
+export const selectProductStatusList = (state: RootState) => state.filters.productStatus;
 export const selectCountryOfOriginList = (state: RootState) => state.filters.countryOfOrigin;
 export const selectPrimaryVendorList = (state: RootState) => state.filters.primaryVendor;
 
-
-const filterReducer = (state: Filter = defaultFilter, action: FiltersAction): Filter => {
-    const {type, payload} = action;
-    const value = payload?.value || '';
-    switch (type) {
-    case filtersSetItemCode:
-        return {...state, itemCode: value};
-    case filterSetProductType:
-        return {...state, productType: value || 'FKR'}
-    case filterSetWarehouse:
-        return {...state, warehouse: value};
-    case filterSetProductLine:
-        return {...state, productLine: value};
-    case filterSetCategory:
-        return {...state, category: value};
-    case filterSetCollection:
-        return {...state, collection: value};
-    case filterSetProductStatus:
-        return {...state, status: value};
-    case filterSetCountryOfOrigin:
-        return {...state, countryOfOrigin: value};
-    case filterSetPrimaryVendor:
-        return {...state, primaryVendor: value};
-    case filterSetBaseSKU:
-        return {...state, baseSKU: value}
-    default:
-        return state;
-    }
-}
-
-const loadingReducer = (state: boolean = false, action: FiltersAction): boolean => {
-    switch (action.type) {
-    case filtersFetchRequested:
-        return true;
-    case filtersFetchFailed:
-    case filtersFetchSucceeded:
-        return false;
-    default:
-        return state;
-    }
-}
-
-const warehouseReducer = (state: WarehouseRecord[] = [], action: FiltersAction): WarehouseRecord[] => {
-    const {type, payload} = action;
-    switch (type) {
-    case filtersFetchSucceeded:
-        if (payload?.warehouseList) {
-            return payload.warehouseList.sort(sortWarehouseRecord)
-        }
-        return state;
-    default:
-        return state;
-    }
-};
-
-const productLineReducer = (state: ProductLineRecord[] = [], action: FiltersAction): ProductLineRecord[] => {
-    const {type, payload} = action;
-    switch (type) {
-    case filtersFetchSucceeded:
-        if (payload?.productLineList) {
-            return payload.productLineList.sort(sortProductLineRecord)
-        }
-        return state;
-    default:
-        return state;
-    }
-};
-
-const categoryReducer = (state: CategoryRecord[] = [], action: FiltersAction): CategoryRecord[] => {
-    const {type, payload} = action;
-    switch (type) {
-    case filtersFetchSucceeded:
-        if (payload?.categoryList) {
-            return payload.categoryList.sort(sortCategoryRecord)
-        }
-        return state;
-    default:
-        return state;
-    }
-};
-
-const collectionReducer = (state: CollectionRecord[] = [], action: FiltersAction): CollectionRecord[] => {
-    const {type, payload} = action;
-    switch (type) {
-    case filtersFetchSucceeded:
-        if (payload?.collectionList) {
-            return payload.collectionList.sort(sortCollectionRecord)
-        }
-        return state;
-    default:
-        return state;
-    }
-};
-
-const baseSKUReducer = (state: BaseSKURecord[] = [], action: FiltersAction): BaseSKURecord[] => {
-    const {type, payload} = action;
-    switch (type) {
-    case filtersFetchSucceeded:
-        if (payload?.baseSKUList) {
-            return payload.baseSKUList.sort(sortBaseSKURecord)
-        }
-        return state;
-    default:
-        return state;
-    }
-};
-
-const statusReducer = (state: ProductStatusRecord[] = [], action: FiltersAction): ProductStatusRecord[] => {
-    const {type, payload} = action;
-    switch (type) {
-    case filtersFetchSucceeded:
-        if (payload?.productStatusList) {
-            return payload.productStatusList.sort(sortProductStatusRecord)
-        }
-        return state;
-    default:
-        return state;
-    }
-};
-
-const countryOfOriginReducer = (state: CountryOfOriginRecord[] = [], action: FiltersAction): CountryOfOriginRecord[] => {
-    const {type, payload} = action;
-    switch (type) {
-    case filtersFetchSucceeded:
-        if (payload?.countryOfOriginList) {
-            return payload.countryOfOriginList.sort(sortCountryOfOriginRecord)
-        }
-        return state;
-    default:
-        return state;
-    }
-};
-
-const primaryVendorReducer = (state: PrimaryVendorRecord[] = [], action: FiltersAction): PrimaryVendorRecord[] => {
-    const {type, payload} = action;
-    switch (type) {
-    case filtersFetchSucceeded:
-        if (payload?.primaryVendorList) {
-            return payload.primaryVendorList.sort(sortPrimaryVendorRecord)
-        }
-        return state;
-    default:
-        return state;
-    }
-};
-
-export default combineReducers({
-    filter: filterReducer,
-    loading: loadingReducer,
-    warehouse: warehouseReducer,
-    productLine: productLineReducer,
-    category: categoryReducer,
-    collection: collectionReducer,
-    baseSKU: baseSKUReducer,
-    status: statusReducer,
-    countryOfOrigin: countryOfOriginReducer,
-    primaryVendor: primaryVendorReducer,
-})
+export default filtersReducer;

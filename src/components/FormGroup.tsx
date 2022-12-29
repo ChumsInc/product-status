@@ -5,15 +5,17 @@ export interface FormColumnProps {
     label: string | ReactNode,
     children?: ReactNode;
     htmlFor?: string;
+    className?: string;
 }
 
 const FormGroup: React.FC<FormColumnProps> = ({
                                                   label,
                                                   htmlFor,
+                                                  className = 'col-auto',
                                                   children
                                               }) => {
     return (
-        <div className="col-auto">
+        <div className={className}>
             <label className="form-label" htmlFor={htmlFor}>{label}</label>
             <div>{children}</div>
         </div>

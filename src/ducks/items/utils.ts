@@ -1,19 +1,23 @@
 import {ItemSorterProps} from "./types";
-import {ItemRecord, ReorderMethod} from "../../types";
+import {ItemKeyProps, ItemRecord, ReorderMethod} from "../../types";
 import classNames from "classnames";
+import {SortProps} from "chums-components";
 
-export const itemKey = (item:ItemRecord) => `${item.WarehouseCode}:${item.ItemCode}`;
+export const itemKey = (item:ItemKeyProps) => `${item.WarehouseCode}:${item.ItemCode}`;
+export const itemKeyProps = ({ItemCode, WarehouseCode}:ItemKeyProps):ItemKeyProps => ({ItemCode, WarehouseCode})
 
-export const itemSorter = (sort:ItemSorterProps) => (a:ItemRecord, b:ItemRecord) => {
-    switch (sort.field) {
+export const itemSorter = (sort:SortProps<ItemRecord>) => (a:ItemRecord, b:ItemRecord) => {
+    const {field, ascending} = sort;
+    const sortMod = ascending ? 1 : -1;
+    switch (field) {
     case 'ItemCode':
     case "ItemCodeDesc":
     case 'WarehouseCode':
     case 'ProductType':
     case 'ProductLine':
-        return (a[sort.field].toLowerCase() === b[sort.field].toLowerCase()
+        return (a[field].toLowerCase() === b[field].toLowerCase()
                 ? (itemKey(a) > itemKey(b) ? 1 : -1)
-                : (a[sort.field].toLowerCase() > b[sort.field].toLowerCase() ? 1 : -1)) * (sort.ascending ? 1 : -1);
+                : (a[field].toLowerCase() > b[field].toLowerCase() ? 1 : -1)) * sortMod;
     case 'AverageUnitCost':
     case 'QuantityAvailable':
     case 'QuantityAvailableCost':
@@ -23,16 +27,26 @@ export const itemSorter = (sort:ItemSorterProps) => (a:ItemRecord, b:ItemRecord)
     case 'MinimumOrderQty':
     case 'EconomicOrderQty':
     case 'ReorderPointQty':
-        return (a[sort.field] - b[sort.field]) * (sort.ascending ? 1 : -1);
+        return (
+            a[field] === b[field]
+                ? (itemKey(a) > itemKey(b) ? 1 : -1)
+                : a[field] - b[field]
+        ) * sortMod;
     case 'changed':
-        return ((a.changed ? 1 : 0 ) - (b.changed ? 1 : 0))  * (sort.ascending ? 1 : -1);
     case 'selected':
+        return (
+            a[field] === b[field]
+                ? (itemKey(a) > itemKey(b) ? 1 : -1)
+                : (a[field] ? 1 : 0 ) - (b[field] ? 1 : 0)
+        )  * sortMod;
     case 'ItemStatusHistory':
+    case 'loading':
+    case 'saving':
         return (itemKey(a) > itemKey(b) ? 1 : -1);
     default:
-        return ((a[sort.field] || '').toLowerCase() === (b[sort.field] || '').toLowerCase()
+        return ((a[field] || '').toLowerCase() === (b[field] || '').toLowerCase()
             ? (itemKey(a) > itemKey(b) ? 1 : -1)
-            : ((a[sort.field] || '').toLowerCase() > (b[sort.field] || '').toLowerCase() ? 1 : -1)) * (sort.ascending ? 1 : -1);
+            : ((a[field] || '').toLowerCase() > (b[field] || '').toLowerCase() ? 1 : -1)) * sortMod;
     }
 }
 
