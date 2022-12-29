@@ -1,12 +1,12 @@
 const reLocal = /^local/;
 
 
-const sessionStoragePrefix:string = 'session/product-status';
+// const sessionStoragePrefix:string = 'session/product-status';
 const localStoragePrefix:string = 'local/product-status';
 
 
-export const sessionStorageKeys = {
-};
+// export const sessionStorageKeys = {
+// };
 
 export const localStorageKeys = {
     rowsPerPage:`${localStoragePrefix}/items/rowsPerPage`,
@@ -29,12 +29,12 @@ export const setPreference = (key:string, value:any) => {
     }
 };
 
-export const clearPreference = (key:string) => {
-    if (typeof window === 'undefined') {
-        return;
-    }
-    getStorage(key).removeItem(key);
-}
+// export const clearPreference = (key:string) => {
+//     if (typeof window === 'undefined') {
+//         return;
+//     }
+//     getStorage(key).removeItem(key);
+// }
 
 export const getPreference = (key:string, defaultValue: any) => {
     try {

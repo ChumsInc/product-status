@@ -1,17 +1,18 @@
 import React from 'react';
-import {ItemTableField} from "./types";
 import numeral from "numeral";
 import ItemSelectedCheckbox from "./ItemSelectedCheckbox";
 import SelectAllCheckbox from "./SelectAllCheckbox";
 import SortableItemList from "./SortableItemList";
 import ItemLink from "./ItemLink";
+import {SortableTableField} from "chums-components";
+import {ItemRecord} from "../../types";
 
 
-const fields: ItemTableField[] = [
+const fields: SortableTableField<ItemRecord>[] = [
     {
         field: 'ItemCode',
         title: (<SelectAllCheckbox/>),
-        render: (row) => <ItemSelectedCheckbox itemKey={row} selected={row.selected}/>
+        render: (row) => <ItemSelectedCheckbox itemKey={row} selected={row.selected ?? false}/>
     },
     {field: 'ItemCode', title: 'Item', sortable: true, render: (item) => <ItemLink ItemCode={item.ItemCode}/>},
     {field: 'WarehouseCode', title: 'Whse', sortable: true},

@@ -1,6 +1,6 @@
 import {FiltersList, FiltersResponse} from "../types";
 import {fetchJSON} from "chums-components";
-import Filters, {Filter} from "../ducks/filters";
+import {Filter} from "../ducks/filters";
 import {ProductSearchItem} from "chums-types";
 
 export const getFilterQuery = (filter: Partial<Filter>): URLSearchParams => {
@@ -46,14 +46,14 @@ export async function fetchFilters(): Promise<FiltersList> {
 }
 
 
-export async function fetchItemFilter(filters:Filter):Promise<ProductSearchItem[]> {
+export async function fetchItemFilter(filters: Filter): Promise<ProductSearchItem[]> {
     try {
         const {itemCode, ...rest} = filters;
         const options = getFilterQuery(rest);
         const url = `/api/search/item/chums/${encodeURIComponent(itemCode || '^')}?${options.toString()}`
         const {result} = await fetchJSON(url);
         return result || [];
-    } catch(err:unknown) {
+    } catch (err: unknown) {
         if (err instanceof Error) {
             console.debug("fetchItemFilter()", err.message);
             return Promise.reject(err);

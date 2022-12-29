@@ -21,8 +21,6 @@ export const loadAdminRole = createAsyncThunk<boolean>(
 )
 
 export const selectIsAdmin = (state:RootState) => state.app.isAdmin;
-export const selectIsAdminLoaded = (state:RootState) => state.app.status === QueryStatus.fulfilled;
-export const selectIsAdminLoading = (state:RootState) => state.app.status === QueryStatus.pending;
 
 const appReducer = createReducer(initialAppState, (builder) => {
     builder
