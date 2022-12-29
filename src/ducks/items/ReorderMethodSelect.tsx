@@ -1,21 +1,22 @@
 import React, {ChangeEvent} from "react";
 import {useDispatch} from "react-redux";
-import {setReorderMethodAction} from "./actions";
+import {setReorderOptions} from "./actions";
 import {Select} from "chums-components";
+import {ItemKeyProps, ReorderMethod} from "../../types";
 
 export interface ReorderMethodSelectProps {
-    itemKey: string,
-    value: string|null,
+    itemKey: ItemKeyProps,
+    value: string | null,
 }
 
-const ReorderMethodSelect:React.FC<ReorderMethodSelectProps> = ({itemKey, value}) => {
+const ReorderMethodSelect: React.FC<ReorderMethodSelectProps> = ({itemKey, value}) => {
     const dispatch = useDispatch();
-    const changeHandler = (ev:ChangeEvent<HTMLSelectElement>) => {
-        dispatch(setReorderMethodAction(itemKey, ev.target.value));
+    const changeHandler = (ev: ChangeEvent<HTMLSelectElement>) => {
+        dispatch(setReorderOptions({...itemKey, ReorderMethod: ev.target.value as ReorderMethod}))
     }
 
     return (
-        <Select bsSize="sm" value={value || ''} onChange={changeHandler} >
+        <Select bsSize="sm" value={value || ''} onChange={changeHandler}>
             <option value="">-</option>
             <option value="E">Economic</option>
             <option value="M">Max Stock</option>

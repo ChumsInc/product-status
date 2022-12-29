@@ -1,23 +1,61 @@
-import React, {ChangeEvent} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
-import {filterSetBaseSKUAction, selectFilter} from "./index";
-import FilterInput, {FilterInputContainerProps} from "./FilterInput";
-import BaseSKUDataList from "./BaseSKUDataList";
+import React, {ChangeEvent, InputHTMLAttributes, useEffect, useState} from 'react';
+import {useSelector} from 'react-redux';
+import {filterBaseSKU, selectBaseSKU, selectBaseSKUList} from "./index";
+import {useAppDispatch} from "../../app/configureStore";
+import AutoComplete from "./AutoComplete";
+import {BaseSKU} from 'chums-types';
 
-const BaseSKUFilter: React.FC<FilterInputContainerProps> = ({id = 'filter--sku', children, ...props}) => {
-    const dispatch = useDispatch();
-    const {baseSKU} = useSelector(selectFilter);
+const BaseSKUAutoComplete = AutoComplete<BaseSKU>;
 
-    const changeHandler = (ev: ChangeEvent<HTMLInputElement>) => {
-        dispatch(filterSetBaseSKUAction(ev.target.value));
+const baseSKUFilter = (value: string) => (element: BaseSKU) => {
+    let regex = /^/;
+    try {
+        regex = new RegExp(value, 'i')
+    } catch(err:unknown) {
     }
-    const listId = id + '--list';
-
-    return (
-        <FilterInput value={baseSKU || ''} onChange={changeHandler} id={id} list={listId}>
-            <BaseSKUDataList id={listId}/>
-        </FilterInput>
-    );
+    return !value
+        || element.Category4.toLowerCase().startsWith(value.toLowerCase())
+        || regex.test(element.description ?? '');
 }
 
-export default React.memo(BaseSKUFilter);
+const BaseSKUItem = ({Category4, description}: BaseSKU) => (
+    <>
+        <div className="me-3"><strong>{Category4}</strong></div>
+        <div>{description}</div>
+    </>
+)
+
+
+const BaseSKUFilter = ({id = 'filter--sku', ...props}: InputHTMLAttributes<HTMLInputElement>) => {
+    const dispatch = useAppDispatch();
+    const value = useSelector(selectBaseSKU);
+    const list = useSelector(selectBaseSKUList);
+    const [helpText, setHelpText] = useState<string | null>(null);
+
+    useEffect(() => {
+        const [sku] = list.filter(sku => sku.Category4 === value);
+        setHelpText(sku?.description ?? null);
+    }, [value]);
+
+    const changeHandler = (ev: ChangeEvent<HTMLInputElement>) => {
+        dispatch(filterBaseSKU(ev.target.value));
+    }
+
+    const recordChangeHandler = (value?: BaseSKU) => {
+        dispatch(filterBaseSKU(value?.Category4 ?? ''));
+    }
+
+    return (
+        <BaseSKUAutoComplete {...props} id={id}
+                             value={value} onChange={changeHandler}
+                             data={list} onChangeRecord={recordChangeHandler}
+                             renderItem={BaseSKUItem}
+                             itemKey={row => row.Category4}
+                             filter={baseSKUFilter}
+                             itemStyle={{display: 'flex'}}
+                             helpText={helpText}/>
+    )
+
+}
+
+export default BaseSKUFilter;

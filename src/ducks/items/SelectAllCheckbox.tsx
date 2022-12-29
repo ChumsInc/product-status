@@ -5,7 +5,7 @@ import {selectPagedData} from "chums-connected-components";
 import {itemStatusTableKey} from "./actionTypes";
 import {ItemRecord} from "../../types";
 import {itemKey} from "./utils";
-import {selectItemsAction} from "./actions";
+import {selectMultipleItems} from "./actions";
 
 function isIndeterminate(qtyChecked: number, qtyRecords: number) {
     return qtyRecords > 0 && qtyChecked > 0 && qtyChecked !== qtyRecords;
@@ -14,7 +14,7 @@ function isIndeterminate(qtyChecked: number, qtyRecords: number) {
 const SelectAllCheckbox: React.FC = () => {
     const dispatch = useDispatch();
     const list = useSelector(selectFilteredItems);
-    const pagedList:ItemRecord[] = useSelector(selectPagedData(itemStatusTableKey, list));
+    const pagedList: ItemRecord[] = useSelector(selectPagedData(itemStatusTableKey, list));
     const [qtyChecked, setQtyChecked] = useState(pagedList.filter(row => row.selected).length);
     const [checked, setChecked] = useState<boolean>(qtyChecked > 0 && qtyChecked === pagedList.length);
     const [indeterminate, setIndeterminate] = useState(isIndeterminate(qtyChecked, pagedList.length));
@@ -38,7 +38,7 @@ const SelectAllCheckbox: React.FC = () => {
 
     const changeHandler = (ev: ChangeEvent<HTMLInputElement>) => {
         const itemKeys = pagedList.map(item => itemKey(item));
-        dispatch(selectItemsAction(itemKeys, ev.target.checked));
+        dispatch(selectMultipleItems({keys: itemKeys, selected: ev.target.checked}));
     }
 
     return (

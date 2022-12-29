@@ -1,15 +1,16 @@
 import React, {useEffect} from "react";
-import {useDispatch, useSelector} from "react-redux";
-import {checkIsAdminAction, selectIsAdmin} from "../ducks/app";
-import AppTabs, {TAB_EDIT, TAB_NOTES, TAB_REORDER, TAB_VIEW, tabKey} from "./Tabs";
-import {fetchFiltersAction} from "../ducks/filters";
-import SelectItemForm from "../ducks/filters/SelectItemForm";
+import {useSelector} from "react-redux";
+import {loadAdminRole, selectIsAdmin} from "../ducks/app";
+import {tabKey} from "./AppTabs";
+import {loadFilters} from "../ducks/filters";
 import ItemReport from "../ducks/items/ItemReport";
 import ItemStatusEdit from "../ducks/items/ItemStatusEdit";
 import ItemReorderEdit from "../ducks/items/ItemReorderEdit";
 import NotesTabContent from "../components/NotesTabContent";
-import {AlertList, selectCurrentTab} from "chums-connected-components";
+import {selectCurrentTab} from "chums-connected-components";
 import {useAppDispatch} from "./configureStore";
+import AppContent from "./AppContent";
+import {Route, Routes} from 'react-router-dom';
 
 
 const App: React.FC = () => {
@@ -18,21 +19,27 @@ const App: React.FC = () => {
     const tab = useSelector(selectCurrentTab(tabKey))
 
     useEffect(() => {
-        dispatch(checkIsAdminAction());
-        dispatch(fetchFiltersAction());
+        dispatch(loadAdminRole());
+        dispatch(loadFilters());
     }, [])
 
     return (
         <React.StrictMode>
-            <AlertList/>
-            <SelectItemForm/>
-            <AppTabs/>
-            <div className="tab-content">
-                {(!isAdmin || tab === TAB_VIEW) && <ItemReport/>}
-                {isAdmin && tab === TAB_EDIT && <ItemStatusEdit/>}
-                {isAdmin && tab === TAB_REORDER && <ItemReorderEdit/>}
-                {tab === TAB_NOTES && <NotesTabContent/>}
-            </div>
+
+            <Routes>
+                <Route path="/" element={<AppContent/>}>
+                    <Route index element={<ItemReport/>}/>
+                    <Route path="/edit" element={<ItemStatusEdit/>}/>
+                    <Route path="/reorder" element={<ItemReorderEdit/>}/>
+                    <Route path="/notes" element={<NotesTabContent/>}/>
+                </Route>
+            </Routes>
+            {/*<div className="tab-content">*/}
+            {/*    {(!isAdmin || tab === TAB_VIEW) && <ItemReport/>}*/}
+            {/*    {isAdmin && tab === TAB_EDIT && <ItemStatusEdit/>}*/}
+            {/*    {isAdmin && tab === TAB_REORDER && <ItemReorderEdit/>}*/}
+            {/*    {tab === TAB_NOTES && <NotesTabContent/>}*/}
+            {/*</div>*/}
         </React.StrictMode>
     )
 }

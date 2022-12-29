@@ -1,23 +1,19 @@
 import React from 'react';
 import {ItemTableField} from "./types";
 import numeral from "numeral";
-import {useDispatch, useSelector} from "react-redux";
-import {selectFilteredItems, selectItemListLength, selectItemsLoading} from "./selectors";
-import {ConnectedPager, ConnectedTable, selectPagedData} from "chums-connected-components";
-import {itemStatusTableKey} from "./actionTypes";
-import {itemKey, rowClassName} from "./utils";
 import ItemSelectedCheckbox from "./ItemSelectedCheckbox";
 import SelectAllCheckbox from "./SelectAllCheckbox";
-import {LoadingProgressBar} from 'chums-components';
+import SortableItemList from "./SortableItemList";
+import ItemLink from "./ItemLink";
 
 
 const fields: ItemTableField[] = [
     {
         field: 'ItemCode',
         title: (<SelectAllCheckbox/>),
-        render: (row) => <ItemSelectedCheckbox itemKey={itemKey(row)} selected={row.selected}/>
+        render: (row) => <ItemSelectedCheckbox itemKey={row} selected={row.selected}/>
     },
-    {field: 'ItemCode', title: 'Item', sortable: true},
+    {field: 'ItemCode', title: 'Item', sortable: true, render: (item) => <ItemLink ItemCode={item.ItemCode}/>},
     {field: 'WarehouseCode', title: 'Whse', sortable: true},
     {field: 'ItemCodeDesc', title: 'Description', sortable: true},
     {field: 'ProductLine', title: 'P/L', sortable: true},
@@ -56,22 +52,10 @@ const fields: ItemTableField[] = [
 
 ]
 
-const ItemStatusList: React.FC = () => {
-    const dispatch = useDispatch();
-    const loading = useSelector(selectItemsLoading);
-    const list = useSelector(selectFilteredItems);
-    const listLength = useSelector(selectItemListLength);
-    const pageList = useSelector(selectPagedData(itemStatusTableKey, list));
-
+const ItemStatusEditList: React.FC = () => {
     return (
-        <div>
-            {loading && <LoadingProgressBar animated striped/>}
-            <ConnectedTable tableKey={itemStatusTableKey} keyField={itemKey} fields={fields} data={pageList}
-                            defaultSort={{field: 'ItemCode', ascending: true}}
-                            className="table-sticky" rowClassName={rowClassName}/>
-            <ConnectedPager pageSetKey={itemStatusTableKey} dataLength={list.length} filtered={list.length < listLength}/>
-        </div>
+        <SortableItemList fields={fields}/>
     )
 }
 
-export default ItemStatusList;
+export default ItemStatusEditList;

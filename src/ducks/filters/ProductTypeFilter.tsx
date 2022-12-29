@@ -1,18 +1,18 @@
-import React, {ChangeEvent} from 'react';
+import React, {ChangeEvent, SelectHTMLAttributes} from 'react';
 import {useDispatch, useSelector} from "react-redux";
-import {filterSetProductTypeAction, selectFilter} from "./index";
+import {filterProductType, selectProductType} from "./index";
 import {Select} from "chums-components";
 
-const ProductTypeFilter:React.FC<{id:string}> = ({id}) => {
+const ProductTypeFilter = ({id, ...props}: SelectHTMLAttributes<HTMLSelectElement>) => {
     const dispatch = useDispatch();
-    const {productType} = useSelector(selectFilter);
+    const productType = useSelector(selectProductType);
 
-    const changeHandler = (ev:ChangeEvent<HTMLSelectElement>) => {
-        dispatch(filterSetProductTypeAction(ev.target.value));
+    const changeHandler = (ev: ChangeEvent<HTMLSelectElement>) => {
+        dispatch(filterProductType(ev.target.value));
     }
 
     return (
-        <Select id={id} value={productType} onChange={changeHandler} bsSize="sm">
+        <Select id={id} {...props} value={productType} onChange={changeHandler} bsSize="sm">
             <option value="FKR">FG/RM/Kit</option>
             <option value="F">Finished Goods</option>
             <option value="K">Kits</option>
@@ -22,4 +22,4 @@ const ProductTypeFilter:React.FC<{id:string}> = ({id}) => {
     )
 }
 
-export default React.memo(ProductTypeFilter);
+export default ProductTypeFilter;

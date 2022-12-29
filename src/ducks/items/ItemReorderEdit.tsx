@@ -7,16 +7,18 @@ import ItemReorderEditList from "./ItemReorderEditList";
 import {ErrorBoundary} from "chums-components";
 import {useSelector} from "react-redux";
 import {selectChangedItems} from "./selectors";
-import {saveChangedItemsAction} from "./actions";
+import {saveMultipleItemStatus} from "./actions";
 import {useAppDispatch} from "../../app/configureStore";
 
 
 const ItemReport: React.FC = () => {
     const dispatch = useAppDispatch();
     const changedItems = useSelector(selectChangedItems);
+
     const clickHandler = () => {
-        dispatch(saveChangedItemsAction())
+        dispatch(saveMultipleItemStatus(changedItems))
     }
+
     return (
         <ErrorBoundary>
             <ItemListFilterBar>

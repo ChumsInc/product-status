@@ -1,55 +1,41 @@
-import {combineReducers} from "redux";
-import {fetchJSON} from "chums-components";
-import {ThunkAction} from "redux-thunk";
 import {RootState} from "../index";
-import {PATH_CHECK_ADMIN_ROLE} from "../../constants";
-import {ActionInterface, ActionPayload} from "chums-connected-components";
+import {createAsyncThunk, createReducer} from "@reduxjs/toolkit";
+import {getAdminRole} from "../../api/admin";
+import {QueryStatus} from "@reduxjs/toolkit/query";
 
-export interface AppPayload extends ActionPayload {
-    isAdmin?: boolean,
+export interface AppState {
+    isAdmin: boolean;
+    status: QueryStatus
 }
 
-export interface AppAction extends ActionInterface {
-    payload?: AppPayload,
+export const initialAppState: AppState = {
+    isAdmin: false,
+    status: QueryStatus.uninitialized,
 }
 
-export interface AppThunkAction extends ThunkAction<any, RootState, unknown, AppAction> {
-}
-
-export const fetchAdminRequested = 'app/fetchAdminRequested';
-export const fetchAdminSucceeded = 'app/fetchAdminSucceeded';
-export const fetchAdminFailed = 'app/fetchAdminFailed';
-
-export const checkIsAdminAction = (): AppThunkAction =>
-    async (dispatch, getState) => {
-        try {
-            const state = getState();
-            dispatch({type: fetchAdminRequested});
-            const {success} = await fetchJSON<{ success: boolean }>(PATH_CHECK_ADMIN_ROLE);
-            dispatch({type: fetchAdminSucceeded, payload: {isAdmin: success}});
-        } catch (error: unknown) {
-            if (error instanceof Error) {
-                console.log("checkIsAdminAction()", error.message);
-                return dispatch({type: fetchAdminFailed, payload: {error, context: fetchAdminRequested}})
-            }
-            console.error("checkIsAdminAction()", error);
-        }
+export const loadAdminRole = createAsyncThunk<boolean>(
+    'app/loadAdminRole',
+    async () => {
+        return await getAdminRole();
     }
+)
 
-export const selectIsAdmin = (state: RootState) => state.app.isAdmin;
+export const selectIsAdmin = (state:RootState) => state.app.isAdmin;
+export const selectIsAdminLoaded = (state:RootState) => state.app.status === QueryStatus.fulfilled;
+export const selectIsAdminLoading = (state:RootState) => state.app.status === QueryStatus.pending;
 
-const isAdminReducer = (state: boolean = false, action: AppAction): boolean => {
-    const {type, payload} = action;
-    switch (type) {
-    case fetchAdminSucceeded:
-        return payload?.isAdmin || false;
-    case fetchAdminFailed:
-        return false;
-    default:
-        return state;
-    }
-}
+const appReducer = createReducer(initialAppState, (builder) => {
+    builder
+        .addCase(loadAdminRole.pending, (state) => {
+            state.status = QueryStatus.pending;
+        })
+        .addCase(loadAdminRole.rejected, (state) => {
+            state.status = QueryStatus.rejected;
+        })
+        .addCase(loadAdminRole.fulfilled, (state, action) => {
+            state.status = QueryStatus.fulfilled;
+            state.isAdmin = action.payload;
+        })
+});
 
-export default combineReducers({
-    isAdmin: isAdminReducer,
-})
+export default appReducer;
