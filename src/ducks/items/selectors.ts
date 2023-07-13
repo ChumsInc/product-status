@@ -9,9 +9,9 @@ export const selectItemList = (state: RootState) => state.items.list;
 export const selectItemsLoading = (state: RootState) => state.items.loading === QueryStatus.pending;
 export const selectItemsSaving = (state: RootState) => state.items.saving === QueryStatus.pending;
 export const selectItemSearchFilter = (state: RootState) => state.items.search;
-export const selectItemsFilterOnHand = (state: RootState) => state.items.filterOnHand;
-export const selectItemsFilterInactive = (state: RootState) => state.items.filterInactive;
-export const selectFilterOnlySelected = (state: RootState) => state.items.filterOnlySelected;
+export const selectItemsShowOnHand = (state: RootState) => state.items.showOnHand;
+export const selectItemsShowInactive = (state: RootState) => state.items.showInactive;
+export const selectItemsShowSelected = (state: RootState) => state.items.showOnlySelected;
 
 
 export const selectPage = (state:RootState) => state.items.page;
@@ -20,7 +20,7 @@ export const selectRowsPerPage = (state:RootState) => state.items.rowsPerPage;
 
 export const selectSort = (state:RootState) => state.items.sort;
 
-const listFilter = (list:ItemRecord[], search:string, filterOnHand: boolean, filterInactive: boolean, filterSelected: boolean) => {
+const listFilter = (list:ItemRecord[], search:string, showOnlyOnHand: boolean, showInactive: boolean, filterSelected: boolean) => {
     let searchRegexp = /^/;
     try {
         searchRegexp = new RegExp(search, 'i');
@@ -30,15 +30,15 @@ const listFilter = (list:ItemRecord[], search:string, filterOnHand: boolean, fil
 
     return list
         .filter(item => !search || searchRegexp.test(item.ItemCode) || searchRegexp.test(item.ItemCodeDesc))
-        .filter(item => !filterInactive || (item.InactiveItem === 'Y' || item.ProductType === 'D'))
-        .filter(item => !filterOnHand || item.QuantityOnHand > 0)
+        .filter(item => showInactive || !(item.InactiveItem === 'Y' || item.ProductType === 'D'))
+        .filter(item => !showOnlyOnHand || item.QuantityOnHand !== 0)
         .filter(item => !filterSelected || item.selected || item.changed);
 }
 
 export const selectFilteredItems = createSelector(
-    [selectItemList, selectItemSearchFilter, selectItemsFilterOnHand, selectItemsFilterInactive, selectFilterOnlySelected, selectSort],
-    (list, search, filterOnHand, filterInactive, filterSelected, sort) => {
-        return listFilter(list, search, filterOnHand, filterInactive, filterSelected).sort(itemSorter(sort));
+    [selectItemList, selectItemSearchFilter, selectItemsShowOnHand, selectItemsShowInactive, selectItemsShowSelected, selectSort],
+    (list, search, filterOnHand, showInactive, filterSelected, sort) => {
+        return listFilter(list, search, filterOnHand, showInactive, filterSelected).sort(itemSorter(sort));
     });
 
 

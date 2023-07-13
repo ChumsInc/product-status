@@ -27,35 +27,35 @@ const fields: SortableTableField<ItemRecord>[] = [
         field: 'ReorderMethod',
         title: 'Reorder Method',
         sortable: true,
-        render: (row) => <ReorderMethodSelect itemKey={itemKeyProps(row)} value={row.ReorderMethod}/>
+        render: (row) => <ReorderMethodSelect itemKey={itemKeyProps(row)} value={row.ReorderMethod} disabled={row.ProductType === 'D' || row.InactiveItem === 'Y'}/>
     },
     {
         field: 'ReorderPointQty',
         title: 'Reorder Point',
         sortable: true,
         render: (row) => <OrderQuantityInput itemKey={itemKeyProps(row)} field="ReorderPointQty"
-                                             quantity={row.ReorderPointQty}/>
+                                             quantity={row.ReorderPointQty}  disabled={row.ProductType === 'D' || row.InactiveItem === 'Y'}/>
     },
     {
         field: 'EconomicOrderQty',
         title: 'Econ Order Qty',
         sortable: true,
         render: (row) => <OrderQuantityInput itemKey={itemKeyProps(row)} field="EconomicOrderQty"
-                                             quantity={row.EconomicOrderQty}/>
+                                             quantity={row.EconomicOrderQty} disabled={row.ProductType === 'D' || row.InactiveItem === 'Y'}/>
     },
     {
         field: 'MinimumOrderQty',
         title: 'Min Order Qty',
         sortable: true,
         render: (row) => <OrderQuantityInput itemKey={itemKeyProps(row)} field="MinimumOrderQty"
-                                             quantity={row.MinimumOrderQty}/>
+                                             quantity={row.MinimumOrderQty} disabled={row.ProductType === 'D' || row.InactiveItem === 'Y'}/>
     },
     {
         field: 'MaximumOnHandQty',
         title: 'Max O/H Qty',
         sortable: true,
         render: (row) => <OrderQuantityInput itemKey={itemKeyProps(row)} field="MaximumOnHandQty"
-                                             quantity={row.MaximumOnHandQty}/>
+                                             quantity={row.MaximumOnHandQty} disabled={row.ProductType === 'D' || row.InactiveItem === 'Y'}/>
     },
     {
         field: 'QuantityOnHand',
@@ -88,9 +88,9 @@ const fields: SortableTableField<ItemRecord>[] = [
 
 ]
 
-const ItemReorderList: React.FC = () => {
+const ItemReorderList= () => {
     return (
-        <SortableItemList fields={fields}/>
+        <SortableItemList fields={fields} rowClassName={(row) => ({'text-danger': row.InactiveItem === 'Y' || row.ProductType === 'D'})}/>
     )
 }
 

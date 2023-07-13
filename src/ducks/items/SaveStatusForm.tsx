@@ -6,7 +6,7 @@ import {saveMultipleItemStatus} from "./actions";
 import {useAppDispatch} from "../../app/configureStore";
 
 
-const SaveStatusForm: React.FC = () => {
+const SaveStatusForm= () => {
     const dispatch = useAppDispatch();
     const selectedItems = useSelector(selectSelectedItems);
     const [nextStatus, setNextStatus] = useState('');

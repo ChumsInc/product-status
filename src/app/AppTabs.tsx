@@ -18,7 +18,7 @@ const initialTabList: ValidatedTab[] = [
 
 ]
 
-const AppTabs: React.FC = () => {
+const AppTabs = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const isAdmin = useSelector((state: RootState) => state.app.isAdmin);

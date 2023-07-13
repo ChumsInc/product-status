@@ -3,7 +3,7 @@ import {useSelector} from "react-redux";
 import {selectFilter} from "./index";
 import {getFilterQuery} from "../../api/filters";
 
-const DownloadButton: React.FC = () => {
+const DownloadButton = () => {
     const filters = useSelector(selectFilter);
 
     const clickHandler = () => {

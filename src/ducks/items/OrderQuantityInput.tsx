@@ -1,16 +1,16 @@
-import React, {ChangeEvent, useEffect, useState} from 'react';
+import React, {ChangeEvent, InputHTMLAttributes, useEffect, useState} from 'react';
 import {ItemKeyProps, ItemRecord} from "../../types";
 import {useDispatch} from "react-redux";
 import {setReorderOptions} from "./actions";
 import {Input} from "chums-components";
 
-export interface OrderQuantityInputProps {
+export interface OrderQuantityInputProps extends InputHTMLAttributes<HTMLInputElement>{
     itemKey: ItemKeyProps,
     field: keyof ItemRecord,
     quantity: number,
 }
 
-const OrderQuantityInput: React.FC<OrderQuantityInputProps> = ({itemKey, field, quantity}) => {
+const OrderQuantityInput = ({itemKey, field, quantity, ...rest}:OrderQuantityInputProps) => {
     const dispatch = useDispatch();
     const [value, setValue] = useState(quantity);
 
@@ -39,7 +39,7 @@ const OrderQuantityInput: React.FC<OrderQuantityInputProps> = ({itemKey, field, 
         <Input type="number" value={value} className="text-end"
                onChange={changeHandler} onBlur={blurHandler}
                min={0} max={9999999} step={1}
-               bsSize="sm"/>
+               bsSize="sm" {...rest}/>
     )
 }
 

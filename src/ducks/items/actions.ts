@@ -13,10 +13,10 @@ export const selectMultipleItems = createAction<{ keys: string[], selected: bool
 
 export const searchItems = createAction<string>('items/search');
 
-export const toggleFilterOnHand = createAction<boolean | undefined>('items/filterOnHand');
+export const toggleFilterOnHand = createAction<boolean | undefined>('items/showOnlyOnHand');
 
-export const toggleFilterActive = createAction<boolean | undefined>('items/filterInactive');
-export const toggleFilterSelected = createAction<boolean | undefined>('items/filterSelected');
+export const toggleShowInactive = createAction<boolean | undefined>('items/showInactive');
+export const toggleShowSelected = createAction<boolean | undefined>('items/showSelected');
 
 export const setReorderOptions = createAction<ItemKeyProps & Partial<ItemRecord>>('items/changeReorderOptions');
 

@@ -59,7 +59,7 @@ export default function AutoComplete<T = any>({
     useEffect(() => {
         const values = data.filter(filter(value));
         setValues(values);
-        setIndex(value === '' ? -1 : 0);
+        setIndex(-1);
     }, [value]);
 
     useEffect(() => {
@@ -103,11 +103,15 @@ export default function AutoComplete<T = any>({
             return;
 
         case 'Enter':
-            const current = values[index];
             if (!open) {
                 return;
             }
+            if (open && index === -1) {
+                setOpen(false);
+                return;
+            }
             ev.preventDefault();
+            const current = values[index];
             setOpen(false);
             return onChangeRecord(current);
         }

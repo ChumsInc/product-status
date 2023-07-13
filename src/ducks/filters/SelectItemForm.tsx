@@ -20,7 +20,7 @@ import VendorFilter from "./VendorFilter";
 import {useAppDispatch} from "../../app/configureStore";
 import {selectFilter} from "./index";
 
-const SelectItemForm: React.FC = () => {
+const SelectItemForm= () => {
     const dispatch = useAppDispatch();
     const loading = useSelector(selectItemsLoading);
     const filter = useSelector(selectFilter);

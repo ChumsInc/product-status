@@ -9,7 +9,7 @@ function isIndeterminate(qtyChecked: number, qtyRecords: number) {
     return qtyRecords > 0 && qtyChecked > 0 && qtyChecked !== qtyRecords;
 }
 
-const SelectAllCheckbox: React.FC = () => {
+const SelectAllCheckbox= () => {
     const dispatch = useDispatch();
     const list = useSelector(selectFilteredItems);
     const page = useSelector(selectPage);

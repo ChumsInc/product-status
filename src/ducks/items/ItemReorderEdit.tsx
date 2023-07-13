@@ -4,14 +4,15 @@
 import React from 'react';
 import ItemListFilterBar from "./ItemListFilterBar";
 import ItemReorderEditList from "./ItemReorderEditList";
-import {ErrorBoundary} from "chums-components";
+import {ErrorBoundary} from "react-error-boundary";
 import {useSelector} from "react-redux";
 import {selectChangedItems} from "./selectors";
 import {saveMultipleItemReorder} from "./actions";
 import {useAppDispatch} from "../../app/configureStore";
+import ErrorBoundaryFallbackAlert from "../alerts/ErrorBoundaryFallbackAlert";
 
 
-const ItemReport: React.FC = () => {
+const ItemReport= () => {
     const dispatch = useAppDispatch();
     const changedItems = useSelector(selectChangedItems);
 
@@ -20,7 +21,7 @@ const ItemReport: React.FC = () => {
     }
 
     return (
-        <ErrorBoundary>
+        <ErrorBoundary FallbackComponent={ErrorBoundaryFallbackAlert}>
             <ItemListFilterBar>
                 <div className="col-auto">
                     <button type="button" className="btn btn-sm btn-primary" onClick={clickHandler}
