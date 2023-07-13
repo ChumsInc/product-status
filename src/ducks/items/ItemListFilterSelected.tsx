@@ -1,19 +1,19 @@
 import React, {ChangeEvent} from 'react';
 import {useDispatch, useSelector} from "react-redux";
-import {selectFilterOnlySelected, selectSelectedCount} from "./selectors";
+import {selectItemsShowSelected, selectSelectedCount} from "./selectors";
 import {FormCheck} from "chums-components";
-import {toggleFilterSelected} from "./actions";
+import {toggleShowSelected} from "./actions";
 import {selectIsAdmin} from "../app";
 
 
-const ItemListFilterSelected: React.FC = () => {
+const ItemListFilterSelected= () => {
     const dispatch = useDispatch();
-    const checked = useSelector(selectFilterOnlySelected);
+    const checked = useSelector(selectItemsShowSelected);
     const count = useSelector(selectSelectedCount);
     const isAdmin = useSelector(selectIsAdmin);
 
     const changeHandler = (ev: ChangeEvent<HTMLInputElement>) => {
-        dispatch(toggleFilterSelected(ev.target.checked));
+        dispatch(toggleShowSelected(ev.target.checked));
     }
 
     if (!isAdmin) {

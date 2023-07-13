@@ -1,6 +1,6 @@
 import React from 'react';
 
-const NotesTabContent:React.FC = () => {
+const NotesTabContent = () => {
 
     return (
         <div className="card mt-5">
@@ -9,7 +9,8 @@ const NotesTabContent:React.FC = () => {
                 <ul>
                     <li>
                         <code>QuantityAvailable = QuantityOnHand
-                            - (QuantityOnSalesOrder + QuantityOnBackOrder + QuantityRequiredForWO + QuantityOnMaterialReq)
+                            - (QuantityOnSalesOrder + QuantityOnBackOrder + QuantityRequiredForWO +
+                            QuantityOnMaterialReq)
                             + QuantityOnWorkOrder + QuantityOnPurchaseOrder;
                         </code>
                     </li>

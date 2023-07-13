@@ -4,10 +4,11 @@ import {filterBaseSKU, selectBaseSKU, selectBaseSKUList} from "./index";
 import {useAppDispatch} from "../../app/configureStore";
 import AutoComplete from "./AutoComplete";
 import {BaseSKU} from 'chums-types';
+import {BaseSKUSearch} from "chums-types/src/products";
 
-const BaseSKUAutoComplete = AutoComplete<BaseSKU>;
+const BaseSKUAutoComplete = AutoComplete<BaseSKUSearch>;
 
-const baseSKUFilter = (value: string) => (element: BaseSKU) => {
+const baseSKUFilter = (value: string) => (element: BaseSKUSearch) => {
     let regex = /^/;
     try {
         regex = new RegExp(value, 'i')
@@ -18,7 +19,7 @@ const baseSKUFilter = (value: string) => (element: BaseSKU) => {
         || regex.test(element.description ?? '');
 }
 
-const BaseSKUItem = ({Category4, description}: BaseSKU) => (
+const BaseSKUItem = ({Category4, description}: BaseSKUSearch) => (
     <>
         <div className="me-3"><strong>{Category4}</strong></div>
         <div>{description}</div>
@@ -41,7 +42,7 @@ const BaseSKUFilter = ({id = 'filter--sku', ...props}: InputHTMLAttributes<HTMLI
         dispatch(filterBaseSKU(ev.target.value));
     }
 
-    const recordChangeHandler = (value?: BaseSKU) => {
+    const recordChangeHandler = (value?: BaseSKUSearch) => {
         dispatch(filterBaseSKU(value?.Category4 ?? ''));
     }
 

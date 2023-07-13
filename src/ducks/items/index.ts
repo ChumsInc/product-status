@@ -15,9 +15,9 @@ import {
     setReorderOptions,
     setRowsPerPage,
     setSort,
-    toggleFilterActive,
+    toggleShowInactive,
     toggleFilterOnHand,
-    toggleFilterSelected,
+    toggleShowSelected,
     toggleSelected
 } from "./actions";
 import {SortProps} from "chums-components";
@@ -28,9 +28,9 @@ export interface ItemsState {
     saving: QueryStatus;
     search: string;
     nextStatus: string;
-    filterOnHand: boolean;
-    filterInactive: boolean;
-    filterOnlySelected: boolean;
+    showOnHand: boolean;
+    showInactive: boolean;
+    showOnlySelected: boolean;
     sort: SortProps<ItemRecord>;
     page: number;
     rowsPerPage: number;
@@ -42,9 +42,9 @@ const initialState: ItemsState = {
     saving: QueryStatus.uninitialized,
     search: '',
     nextStatus: '',
-    filterOnHand: getPreference(localStorageKeys.filterOnHand, false),
-    filterInactive: getPreference(localStorageKeys.filterInactive, true),
-    filterOnlySelected: getPreference(localStorageKeys.filterOnlySelected, false),
+    showOnHand: getPreference(localStorageKeys.showOnlyOnHand, false),
+    showInactive: getPreference(localStorageKeys.showInactive, true),
+    showOnlySelected: getPreference(localStorageKeys.showOnlySelected, false),
     sort: {field: 'ItemCode', ascending: true},
     page: 0,
     rowsPerPage: getPreference(localStorageKeys.rowsPerPage, 25),
@@ -95,18 +95,18 @@ const itemsReducer = createReducer(initialState, builder => {
             state.saving = QueryStatus.fulfilled;
         })
         .addCase(toggleFilterOnHand, (state, action) => {
-            setPreference(localStorageKeys.filterOnHand, action.payload ?? !state.filterOnHand);
-            state.filterOnHand = action.payload ?? !state.filterOnHand;
+            setPreference(localStorageKeys.showOnlyOnHand, action.payload ?? !state.showOnHand);
+            state.showOnHand = action.payload ?? !state.showOnHand;
             state.page = 0;
         })
-        .addCase(toggleFilterActive, (state, action) => {
-            setPreference(localStorageKeys.filterInactive, action.payload ?? !state.filterInactive);
-            state.filterInactive = action.payload ?? !state.filterInactive;
+        .addCase(toggleShowInactive, (state, action) => {
+            setPreference(localStorageKeys.showInactive, action.payload ?? !state.showInactive);
+            state.showInactive = action.payload ?? !state.showInactive;
             state.page = 0;
         })
-        .addCase(toggleFilterSelected, (state, action) => {
-            setPreference(localStorageKeys.filterOnlySelected, action.payload ?? !state.filterOnlySelected);
-            state.filterOnlySelected = action.payload ?? !state.filterOnlySelected;
+        .addCase(toggleShowSelected, (state, action) => {
+            setPreference(localStorageKeys.showOnlySelected, action.payload ?? !state.showOnlySelected);
+            state.showOnlySelected = action.payload ?? !state.showOnlySelected;
             state.page = 0;
         })
         .addCase(toggleSelected, (state, action) => {

@@ -3,12 +3,12 @@ import {useSelector} from "react-redux";
 import {selectProductStatusList} from "./index";
 import {Select} from "chums-components";
 
-const ProductStatusSelect: React.FC<SelectHTMLAttributes<HTMLSelectElement>> = ({
-                                                                                    value,
-                                                                                    className,
-                                                                                    children,
-                                                                                    ...props
-                                                                                }) => {
+const ProductStatusSelect = ({
+                                 value,
+                                 className,
+                                 children,
+                                 ...props
+                             }: SelectHTMLAttributes<HTMLSelectElement>) => {
     const list = useSelector(selectProductStatusList);
 
     return (

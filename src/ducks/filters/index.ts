@@ -5,6 +5,7 @@ import {createAction, createAsyncThunk, createReducer} from "@reduxjs/toolkit";
 import {fetchFilters} from "../../api/filters";
 import {
     BaseSKU,
+    BaseSKUSearch,
     CountryOfOrigin,
     PrimaryVendor,
     ProductCategory,
@@ -22,7 +23,7 @@ export interface FiltersState {
     productLine: ProductLine[],
     category: ProductCategory[],
     collection: ProductCollection[],
-    baseSKU: BaseSKU[],
+    baseSKU: BaseSKUSearch[],
     productStatus: ProductStatus[],
     countryOfOrigin: CountryOfOrigin[],
     primaryVendor: PrimaryVendor[],
@@ -143,7 +144,7 @@ const sortWarehouseRecord = (a: Warehouse, b: Warehouse) => a.WarehouseCode > b.
 const sortProductLineRecord = (a: ProductLine, b: ProductLine) => a.ProductLine > b.ProductLine ? 1 : -1;
 const sortCategoryRecord = (a: ProductCategory, b: ProductCategory) => a.Category2 > b.Category2 ? 1 : -1;
 const sortCollectionRecord = (a: ProductCollection, b: ProductCollection) => a.Category3 > b.Category3 ? 1 : -1;
-const sortBaseSKU = (a: BaseSKU, b: BaseSKU) => a.Category4 > b.Category4 ? 1 : -1;
+const sortBaseSKU = (a: BaseSKUSearch, b: BaseSKUSearch) => a.Category4 > b.Category4 ? 1 : -1;
 const sortProductStatusRecord = (a: ProductStatusRecord, b: ProductStatusRecord) => a.code > b.code ? 1 : -1;
 const sortCountryOfOriginRecord = (a: CountryOfOriginRecord, b: CountryOfOriginRecord) => a.countryOfOrigin > b.countryOfOrigin ? 1 : -1;
 const sortPrimaryVendorRecord = (a: PrimaryVendorRecord, b: PrimaryVendorRecord) => a.PrimaryVendorNo > b.PrimaryVendorNo ? 1 : -1;

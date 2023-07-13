@@ -10,9 +10,9 @@ const localStoragePrefix:string = 'local/product-status';
 
 export const localStorageKeys = {
     rowsPerPage:`${localStoragePrefix}/items/rowsPerPage`,
-    filterOnHand: `${localStoragePrefix}/items/filterOnHand`,
-    filterInactive: `${localStoragePrefix}/items/filterInactive`,
-    filterOnlySelected: `${localStoragePrefix}/items/filterOnlySelected`,
+    showOnlyOnHand: `${localStoragePrefix}/items/showOnlyOnHand`,
+    showInactive: `${localStoragePrefix}/items/showInactive`,
+    showOnlySelected: `${localStoragePrefix}/items/showOnlySelected`,
 }
 function getStorage(key:string):Storage {
     return reLocal.test(key) ? window.localStorage : window.sessionStorage;

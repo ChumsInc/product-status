@@ -4,7 +4,7 @@ import {selectItemSearchFilter} from "./selectors";
 import {Input, InputGroup} from "chums-components";
 import {searchItems} from "./actions";
 
-const ItemListSearchInput: React.FC = () => {
+const ItemListSearchInput= () => {
     const dispatch = useDispatch();
     const search = useSelector(selectItemSearchFilter);
     const [timeoutHandle, setTimeoutHandle] = useState(0);

@@ -53,7 +53,7 @@ const fields: SortableTableField<ItemRecord>[] = [
 
 ]
 
-const ItemStatusEditList: React.FC = () => {
+const ItemStatusEditList= () => {
     return (
         <SortableItemList fields={fields}/>
     )

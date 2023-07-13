@@ -1,13 +1,13 @@
 import React, {ChangeEvent} from 'react';
 import {useDispatch, useSelector} from "react-redux";
-import {selectItemsFilterOnHand, selectZeroCount} from "./selectors";
+import {selectItemsShowOnHand, selectZeroCount} from "./selectors";
 import {FormCheck} from "chums-components";
 import {toggleFilterOnHand} from "./actions";
 
 
-const ItemListFilterOnHand: React.FC = () => {
+const ItemListFilterOnHand= () => {
     const dispatch = useDispatch();
-    const checked = useSelector(selectItemsFilterOnHand);
+    const checked = useSelector(selectItemsShowOnHand);
     const count = useSelector(selectZeroCount);
 
     return (

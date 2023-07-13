@@ -8,12 +8,12 @@ export interface FormColumnProps {
     className?: string;
 }
 
-const FormGroup: React.FC<FormColumnProps> = ({
-                                                  label,
-                                                  htmlFor,
-                                                  className = 'col-auto',
-                                                  children
-                                              }) => {
+const FormGroup = ({
+                       label,
+                       htmlFor,
+                       className = 'col-auto',
+                       children
+                   }: FormColumnProps) => {
     return (
         <div className={className}>
             <label className="form-label" htmlFor={htmlFor}>{label}</label>

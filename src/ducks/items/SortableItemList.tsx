@@ -6,14 +6,16 @@ import {LoadingProgressBar, SortableTable, SortableTableField, SortProps, TableP
 import {InProcessStatus, ItemRecord} from "../../types";
 import {setPage, setRowsPerPage, setSort} from "./actions";
 import {itemKey} from "./utils";
-import classNames from "classnames";
+import classNames, {Argument} from "classnames";
 import {QueryStatus} from "@reduxjs/toolkit/query";
 
+
 export interface SortableItemListProps {
-    fields: SortableTableField<ItemRecord>[]
+    fields: SortableTableField<ItemRecord>[],
+    rowClassName?: (row:ItemRecord) => Argument
 }
 
-const SortableItemList = ({fields}: SortableItemListProps) => {
+const SortableItemList = ({fields, rowClassName}: SortableItemListProps) => {
     const dispatch = useAppDispatch();
     const loading = useSelector(selectItemsLoading);
     const list = useSelector(selectFilteredItems);
@@ -29,19 +31,19 @@ const SortableItemList = ({fields}: SortableItemListProps) => {
 
     const rowsPerPageChangeHandler = (rowsPerPage: number) => dispatch(setRowsPerPage(rowsPerPage));
 
-    const rowClassName = (item:ItemRecord) => {
+    const _rowClassName = (item:ItemRecord) => {
         return classNames({
             'table-warning': item.changed && !item.saving,
             'text-info': item.saving === QueryStatus.pending,
             'text-success': item.saving === InProcessStatus.saving
-        })
+        }, rowClassName ? rowClassName(item) : '')
     }
     return (
         <div>
             {loading && <LoadingProgressBar animated striped/>}
             <SortableTable data={list.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)}
                            className="table-sticky"
-                           rowClassName={rowClassName}
+                           rowClassName={_rowClassName}
                            onChangeSort={sortChangeHandler}
                            fields={fields} currentSort={sort} keyField={row => itemKey(row)}/>
             <TablePagination page={page} onChangePage={pageChangeHandler}

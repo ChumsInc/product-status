@@ -1,6 +1,7 @@
 import {
-    BaseSKU,
-    CountryOfOrigin, PrimaryVendor,
+    BaseSKUSearch,
+    CountryOfOrigin,
+    PrimaryVendor,
     ProductCategory,
     ProductCollection,
     ProductLine,
@@ -43,6 +44,7 @@ export type ReorderMethod = 'E' | 'M' | 'R' | null;
 export enum InProcessStatus {
     saving = 'saving',
 }
+
 export type SavingStatus = QueryStatus | InProcessStatus;
 
 export interface ItemRecord {
@@ -81,15 +83,15 @@ export interface ItemRecord {
     saving?: SavingStatus;
 }
 
-export type ItemStatusProps = Pick<ItemRecord, 'ItemCode'|'WarehouseCode'|'ItemStatus'>
-export type ItemKeyProps = Pick<ItemRecord, 'ItemCode'|'WarehouseCode'>
+export type ItemStatusProps = Pick<ItemRecord, 'ItemCode' | 'WarehouseCode' | 'ItemStatus'>
+export type ItemKeyProps = Pick<ItemRecord, 'ItemCode' | 'WarehouseCode'>
 
 export interface FiltersResponse {
     warehouses?: Warehouse[];
     productLines?: ProductLine[];
     categories?: ProductCategory[];
     collections?: ProductCollection[];
-    baseSKUs?: BaseSKU[];
+    baseSKUs?: BaseSKUSearch[];
     countryOfOrigin?: CountryOfOrigin[];
     productStatusList?: ProductStatus[];
     primaryVendor?: PrimaryVendor[];
@@ -100,7 +102,7 @@ export interface FiltersList {
     productLineList: ProductLine[];
     categoryList: ProductCategory[];
     collectionList: ProductCollection[];
-    baseSKUList: BaseSKU[];
+    baseSKUList: BaseSKUSearch[];
     productStatusList: ProductStatus[];
     countryOfOriginList: CountryOfOrigin[];
     primaryVendorList: PrimaryVendor[];

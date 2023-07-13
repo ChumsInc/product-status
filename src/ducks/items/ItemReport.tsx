@@ -4,12 +4,12 @@
 import React from 'react';
 import ItemListFilterBar from "./ItemListFilterBar";
 import ItemStatusList from "./ItemStatusList";
-import {ErrorBoundary} from "chums-components";
+import {ErrorBoundary} from 'react-error-boundary';
+import ErrorBoundaryFallbackAlert from "../alerts/ErrorBoundaryFallbackAlert";
 
-
-const ItemReport: React.FC = () => {
+const ItemReport= () => {
     return (
-        <ErrorBoundary>
+        <ErrorBoundary FallbackComponent={ErrorBoundaryFallbackAlert}>
             <ItemListFilterBar/>
             <ItemStatusList/>
         </ErrorBoundary>

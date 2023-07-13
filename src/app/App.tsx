@@ -10,7 +10,7 @@ import AppContent from "./AppContent";
 import {Route, Routes} from 'react-router-dom';
 
 
-const App: React.FC = () => {
+const App = () => {
     const dispatch = useAppDispatch();
 
     useEffect(() => {

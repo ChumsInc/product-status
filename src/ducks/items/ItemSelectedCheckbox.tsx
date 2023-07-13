@@ -10,7 +10,7 @@ export interface ItemSelectedCheckboxProps {
     selected: boolean,
 }
 
-const ItemSelectedCheckbox: React.FC<ItemSelectedCheckboxProps> = ({itemKey, selected}) => {
+const ItemSelectedCheckbox = ({itemKey, selected}:ItemSelectedCheckboxProps) => {
     const dispatch = useDispatch();
     const isAdmin = useSelector(selectIsAdmin);
     if (!isAdmin) {
