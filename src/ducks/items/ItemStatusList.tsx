@@ -5,6 +5,7 @@ import {ItemRecord} from "../../types";
 import ProductStatusBadges from "./ProductStatusBadges";
 import SortableItemList from "./SortableItemList";
 import ItemLink from "./ItemLink";
+import classNames from "classnames";
 
 
 const fields: SortableTableField<ItemRecord>[] = [
@@ -26,28 +27,29 @@ const fields: SortableTableField<ItemRecord>[] = [
         field: 'QuantityOnHand',
         title: 'Qty On Hand',
         render: ({QuantityOnHand}) => numeral(QuantityOnHand).format('0,0'),
-        className: 'text-end',
+        align: 'end',
         sortable: true
     },
     {
         field: 'QuantityAvailable',
         title: 'Qty Available',
         render: ({QuantityAvailable}) => numeral(QuantityAvailable).format('0,0'),
-        className: 'text-end',
+        className: (row) => classNames('text-end', {'text-danger': row.QuantityAvailable < 0}),
+        align: 'end',
         sortable: true
     },
     {
         field: 'AverageUnitCost',
         title: 'Item Cost',
         render: ({AverageUnitCost}) => numeral(AverageUnitCost).format('0,0.0000'),
-        className: 'text-end',
+        align: 'end',
         sortable: true
     },
     {
         field: 'QuantityAvailableCost',
         title: 'Ext Cost',
         render: ({QuantityAvailableCost}) => numeral(QuantityAvailableCost).format('0,0.00'),
-        className: 'text-end',
+        align: 'end',
         sortable: true
     },
 

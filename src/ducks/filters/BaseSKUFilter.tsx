@@ -3,7 +3,6 @@ import {useSelector} from 'react-redux';
 import {filterBaseSKU, selectBaseSKU, selectBaseSKUList} from "./index";
 import {useAppDispatch} from "../../app/configureStore";
 import AutoComplete from "./AutoComplete";
-import {BaseSKU} from 'chums-types';
 import {BaseSKUSearch} from "chums-types/src/products";
 
 const BaseSKUAutoComplete = AutoComplete<BaseSKUSearch>;
@@ -12,7 +11,7 @@ const baseSKUFilter = (value: string) => (element: BaseSKUSearch) => {
     let regex = /^/;
     try {
         regex = new RegExp(value, 'i')
-    } catch(err:unknown) {
+    } catch (err: unknown) {
     }
     return !value
         || element.Category4.toLowerCase().startsWith(value.toLowerCase())

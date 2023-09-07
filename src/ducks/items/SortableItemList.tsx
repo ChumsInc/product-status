@@ -46,7 +46,7 @@ const SortableItemList = ({fields, rowClassName}: SortableItemListProps) => {
                            rowClassName={_rowClassName}
                            onChangeSort={sortChangeHandler}
                            fields={fields} currentSort={sort} keyField={row => itemKey(row)}/>
-            <TablePagination page={page} onChangePage={pageChangeHandler}
+            <TablePagination page={page} onChangePage={pageChangeHandler} bsSize="sm"
                              rowsPerPage={rowsPerPage} onChangeRowsPerPage={rowsPerPageChangeHandler}
                              count={list.length} showFirst showLast/>
         </div>
