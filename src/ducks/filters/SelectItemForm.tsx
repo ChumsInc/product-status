@@ -48,11 +48,18 @@ const SelectItemForm= () => {
     const [searchParams, setSearchParams] = useSearchParams();
 
     useEffect(() => {
-        dispatch(setFilter(filterFromSearchParams(searchParams)));
+        const filter = filterFromSearchParams(searchParams);
+        dispatch(setFilter(filter));
+        const filters = Object.keys(filter)
+            .filter(key => key !== 'ProductType')
+            .filter(key => !!filter[key as keyof Filter]);
+        if (filters.length) {
+            dispatch(loadItems(filter));
+        }
     }, []);
 
-    const submitHandler = (ev: FormEvent) => {
-        ev.preventDefault();
+    const submitHandler = (ev?: FormEvent) => {
+        ev?.preventDefault();
         const searchParams = new URLSearchParams();
 
         setSearchParams(searchFilter(filter));
