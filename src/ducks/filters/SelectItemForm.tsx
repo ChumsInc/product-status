@@ -2,7 +2,7 @@
  * Created by steve on 2/9/2017.
  */
 
-import React, {FormEvent} from 'react';
+import React, {FormEvent, useEffect} from 'react';
 import {useSelector} from 'react-redux';
 import WarehouseFilter from "./WarehouseFilter";
 import ProductLineFilter from "./ProductLineFilter";
@@ -18,15 +18,44 @@ import {loadItems} from "../items/actions";
 import DownloadButton from "./DownloadButton";
 import VendorFilter from "./VendorFilter";
 import {useAppDispatch} from "../../app/configureStore";
-import {selectFilter} from "./index";
+import {defaultFilter, Filter, selectFilter, setFilter} from "./index";
+import {useSearchParams} from "react-router-dom";
+
+const searchFilter = (filter:Filter):URLSearchParams => {
+    const params = new URLSearchParams();
+    Object.keys(filter)
+        .map(key => {
+            if (filter[key]) {
+                params.set(key, filter[key]);
+            }
+        })
+    return params;
+}
+
+const filterFromSearchParams = (params:URLSearchParams):Filter => {
+    const filter = {...defaultFilter};
+    Object.keys(filter)
+        .map(key => {
+            filter[key] = params.get(key) ?? '';
+        });
+    return filter;
+}
 
 const SelectItemForm= () => {
     const dispatch = useAppDispatch();
     const loading = useSelector(selectItemsLoading);
     const filter = useSelector(selectFilter);
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    useEffect(() => {
+        dispatch(setFilter(filterFromSearchParams(searchParams)));
+    }, []);
 
     const submitHandler = (ev: FormEvent) => {
         ev.preventDefault();
+        const searchParams = new URLSearchParams();
+
+        setSearchParams(searchFilter(filter));
         dispatch(loadItems(filter));
     }
 
@@ -58,6 +87,9 @@ const SelectItemForm= () => {
             </FormGroup>
             <FormGroup label="Status" htmlFor="sif-status">
                 <ProductStatusFilter id="sif-status" placeholder="All"/>
+            </FormGroup>
+            <FormGroup label={<span>&nbsp;</span>}>
+                <button type="button" className="btn btn-sm btn-outline-secondary" onClick={() => dispatch(setFilter(defaultFilter))}>Reset</button>
             </FormGroup>
             <FormGroup label={<span>&nbsp;</span>}>
                 <button type="submit" className="btn btn-sm btn-primary" disabled={loading}>

@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {Tab, TabList} from 'chums-components'
 import {useSelector} from "react-redux";
 import {RootState} from "../ducks";
-import {useLocation, useNavigate} from "react-router-dom";
+import {useLocation, useNavigate, useParams, useSearchParams} from "react-router-dom";
 
 
 export interface ValidatedTab extends Tab {
@@ -21,6 +21,7 @@ const initialTabList: ValidatedTab[] = [
 const AppTabs = () => {
     const location = useLocation();
     const navigate = useNavigate();
+    const [searchParams, setSearchParams] = useSearchParams();
     const isAdmin = useSelector((state: RootState) => state.app.isAdmin);
     const [tabList, setTabList] = useState(initialTabList);
 
@@ -29,7 +30,8 @@ const AppTabs = () => {
     }, [isAdmin]);
 
     const selectHandler = (tab: Tab) => {
-        navigate(tab.id);
+        const url = `${tab.id}?${searchParams.toString()}`
+        navigate(url);
     }
 
     return (

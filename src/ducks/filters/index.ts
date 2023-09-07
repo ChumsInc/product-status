@@ -15,6 +15,7 @@ import {
     ProductStatus,
     Warehouse
 } from "chums-types";
+import {createSelector} from "reselect";
 
 export interface FiltersState {
     filter: Filter;
@@ -67,6 +68,7 @@ export const filterProductLine = createAction<string>('filters/filter/productLin
 export const filterPrimaryVendor = createAction<string>('filters/filter/primaryVendor');
 export const filterBaseSKU = createAction<string>('filters/filter/baseSKU');
 export const filterProductStatus = createAction<string>('filters/filter/productStatus');
+export const setFilter = createAction<Filter>('filters/filter/set')
 
 export const loadFilters = createAsyncThunk<FiltersList>(
     'filters/load',
@@ -123,6 +125,9 @@ const filtersReducer = createReducer(initialFiltersState, (builder) => {
         .addCase(filterProductStatus, (state, action) => {
             state.filter.productStatus = action.payload;
         })
+        .addCase(setFilter, (state, action) => {
+            state.filter = action.payload;
+        })
 });
 
 
@@ -162,7 +167,8 @@ export const selectBaseSKU = (state: RootState) => state.filters.filter.baseSKU;
 export const selectProductStatus = (state: RootState) => state.filters.filter.productStatus;
 export const selectPrimaryVendor = (state: RootState) => state.filters.filter.primaryVendor;
 
-export const selectActiveWarehouseList = (state: RootState) => state.filters.warehouse.filter(whs => whs.WarehouseStatus === 'A');
+
+export const selectWarehouseList = (state: RootState) => state.filters.warehouse;
 
 export const selectProductLineList = (state: RootState) => state.filters.productLine;
 export const selectCategoryList = (state: RootState) => state.filters.category;
@@ -171,4 +177,10 @@ export const selectBaseSKUList = (state: RootState) => state.filters.baseSKU;
 export const selectProductStatusList = (state: RootState) => state.filters.productStatus;
 export const selectPrimaryVendorList = (state: RootState) => state.filters.primaryVendor;
 
+export const selectActiveWarehouseList = createSelector(
+    [selectWarehouseList],
+    (list) => {
+        return list.filter(whs => whs.WarehouseStatus === 'A').sort(sortWarehouseRecord);
+    }
+)
 export default filtersReducer;
