@@ -6,6 +6,7 @@ import SortableItemList from "./SortableItemList";
 import ItemLink from "./ItemLink";
 import {SortableTableField} from "chums-components";
 import {ItemRecord} from "../../types";
+import ProductStatusBadges from "./ProductStatusBadges";
 
 
 const fields: SortableTableField<ItemRecord>[] = [
@@ -21,7 +22,13 @@ const fields: SortableTableField<ItemRecord>[] = [
     {field: 'Category2', title: 'Category', sortable: true},
     {field: 'Category3', title: 'Collection', sortable: true},
     {field: 'Category4', title: 'SKU', sortable: true},
-    {field: 'ItemStatus', title: 'Status', className: 'status-container', sortable: true},
+    {
+        field: 'ItemStatus',
+        title: 'Status',
+        className: 'status-container',
+        sortable: true,
+        render: (row) => (<ProductStatusBadges item={row}/>)
+    },
     {
         field: 'QuantityOnHand',
         title: 'Qty On Hand',
