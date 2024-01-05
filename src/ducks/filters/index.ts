@@ -1,10 +1,9 @@
 import {CountryOfOriginRecord, FiltersList, PrimaryVendorRecord, ProductStatusRecord} from "../../types";
 import {RootState} from "../index";
 import {QueryStatus} from "@reduxjs/toolkit/query";
-import {createAction, createAsyncThunk, createReducer} from "@reduxjs/toolkit";
+import {createAction, createAsyncThunk, createReducer, createSelector} from "@reduxjs/toolkit";
 import {fetchFilters} from "../../api/filters";
 import {
-    BaseSKU,
     BaseSKUSearch,
     CountryOfOrigin,
     PrimaryVendor,
@@ -15,7 +14,6 @@ import {
     ProductStatus,
     Warehouse
 } from "chums-types";
-import {createSelector} from "reselect";
 
 export interface FiltersState {
     filter: Filter;

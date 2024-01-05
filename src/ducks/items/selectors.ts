@@ -1,8 +1,8 @@
 import {RootState} from "../index";
-import {createSelector} from "reselect";
 import {itemSorter} from "./utils";
 import {QueryStatus} from "@reduxjs/toolkit/query";
 import {InProcessStatus, ItemRecord} from "../../types";
+import {createSelector} from "@reduxjs/toolkit";
 
 
 export const selectItemList = (state: RootState) => state.items.list;
