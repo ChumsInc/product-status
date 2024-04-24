@@ -7,7 +7,7 @@ import {Input} from "chums-components";
 export interface OrderQuantityInputProps extends InputHTMLAttributes<HTMLInputElement>{
     itemKey: ItemKeyProps,
     field: keyof ItemRecord,
-    quantity: number,
+    quantity: number|string,
 }
 
 const OrderQuantityInput = ({itemKey, field, quantity, ...rest}:OrderQuantityInputProps) => {

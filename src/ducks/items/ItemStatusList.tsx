@@ -6,6 +6,8 @@ import ProductStatusBadges from "./ProductStatusBadges";
 import SortableItemList from "./SortableItemList";
 import ItemLink from "./ItemLink";
 import classNames from "classnames";
+import Decimal from "decimal.js";
+import QuantityAvailableToolTip from "./QuantityAvailableToolTip";
 
 
 const fields: SortableTableField<ItemRecord>[] = [
@@ -33,8 +35,8 @@ const fields: SortableTableField<ItemRecord>[] = [
     {
         field: 'QuantityAvailable',
         title: 'Qty Available',
-        render: ({QuantityAvailable}) => numeral(QuantityAvailable).format('0,0'),
-        className: (row) => classNames('text-end', {'text-danger': row.QuantityAvailable < 0}),
+        render: (row) => <QuantityAvailableToolTip values={row}><>{numeral(row.QuantityAvailable).format('0,0')}</></QuantityAvailableToolTip>,
+        className: (row) => classNames('text-end', {'text-danger': new Decimal(row.QuantityAvailable).lt(0)}),
         align: 'end',
         sortable: true
     },

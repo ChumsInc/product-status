@@ -97,6 +97,12 @@ $brand-danger:          #d9534f !default;
       }
     }
   }
+
+  .btn-text {
+    cursor: pointer;
+    display: inline-block;
+  }
+
   @media (max-width: 767px) {
     .save-form {
       width: 100%;

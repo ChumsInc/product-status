@@ -66,6 +66,10 @@
 #app .save-form.form-inline .form-group {
   display: inline-block;
 }
+#app .btn-text {
+  cursor: pointer;
+  display: inline-block;
+}
 @media (max-width: 767px) {
   #app .save-form {
     width: 100%;
