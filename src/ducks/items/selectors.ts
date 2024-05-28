@@ -57,7 +57,7 @@ export const selectChangedItems = createSelector(
     }
 );
 
-export const selectZeroCount = (state:RootState) => state.items.list.filter(item => item.QuantityOnHand === 0 && item.QuantityAvailable === 0).length;
+export const selectZeroCount = (state:RootState) => state.items.list.filter(item => new Decimal(item.QuantityOnHand).eq(0) && new Decimal(item.QuantityAvailable).eq(0)).length;
 
 export const selectInactiveCount = (state:RootState) => state.items.list.filter(item => item.InactiveItem === 'Y' || item.ProductType === 'D').length;
 
