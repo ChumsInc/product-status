@@ -3,6 +3,7 @@ import {itemSorter} from "./utils";
 import {QueryStatus} from "@reduxjs/toolkit/query";
 import {InProcessStatus, ItemRecord} from "../../types";
 import {createSelector} from "@reduxjs/toolkit";
+import Decimal from "decimal.js";
 
 
 export const selectItemList = (state: RootState) => state.items.list;
@@ -31,7 +32,7 @@ const listFilter = (list:ItemRecord[], search:string, showOnlyOnHand: boolean, s
     return list
         .filter(item => !search || searchRegexp.test(item.ItemCode) || searchRegexp.test(item.ItemCodeDesc))
         .filter(item => showInactive || !(item.InactiveItem === 'Y' || item.ProductType === 'D'))
-        .filter(item => !showOnlyOnHand || item.QuantityOnHand !== 0)
+        .filter(item => !showOnlyOnHand || !new Decimal(item.QuantityOnHand).eq(0))
         .filter(item => !filterSelected || item.selected || item.changed);
 }
 
