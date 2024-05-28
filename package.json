@@ -1,6 +1,6 @@
 {
   "name": "product-status",
-  "version": "2.2.7",
+  "version": "2.2.8",
   "main": "src/index.tsx",
   "scripts": {
     "start": "webpack serve --config webpack.dev.js --progress",
