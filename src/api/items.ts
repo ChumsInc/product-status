@@ -2,6 +2,7 @@ import {Filter} from "../ducks/filters";
 import {ItemRecord, ItemStatusProps} from "../types";
 import {getFilterQuery} from "./filters";
 import {fetchJSON} from "chums-components";
+import Decimal from "decimal.js";
 
 const urlItems = '/api/operations/production/item/status/chums/';
 const urlPostStatus = '/api/operations/production/item/status/chums/:ItemCode/:WarehouseCode';
@@ -55,7 +56,12 @@ export async function postReorderOptions(args: ItemRecord): Promise<ItemRecord |
         const body = {
             Company: 'CHI',
             ItemCode,
-            WarehouseCode, ReorderMethod, ReorderPointQty, EconomicOrderQty, MaximumOnHandQty, MinimumOrderQty
+            WarehouseCode,
+            ReorderMethod,
+            ReorderPointQty: new Decimal(ReorderPointQty).toDecimalPlaces(0).toNumber(),
+            EconomicOrderQty: new Decimal(EconomicOrderQty).toDecimalPlaces(0).toNumber(),
+            MaximumOnHandQty: new Decimal(MaximumOnHandQty).toDecimalPlaces(0).toNumber(),
+            MinimumOrderQty: new Decimal(MinimumOrderQty).toDecimalPlaces(0).toNumber()
         }
         await fetchJSON(urlSaveReorderOptions, {method: 'POST', body: JSON.stringify(body)});
 

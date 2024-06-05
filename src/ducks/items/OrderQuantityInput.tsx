@@ -3,6 +3,7 @@ import {ItemKeyProps, ItemRecord} from "../../types";
 import {useDispatch} from "react-redux";
 import {setReorderOptions} from "./actions";
 import {Input} from "chums-components";
+import Decimal from "decimal.js";
 
 export interface OrderQuantityInputProps extends InputHTMLAttributes<HTMLInputElement>{
     itemKey: ItemKeyProps,
@@ -12,10 +13,10 @@ export interface OrderQuantityInputProps extends InputHTMLAttributes<HTMLInputEl
 
 const OrderQuantityInput = ({itemKey, field, quantity, ...rest}:OrderQuantityInputProps) => {
     const dispatch = useDispatch();
-    const [value, setValue] = useState(quantity);
+    const [value, setValue] = useState<number>(+quantity);
 
     useEffect(() => {
-        setValue(quantity);
+        setValue(+quantity);
     }, [quantity])
 
     const changeHandler = (ev: ChangeEvent<HTMLInputElement>) => {
@@ -34,6 +35,7 @@ const OrderQuantityInput = ({itemKey, field, quantity, ...rest}:OrderQuantityInp
             dispatch(setReorderOptions({...itemKey, [field]: value}));
         }
     }
+
 
     return (
         <Input type="number" value={value} className="text-end"

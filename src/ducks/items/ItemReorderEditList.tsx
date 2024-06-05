@@ -34,28 +34,28 @@ const fields: SortableTableField<ItemRecord>[] = [
         title: 'Reorder Point',
         sortable: true,
         render: (row) => <OrderQuantityInput itemKey={itemKeyProps(row)} field="ReorderPointQty"
-                                             quantity={row.ReorderPointQty}  disabled={row.ProductType === 'D' || row.InactiveItem === 'Y'}/>
+                                             quantity={numeral(row.ReorderPointQty).format('0')}  disabled={row.ProductType === 'D' || row.InactiveItem === 'Y'}/>
     },
     {
         field: 'EconomicOrderQty',
         title: 'Econ Order Qty',
         sortable: true,
         render: (row) => <OrderQuantityInput itemKey={itemKeyProps(row)} field="EconomicOrderQty"
-                                             quantity={row.EconomicOrderQty} disabled={row.ProductType === 'D' || row.InactiveItem === 'Y'}/>
+                                             quantity={numeral(row.EconomicOrderQty).format('0')} disabled={row.ProductType === 'D' || row.InactiveItem === 'Y'}/>
     },
     {
         field: 'MinimumOrderQty',
         title: 'Min Order Qty',
         sortable: true,
         render: (row) => <OrderQuantityInput itemKey={itemKeyProps(row)} field="MinimumOrderQty"
-                                             quantity={row.MinimumOrderQty} disabled={row.ProductType === 'D' || row.InactiveItem === 'Y'}/>
+                                             quantity={numeral(row.MinimumOrderQty).format('0')} disabled={row.ProductType === 'D' || row.InactiveItem === 'Y'}/>
     },
     {
         field: 'MaximumOnHandQty',
         title: 'Max O/H Qty',
         sortable: true,
         render: (row) => <OrderQuantityInput itemKey={itemKeyProps(row)} field="MaximumOnHandQty"
-                                             quantity={row.MaximumOnHandQty} disabled={row.ProductType === 'D' || row.InactiveItem === 'Y'}/>
+                                             quantity={numeral(row.MaximumOnHandQty).format('0')} disabled={row.ProductType === 'D' || row.InactiveItem === 'Y'}/>
     },
     {
         field: 'QuantityOnHand',
