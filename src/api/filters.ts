@@ -15,25 +15,16 @@ export const getFilterQuery = (filter: Partial<Filter>): URLSearchParams => {
 
 export async function fetchFilters(): Promise<FiltersList> {
     try {
-        const {
-            warehouses,
-            productLines,
-            categories,
-            collections,
-            baseSKUs,
-            primaryVendor,
-            countryOfOrigin,
-            productStatusList
-        } = await fetchJSON<FiltersResponse>('/api/search/item/filters/CHI/');
+        const res = await fetchJSON<FiltersResponse>('/api/search/item/filters/CHI/');
         return {
-            warehouseList: warehouses ?? [],
-            productLineList: productLines ?? [],
-            categoryList: categories ?? [],
-            collectionList: collections ?? [],
-            baseSKUList: baseSKUs ?? [],
-            primaryVendorList: primaryVendor ?? [],
-            countryOfOriginList: countryOfOrigin ?? [],
-            productStatusList: productStatusList ?? []
+            warehouseList: res?.warehouses ?? [],
+            productLineList: res?.productLines ?? [],
+            categoryList: res?.categories ?? [],
+            collectionList: res?.collections ?? [],
+            baseSKUList: res?.baseSKUs ?? [],
+            primaryVendorList: res?.primaryVendor ?? [],
+            countryOfOriginList: res?.countryOfOrigin ?? [],
+            productStatusList: res?.productStatusList ?? []
         }
     } catch (err: unknown) {
         if (err instanceof Error) {

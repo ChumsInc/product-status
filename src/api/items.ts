@@ -12,8 +12,8 @@ const urlSaveReorderOptions = `/sage/api/operations/item-reorder-options.php`;
 export async function fetchItems(filter: Partial<Filter>): Promise<ItemRecord[]> {
     try {
         const url = `${urlItems}?${getFilterQuery(filter)}`;
-        const {result} = await fetchJSON<{ result: ItemRecord[] }>(url);
-        return result ?? [];
+        const res = await fetchJSON<{ result: ItemRecord[] }>(url);
+        return res?.result ?? [];
     } catch (err: unknown) {
         if (err instanceof Error) {
             console.debug("fetchItems()", err.message);
@@ -29,8 +29,8 @@ export async function postItemStatus(props: ItemStatusProps): Promise<ItemRecord
         const url = urlPostStatus.replace(':ItemCode', encodeURIComponent(props.ItemCode))
             .replace(':WarehouseCode', encodeURIComponent(props.WarehouseCode));
         const body = JSON.stringify({ItemStatus: props.ItemStatus});
-        const {result} = await fetchJSON<{ result: ItemRecord[] }>(url, {method: 'POST', body});
-        const [item] = result ?? [];
+        const res = await fetchJSON<{ result: ItemRecord[] }>(url, {method: 'POST', body});
+        const [item] = res?.result ?? [];
         return item ?? null;
     } catch (err: unknown) {
         if (err instanceof Error) {
