@@ -5,19 +5,18 @@
  * @author Steve Montgomery
  * @copyright Copyright &copy; 2011, steve
  */
+use chums\ui\WebUI2;
+use chums\user\Groups;
+use chums\ui\JSOptions;
+use chums\ui\CSSOptions;
 
 require_once ("autoload.inc.php");
-require_once ("access.inc.php");
 
-enable_error_reporting(true);
-
-$bodyPath = "/apps/product-status";
-$title = "Product Status";
-
-$ui = new WebUI($bodyPath, $title, '', true, 5);
-$ui->version = "2017.02.08.1331";
-$ui->setBodyClass('container-fluid');
-
-$ui->AddCSS('public/css/styles.css');
-$ui->addManifest('public/js/manifest.json');
-$ui->Send();
+$ui = new WebUI2([
+    'title' => 'Product Status',
+    'bodyClassName' => 'container-fluid',
+    'requiredRoles' => [Groups::SALES],
+]);
+$ui->addCSS('public/css/styles.css', CSSOptions::parse(['useTimestampVersion' => true]))
+    ->addManifestJSON('public/js/manifest.json')
+    ->render();
