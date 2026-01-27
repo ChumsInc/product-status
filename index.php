@@ -16,6 +16,7 @@ $ui = new WebUI2([
     'title' => 'Product Status',
     'bodyClassName' => 'container-fluid',
     'requiredRoles' => [Groups::SALES],
+    'contentFile' => 'body.inc.php'
 ]);
 $ui->addCSS('public/css/styles.css', CSSOptions::parse(['useTimestampVersion' => true]))
     ->addManifestJSON('public/js/manifest.json')
