@@ -1,6 +1,6 @@
 {
   "name": "product-status",
-  "version": "2.2.10",
+  "version": "2.3.0",
   "main": "src/index.tsx",
   "type": "module",
   "scripts": {
