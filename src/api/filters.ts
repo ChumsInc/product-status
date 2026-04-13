@@ -1,7 +1,7 @@
-import {FiltersList, FiltersResponse} from "../types";
-import {fetchJSON} from "chums-components";
-import {Filter} from "../ducks/filters";
-import {ProductSearchItem} from "chums-types";
+import type {FiltersList, FiltersResponse} from "../types";
+import {fetchJSON} from "@chumsinc/ui-utils";
+import type {Filter} from "../ducks/filters";
+import type {ProductSearchItem} from "chums-types";
 
 export const getFilterQuery = (filter: Partial<Filter>): URLSearchParams => {
     const params = new URLSearchParams();
@@ -37,13 +37,11 @@ export async function fetchFilters(): Promise<FiltersList> {
 }
 
 
-export async function fetchItemFilter(filters: Filter): Promise<ProductSearchItem[]> {
+export async function fetchItemFilter(itemCode:string, params?: URLSearchParams): Promise<ProductSearchItem[]> {
     try {
-        const {itemCode, ...rest} = filters;
-        const options = getFilterQuery(rest);
-        const url = `/api/search/item/chums/${encodeURIComponent(itemCode || '^')}?${options.toString()}`
-        const {result} = await fetchJSON(url);
-        return result || [];
+        const url = `/api/search/item/chums/${encodeURIComponent(itemCode || '^')}?${params?.toString()}`
+        const res = await fetchJSON<{result: ProductSearchItem[]}>(url);
+        return res?.result ?? [];
     } catch (err: unknown) {
         if (err instanceof Error) {
             console.debug("fetchItemFilter()", err.message);

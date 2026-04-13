@@ -1,4 +1,4 @@
-import {
+import type {
     BaseSKUSearch,
     CountryOfOrigin,
     PrimaryVendor,
@@ -9,9 +9,9 @@ import {
     Warehouse
 } from "chums-types";
 import {QueryStatus} from "@reduxjs/toolkit/query";
+import type {ReactNode} from "react";
 
 export type ProductType = 'F' | 'K' | 'R' | 'D';
-
 
 export interface CollectionRecord {
     Category3: string;
@@ -41,11 +41,19 @@ export interface ItemStatusHistory {
 
 export type ReorderMethod = 'E' | 'M' | 'R' | null;
 
-export enum InProcessStatus {
-    saving = 'saving',
-}
+export const InProcessStatus = {
+    saving: 'saving'
+} as const;
 
-export type SavingStatus = QueryStatus | InProcessStatus;
+export type SavingStatus = QueryStatus | (typeof InProcessStatus)[keyof typeof InProcessStatus];
+
+export interface ItemRecordEditFields {
+    ReorderMethod?: ReorderMethod;
+    ReorderPointQty?: string | number;
+    EconomicOrderQty?: string | number;
+    MaximumOnHandQty?: string | number;
+    MinimumOrderQty?: string | number;
+}
 
 export interface ItemRecord {
     ItemCode: string;
@@ -57,31 +65,34 @@ export interface ItemRecord {
     Category4: string | null;
     InactiveItem: 'Y' | 'N';
     WarehouseCode: string;
-    QuantityOnHand: string|number;
-    QuantityOnSalesOrder: string|number;
-    QuantityOnBackOrder: string|number;
-    QuantityOnPurchaseOrder: string|number;
-    QuantityOnWorkOrder: string|number;
-    QuantityRequiredForWO: string|number;
-    QuantityOnMaterialReq: string|number;
-    QuantityAvailable: string|number;
-    StandardUnitCost: string|number;
-    AverageUnitCost: string|number;
-    QuantityAvailableCost: string|number;
+    QuantityOnHand: string | number;
+    QuantityOnSalesOrder: string | number;
+    QuantityOnBackOrder: string | number;
+    QuantityOnPurchaseOrder: string | number;
+    QuantityOnWorkOrder: string | number;
+    QuantityRequiredForWO: string | number;
+    QuantityOnMaterialReq: string | number;
+    QuantityAvailable: string | number;
+    StandardUnitCost: string | number;
+    AverageUnitCost: string | number;
+    QuantityAvailableCost: string | number;
     selected?: boolean;
     changed?: boolean;
     ItemStatus: string;
     BinLocation: string | null;
     ReorderMethod: ReorderMethod;
-    ReorderPointQty: string|number;
-    EconomicOrderQty: string|number;
-    MaximumOnHandQty: string|number;
-    MinimumOrderQty: string|number;
+    ReorderPointQty: string | number;
+    EconomicOrderQty: string | number;
+    MaximumOnHandQty: string | number;
+    MinimumOrderQty: string | number;
     PrimaryVendorNo: string;
     ItemStatusHistory?: ItemStatusHistory[];
+    changes?: ItemRecordEditFields;
+    status?: 'idle' | 'changed' | 'pending' | 'saving' | 'rejected';
     loading?: QueryStatus;
     saving?: SavingStatus;
 }
+
 
 export type ItemStatusProps = Pick<ItemRecord, 'ItemCode' | 'WarehouseCode' | 'ItemStatus'>
 export type ItemKeyProps = Pick<ItemRecord, 'ItemCode' | 'WarehouseCode'>
@@ -107,3 +118,16 @@ export interface FiltersList {
     countryOfOriginList: CountryOfOrigin[];
     primaryVendorList: PrimaryVendor[];
 }
+
+export interface Tab {
+    id: string,
+    title: string | ReactNode,
+
+    /** Bootstrap icon className */
+    icon?: string,
+
+    canClose?: boolean,
+    disabled?: boolean,
+}
+
+

@@ -1,7 +1,8 @@
-import {RootState} from "../index";
-import {createAsyncThunk, createReducer} from "@reduxjs/toolkit";
-import {getAdminRole} from "../../api/admin";
+import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
+import {getAdminRole} from "@/api/admin.ts";
 import {QueryStatus} from "@reduxjs/toolkit/query";
+import {dismissAlert} from "@chumsinc/alert-list";
+
 
 export interface AppState {
     isAdmin: boolean;
@@ -20,20 +21,34 @@ export const loadAdminRole = createAsyncThunk<boolean>(
     }
 )
 
-export const selectIsAdmin = (state:RootState) => state.app.isAdmin;
-
-const appReducer = createReducer(initialAppState, (builder) => {
-    builder
-        .addCase(loadAdminRole.pending, (state) => {
-            state.status = QueryStatus.pending;
-        })
-        .addCase(loadAdminRole.rejected, (state) => {
-            state.status = QueryStatus.rejected;
-        })
-        .addCase(loadAdminRole.fulfilled, (state, action) => {
-            state.status = QueryStatus.fulfilled;
-            state.isAdmin = action.payload;
-        })
+const appSlice = createSlice({
+    name: 'app',
+    initialState: initialAppState,
+    reducers: {},
+    extraReducers: (builder) => {
+        builder
+            .addCase(dismissAlert, (state, action) => {
+                if (action.payload.context === loadAdminRole.typePrefix) {
+                    state.status = QueryStatus.uninitialized;
+                }
+            })
+            .addAsyncThunk(loadAdminRole, {
+                pending: (state) => {
+                    state.status = QueryStatus.pending;
+                },
+                fulfilled: (state, action) => {
+                    state.status = QueryStatus.fulfilled;
+                    state.isAdmin = action.payload;
+                },
+                rejected: (state) => {
+                    state.status = QueryStatus.rejected;
+                }
+            })
+    },
+    selectors: {
+        selectIsAdmin: (state) => state.isAdmin,
+    }
 });
 
-export default appReducer;
+export default appSlice;
+export const {selectIsAdmin} = appSlice.selectors;

@@ -1,6 +1,6 @@
-import {fetchJSON} from "chums-components";
+import {fetchJSON} from "@chumsinc/ui-utils";
 
-export const PATH_CHECK_ADMIN_ROLE = '/api/user/validate/role/product-admin';
+export const PATH_CHECK_ADMIN_ROLE = '/api/user/v2/validate/role/product-admin.json';
 
 export async function getAdminRole():Promise<boolean> {
     try {

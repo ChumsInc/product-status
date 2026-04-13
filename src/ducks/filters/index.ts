@@ -1,9 +1,9 @@
-import {CountryOfOriginRecord, FiltersList, PrimaryVendorRecord, ProductStatusRecord} from "../../types";
-import {RootState} from "../index";
+import type {CountryOfOriginRecord, FiltersList, PrimaryVendorRecord, ProductStatusRecord} from "../../types";
+import type {RootState} from "@/app/configureStore";
 import {QueryStatus} from "@reduxjs/toolkit/query";
-import {createAction, createAsyncThunk, createReducer, createSelector} from "@reduxjs/toolkit";
-import {fetchFilters} from "../../api/filters";
-import {
+import {createAction, createAsyncThunk, createReducer} from "@reduxjs/toolkit";
+import {fetchFilters} from "@/api/filters.ts";
+import type {
     BaseSKUSearch,
     CountryOfOrigin,
     PrimaryVendor,
@@ -59,7 +59,7 @@ export const initialFiltersState: FiltersState = {
 export const filterItemCode = createAction<string>('filters/filter/itemCode');
 export const filterProductType = createAction<string>('filters/filter/productType');
 export const filterWarehouse = createAction<string>('filters/filter/warehouse');
-export const filterCategory = createAction<string>('filters/filter/category');
+export const filterCategory = createAction<string>('filters/filter/product-category');
 export const filterCollection = createAction<string>('filters/filter/collection');
 export const filterCountryOfOrigin = createAction<string>('filters/filter/countryOfOrigin');
 export const filterProductLine = createAction<string>('filters/filter/productLine');
@@ -156,29 +156,6 @@ const sortPrimaryVendorRecord = (a: PrimaryVendorRecord, b: PrimaryVendorRecord)
 export const selectFilter = (state: RootState) => state.filters.filter;
 
 export const selectItemCode = (state: RootState) => state.filters.filter.itemCode;
-export const selectProductType = (state: RootState) => state.filters.filter.productType;
-export const selectWarehouse = (state: RootState) => state.filters.filter.warehouse;
-export const selectProductLine = (state: RootState) => state.filters.filter.productLine;
-export const selectCategory = (state: RootState) => state.filters.filter.category;
-export const selectCollection = (state: RootState) => state.filters.filter.collection;
-export const selectBaseSKU = (state: RootState) => state.filters.filter.baseSKU;
-export const selectProductStatus = (state: RootState) => state.filters.filter.productStatus;
-export const selectPrimaryVendor = (state: RootState) => state.filters.filter.primaryVendor;
 
 
-export const selectWarehouseList = (state: RootState) => state.filters.warehouse;
-
-export const selectProductLineList = (state: RootState) => state.filters.productLine;
-export const selectCategoryList = (state: RootState) => state.filters.category;
-export const selectCollectionList = (state: RootState) => state.filters.collection;
-export const selectBaseSKUList = (state: RootState) => state.filters.baseSKU;
-export const selectProductStatusList = (state: RootState) => state.filters.productStatus;
-export const selectPrimaryVendorList = (state: RootState) => state.filters.primaryVendor;
-
-export const selectActiveWarehouseList = createSelector(
-    [selectWarehouseList],
-    (list) => {
-        return list.filter(whs => whs.WarehouseStatus === 'A').sort(sortWarehouseRecord);
-    }
-)
 export default filtersReducer;

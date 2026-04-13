@@ -1,13 +1,13 @@
-import React, {useEffect} from "react";
+import {StrictMode, useEffect} from "react";
 import {loadAdminRole} from "../ducks/app";
 import {loadFilters} from "../ducks/filters";
 import ItemReport from "../ducks/items/ItemReport";
-import ItemStatusEdit from "../ducks/items/ItemStatusEdit";
-import ItemReorderEdit from "../ducks/items/ItemReorderEdit";
+import ItemStatusEdit from "@/ducks/items/product-edit-list/ItemStatusEdit.tsx";
+import ItemReorderEdit from "@/ducks/items/product-reorder-list/ItemReorderEdit.tsx";
 import NotesTabContent from "../components/NotesTabContent";
 import {useAppDispatch} from "./configureStore";
 import AppContent from "./AppContent";
-import {Route, Routes} from 'react-router-dom';
+import {Route, Routes} from 'react-router';
 
 
 const App = () => {
@@ -16,10 +16,10 @@ const App = () => {
     useEffect(() => {
         dispatch(loadAdminRole());
         dispatch(loadFilters());
-    }, [])
+    }, [dispatch])
 
     return (
-        <React.StrictMode>
+        <StrictMode>
             <Routes>
                 <Route path="/" element={<AppContent/>}>
                     <Route index element={<ItemReport/>}/>
@@ -28,7 +28,7 @@ const App = () => {
                     <Route path="/notes" element={<NotesTabContent/>}/>
                 </Route>
             </Routes>
-        </React.StrictMode>
+        </StrictMode>
     )
 }
 

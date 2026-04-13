@@ -1,5 +1,5 @@
-import {ItemKeyProps, ItemRecord} from "../../types";
-import {SortProps} from "chums-components";
+import type {ItemKeyProps, ItemRecord, ItemRecordEditFields} from "../../types";
+import type {SortProps} from "@chumsinc/sortable-tables";
 import Decimal from "decimal.js";
 
 export const itemKey = (item: ItemKeyProps) => `${item.WarehouseCode}:${item.ItemCode}`;
@@ -47,6 +47,7 @@ export const itemSorter = (sort: SortProps<ItemRecord>) => (a: ItemRecord, b: It
         case 'ItemStatusHistory':
         case 'loading':
         case 'saving':
+        case 'changes':
             return (itemKey(a) > itemKey(b) ? 1 : -1);
         default:
             return ((a[field] || '').toLowerCase() === (b[field] || '').toLowerCase()
@@ -62,4 +63,39 @@ export const updateItemInArray = (items: ItemRecord[], itemKeys: string[], updat
         ...items.filter(item => !itemKeys?.includes(itemKey(item))),
         ...items.filter(item => itemKeys?.includes(itemKey(item))).map(updater),
     ].sort(itemKeySorter);
+}
+
+export const listFilter = (list: ItemRecord[], search: string, showOnlyOnHand: boolean, showInactive: boolean, filterSelected: boolean) => {
+    let searchRegexp = /^/;
+    try {
+        searchRegexp = new RegExp(search, 'i');
+    } catch (_err) {
+        searchRegexp = /^/
+    }
+
+    return list
+        .filter(item => !search || searchRegexp.test(item.ItemCode) || searchRegexp.test(item.ItemCodeDesc))
+        .filter(item => showInactive || !(item.InactiveItem === 'Y' || item.ProductType === 'D'))
+        .filter(item => !showOnlyOnHand || !new Decimal(item.QuantityOnHand).eq(0))
+        .filter(item => !filterSelected || item.selected || item.changed);
+}
+
+export function isItemChanged(item:ItemRecord):boolean {
+    return isItemFieldChanged(item, 'ReorderMethod')
+        || isItemFieldChanged(item, 'ReorderPointQty')
+        || isItemFieldChanged(item, 'MinimumOrderQty')
+        || isItemFieldChanged(item, 'MaximumOnHandQty')
+        || isItemFieldChanged(item, 'EconomicOrderQty')
+}
+
+function isItemFieldChanged(item:ItemRecord, field:keyof ItemRecordEditFields):boolean {
+    if (item.changes?.[field] === undefined) {
+        return false
+    }
+    switch (field) {
+        case 'ReorderMethod':
+            return (item.changes[field] ?? '') !== (item.ReorderMethod ?? '');
+        default:
+            return !new Decimal(item.changes[field]).eq(item[field]);
+    }
 }

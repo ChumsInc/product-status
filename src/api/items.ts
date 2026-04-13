@@ -1,17 +1,15 @@
-import {Filter} from "../ducks/filters";
-import {ItemRecord, ItemStatusProps} from "../types";
-import {getFilterQuery} from "./filters";
-import {fetchJSON} from "chums-components";
+import type {ItemRecord, ItemStatusProps} from "../types";
+import {fetchJSON} from "@chumsinc/ui-utils";
 import Decimal from "decimal.js";
 
-const urlItems = '/api/operations/production/item/status/chums/';
-const urlPostStatus = '/api/operations/production/item/status/chums/:ItemCode/:WarehouseCode';
+const urlItems = '/api/operations/production/item/status/items.json';
+const urlPostStatus = '/api/operations/production/item/status/:ItemCode/:WarehouseCode.json';
 const urlSaveReorderOptions = `/sage/api/operations/item-reorder-options.php`;
 
 
-export async function fetchItems(filter: Partial<Filter>): Promise<ItemRecord[]> {
+export async function fetchItems(params: URLSearchParams): Promise<ItemRecord[]> {
     try {
-        const url = `${urlItems}?${getFilterQuery(filter)}`;
+        const url = `${urlItems}?${params.toString()}`;
         const res = await fetchJSON<{ result: ItemRecord[] }>(url);
         return res?.result ?? [];
     } catch (err: unknown) {
@@ -51,21 +49,25 @@ export async function postReorderOptions(args: ItemRecord): Promise<ItemRecord |
             ReorderPointQty,
             EconomicOrderQty,
             MaximumOnHandQty,
-            MinimumOrderQty
+            MinimumOrderQty,
+            changes,
         } = args;
         const body = {
             Company: 'CHI',
             ItemCode,
             WarehouseCode,
-            ReorderMethod,
-            ReorderPointQty: new Decimal(ReorderPointQty).toDecimalPlaces(0).toNumber(),
-            EconomicOrderQty: new Decimal(EconomicOrderQty).toDecimalPlaces(0).toNumber(),
-            MaximumOnHandQty: new Decimal(MaximumOnHandQty).toDecimalPlaces(0).toNumber(),
-            MinimumOrderQty: new Decimal(MinimumOrderQty).toDecimalPlaces(0).toNumber()
+            ReorderMethod: changes?.ReorderMethod ?? ReorderMethod,
+            ReorderPointQty: new Decimal(changes?.ReorderPointQty ?? ReorderPointQty).toDecimalPlaces(0).toNumber(),
+            EconomicOrderQty: new Decimal(changes?.EconomicOrderQty ?? EconomicOrderQty).toDecimalPlaces(0).toNumber(),
+            MinimumOrderQty: new Decimal(changes?.MinimumOrderQty ?? MinimumOrderQty).toDecimalPlaces(0).toNumber(),
+            MaximumOnHandQty: new Decimal(changes?.MaximumOnHandQty ?? MaximumOnHandQty).toDecimalPlaces(0).toNumber()
         }
         await fetchJSON(urlSaveReorderOptions, {method: 'POST', body: JSON.stringify(body)});
 
-        const [item] = await fetchItems({warehouse: WarehouseCode, itemCode: `^${ItemCode}$`});
+        const params = new URLSearchParams();
+        params.set('itemCode', `^${ItemCode}$`);
+        params.set('warehouse', WarehouseCode);
+        const [item] = await fetchItems(params);
         return item ?? null;
     } catch (err: unknown) {
         if (err instanceof Error) {

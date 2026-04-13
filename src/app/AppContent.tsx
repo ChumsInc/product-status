@@ -1,18 +1,24 @@
-import React from 'react';
 import AlertList from "../ducks/alerts/AlertList";
-import SelectItemForm from "../ducks/filters/SelectItemForm";
 import AppTabs from "./AppTabs";
-import {Outlet} from 'react-router-dom';
+import {Outlet} from 'react-router';
+import {ErrorBoundary} from "react-error-boundary";
+import ErrorBoundaryFallbackAlert from "@/ducks/alerts/ErrorBoundaryFallbackAlert.tsx";
+import FilterFormProvider from "@/components/form/FilterFormProvider.tsx";
+import FilterForm from "@/components/form/FilterForm.tsx";
+import FilterChooser from "@/components/form/FilterChooser.tsx";
 
 const AppContent = () => {
 
     return (
-        <div>
+        <ErrorBoundary FallbackComponent={ErrorBoundaryFallbackAlert}>
             <AlertList/>
-            <SelectItemForm/>
+            <FilterFormProvider>
+                <FilterForm/>
+                <FilterChooser/>
+            </FilterFormProvider>
             <AppTabs/>
-            <Outlet />
-        </div>
+            <Outlet/>
+        </ErrorBoundary>
     )
 }
 

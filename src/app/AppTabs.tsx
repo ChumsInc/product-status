@@ -1,8 +1,9 @@
-import React, {useEffect, useState} from 'react';
-import {Tab, TabList} from 'chums-components'
+import {useEffect, useState} from 'react';
 import {useSelector} from "react-redux";
-import {RootState} from "../ducks";
-import {useLocation, useNavigate, useParams, useSearchParams} from "react-router-dom";
+import type {RootState} from "@/app/configureStore";
+import {NavLink, useLocation, useSearchParams} from "react-router";
+import type {Tab} from "../types";
+import {Nav} from "react-bootstrap";
 
 
 export interface ValidatedTab extends Tab {
@@ -20,8 +21,7 @@ const initialTabList: ValidatedTab[] = [
 
 const AppTabs = () => {
     const location = useLocation();
-    const navigate = useNavigate();
-    const [searchParams, setSearchParams] = useSearchParams();
+    const [searchParams] = useSearchParams();
     const isAdmin = useSelector((state: RootState) => state.app.isAdmin);
     const [tabList, setTabList] = useState(initialTabList);
 
@@ -29,14 +29,18 @@ const AppTabs = () => {
         setTabList(tabList.map(t => ({...t, disabled: t.requireAdmin && !isAdmin})));
     }, [isAdmin]);
 
-    const selectHandler = (tab: Tab) => {
-        const url = `${tab.id}?${searchParams.toString()}`
-        navigate(url);
-    }
-
     return (
         <div>
-            <TabList tabs={tabList} currentTabId={location.pathname} className="mt-3 mb-1" onSelectTab={selectHandler}/>
+            <Nav activeKey={location.pathname} className="nav-tabs mt-3 mb-1">
+                {tabList.map(tab => (
+                    <Nav.Item key={tab.id}>
+                        <Nav.Link as={NavLink} eventKey={tab.id} disabled={tab.disabled}
+                                  to={`${tab.id}?${searchParams.toString()}`}>
+                            {tab.title}
+                        </Nav.Link>
+                    </Nav.Item>
+                ))}
+            </Nav>
         </div>
     )
 }

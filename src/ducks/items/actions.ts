@@ -1,31 +1,9 @@
-import {Filter} from "../filters";
-import {RootState} from "../index";
-import {selectPendingCount, selectSavingCount} from "./selectors";
-import {SortProps} from "chums-components";
-import {ItemKeyProps, ItemRecord, ItemStatusProps} from "../../types";
-import {createAction, createAsyncThunk} from "@reduxjs/toolkit";
-import {fetchItems, postItemStatus, postReorderOptions} from "../../api/items";
+import type {ItemRecord, ItemStatusProps} from "../../types";
+import {createAsyncThunk} from "@reduxjs/toolkit";
+import {fetchItems, postItemStatus, postReorderOptions} from "@/api/items.ts";
 
 
-export const toggleSelected = createAction<ItemKeyProps & Pick<ItemRecord, 'selected'>>('items/selectItem');
-
-export const selectMultipleItems = createAction<{ keys: string[], selected: boolean | undefined }>('items/selectItems');
-
-export const searchItems = createAction<string>('items/search');
-
-export const toggleFilterOnHand = createAction<boolean | undefined>('items/showOnlyOnHand');
-
-export const toggleShowInactive = createAction<boolean | undefined>('items/showInactive');
-export const toggleShowSelected = createAction<boolean | undefined>('items/showSelected');
-
-export const setReorderOptions = createAction<ItemKeyProps & Partial<ItemRecord>>('items/changeReorderOptions');
-
-export const setPage = createAction<number>('items/setPage');
-export const setRowsPerPage = createAction<number>('items/setRowsPerPage');
-
-export const setSort = createAction<SortProps<ItemRecord>>('items/setSort');
-
-export const loadItems = createAsyncThunk<ItemRecord[], Filter>(
+export const loadItems = createAsyncThunk<ItemRecord[], URLSearchParams>(
     'items/load',
     async (arg) => {
         return await fetchItems(arg);
@@ -41,24 +19,8 @@ export const saveItemStatus = createAsyncThunk<ItemRecord | null, ItemStatusProp
 
 export const saveMultipleItemStatus = createAsyncThunk<void, ItemStatusProps[]>(
     'items/saveMultipleItems',
-    async (arg, {dispatch, getState}) => {
-        let intervalId = 0;
-        let index = 0;
-        const maxFiles = 3;
-        intervalId = window.setInterval(() => {
-            const state = getState() as RootState;
-            let pending = selectPendingCount(state);
-            let saving = selectSavingCount(state);
-            if (!pending) {
-                window.clearInterval(intervalId);
-                return;
-            }
-            while (saving < maxFiles && index < arg.length) {
-                dispatch(saveItemStatus(arg[index]));
-                index += 1;
-                saving += 1;
-            }
-        }, 250)
+    async (arg, {dispatch}) => {
+        await processList(arg, (item) => dispatch(saveItemStatus(item)), 3);
     }
 )
 
@@ -71,25 +33,26 @@ export const saveItemReorder = createAsyncThunk<ItemRecord | null, ItemRecord>(
 
 export const saveMultipleItemReorder = createAsyncThunk<void, ItemRecord[]>(
     'items/saveMultipleReorder',
-    async (arg, {dispatch, getState}) => {
-        let intervalId = 0;
-        let index = 0;
-        const maxFiles = 3;
-        function savePending() {
-            const state = getState() as RootState;
-            let pending = selectPendingCount(state);
-            let saving = selectSavingCount(state);
-            console.log('savePending', {pending, saving, maxFiles, index})
-            if (!pending) {
-                window.clearInterval(intervalId);
-                return;
-            }
-            while (saving < maxFiles && index < arg.length) {
-                dispatch(saveItemReorder(arg[index]));
-                index += 1;
-                saving += 1;
-            }
-        }
-        intervalId = window.setInterval(savePending, 250)
+    async (arg, {dispatch}) => {
+        await processList(arg, (item) => dispatch(saveItemReorder(item)), 3)
     }
 )
+
+
+async function processList<T = unknown>(list: T[], callback: (arg: T) => void, limit: number) {
+    const executing = new Set();
+
+    for (const arg of list) {
+        // create a wrapper to save the item
+        const p = Promise.resolve().then(() => callback(arg));
+        executing.add(p);
+
+        //cleanup when done
+        const cleanup = () => executing.delete(p);
+        p.finally(cleanup);
+
+        if (executing.size >= limit) {
+            await Promise.race(executing);
+        }
+    }
+}

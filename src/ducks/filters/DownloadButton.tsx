@@ -1,21 +1,11 @@
-import React from "react";
-import {useSelector} from "react-redux";
-import {selectFilter} from "./index";
-import {getFilterQuery} from "../../api/filters";
+import {Button, type ButtonProps} from "react-bootstrap";
 
-const DownloadButton = () => {
-    const filters = useSelector(selectFilter);
+export default function DownloadButton({onClick, ...rest}: ButtonProps) {
 
-    const clickHandler = () => {
-        const query = getFilterQuery(filters);
-        const url = `/api/operations/production/item/status/chums.xlsx?${query.toString()}`;
-        window.open(url, '_blank');
-    }
     return (
-        <button type="button" className="btn btn-sm btn-outline-secondary" onClick={clickHandler}>
+        <Button type="button" size="sm" variant="secondary" onClick={onClick} {...rest}>
             Download .xlsx
-        </button>
+        </Button>
     )
 }
 
-export default DownloadButton;
