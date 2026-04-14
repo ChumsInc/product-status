@@ -12,7 +12,7 @@ export default function DescriptionFilter() {
     }
 
     return (
-        <Col xs="auto">
+        <Col xs="auto" lg>
             <FormLabel htmlFor={id}>
                 Description
             </FormLabel>

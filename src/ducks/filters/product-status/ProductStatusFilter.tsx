@@ -11,7 +11,7 @@ export default function ProductStatusFilter() {
     }
 
     return (
-        <Col xs="auto">
+        <Col xs="auto" lg>
             <FormLabel htmlFor={id}>Product Status</FormLabel>
             <ProductStatusAutocomplete id={id} placeholder="All"/>
         </Col>

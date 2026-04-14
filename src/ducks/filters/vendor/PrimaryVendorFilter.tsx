@@ -11,7 +11,7 @@ export default function PrimaryVendorFilter() {
     }
 
     return (
-        <Col xs="auto">
+        <Col xs="auto" lg>
             <FormLabel htmlFor={id}>Primary Vendor</FormLabel>
             <VendorAutocomplete id={id} placeholder="All"/>
         </Col>

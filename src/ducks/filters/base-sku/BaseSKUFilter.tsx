@@ -11,7 +11,7 @@ export default function BaseSKUFilter() {
     }
 
     return (
-        <Col xs="auto">
+        <Col xs="auto" lg>
             <FormLabel htmlFor={id}>
                 Base SKU
             </FormLabel>

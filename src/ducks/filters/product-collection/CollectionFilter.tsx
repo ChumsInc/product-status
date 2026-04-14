@@ -11,7 +11,7 @@ export default function CollectionFilter() {
     }
 
     return (
-        <Col xs="auto">
+        <Col xs="auto" lg>
             <FormLabel htmlFor={id}>Collection</FormLabel>
             <CollectionAutocomplete id={id} placeholder="All"/>
         </Col>

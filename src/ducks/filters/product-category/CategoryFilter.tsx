@@ -11,7 +11,7 @@ export default function CategoryFilter() {
     }
 
     return (
-        <Col xs="auto">
+        <Col xs="auto" lg>
             <FormLabel htmlFor={id}>Category</FormLabel>
             <CategoryAutocomplete id={id} placeholder="All"/>
         </Col>

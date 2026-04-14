@@ -11,7 +11,7 @@ export default function ProductLineFilter() {
     }
 
     return (
-        <Col xs="auto">
+        <Col xs="auto" lg>
             <FormLabel htmlFor={id}>
                 Product Line
             </FormLabel>
